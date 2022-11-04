@@ -6,11 +6,11 @@ This project is incomplete and experimental. No guarantee it will be completed.
 May not work at the moment, but this is how I plan for it to work:
 
 ```hxml
-# Enable the library
--lib gdscript-compiler
-
 # Set output folder to "./output"
 -D gdscript-output=output
+
+# Enable the library
+-lib gdscript-compiler
 
 # We do not want to output any other target
 --no-output
