@@ -1,0 +1,22 @@
+{
+	"name": "gdscript-compiler",
+	"version": "1.0.0",
+	"description": "Compile Haxe to GDScript 2.0 as easily as you'd output to any other target.",
+	"url": "https://github.com/RobertBorghese/Haxe-CompileToGDScript",
+	"license": "MIT",
+	"tags": [
+		"godot",
+		"gdscript",
+		"macro",
+		"compiler",
+		"target",
+		"game",
+		"engine",
+		"externs",
+		"metadata",
+		"extension"
+	],
+	"classPath": "src/",
+	"releasenote": "Initial release.",
+	"contributors": ["RobertBorghese"]
+}

@@ -1,0 +1,99 @@
+var bla
+
+func get_fdsfds():
+	return 43
+
+func set_fdsfds(v):
+	return 54
+
+func fds():
+	Log.trace(self.bla, {
+		"fileName": "Test.hx"
+		"lineNumber": 16
+		"className": "Test"
+		"methodName": "fds",
+	})
+	
+	var a = 0.0
+	var tempNumber = null
+	
+	if (a > Math.random()):
+		a = 0
+		tempNumber = a + a
+	else:
+		tempNumber = a
+	
+	var b = tempNumber
+	
+	self.set_fdsfds(54)
+	
+	if (a < Math.random()):
+		pass
+	
+	match (a):
+		2.0, 4.0:
+			if (a < Math.random()):
+				Log.trace("2.0", {
+					"fileName": "Test.hx"
+					"lineNumber": 32
+					"className": "Test"
+					"methodName": "fds",
+				})
+			else:
+				Log.trace("fjdksl", {
+					"fileName": "Test.hx"
+					"lineNumber": 35
+					"className": "Test"
+					"methodName": "fds",
+				})
+		_:
+			Log.trace("fjdksl", {
+				"fileName": "Test.hx"
+				"lineNumber": 35
+				"className": "Test"
+				"methodName": "fds",
+			})
+	
+	Log.trace(b, {
+		"fileName": "Test.hx"
+		"lineNumber": 39
+		"className": "Test"
+		"methodName": "fds",
+	})
+	
+	var fd = [436, 765, 43]
+	var tempIndex = null
+	
+	if true:
+		var a = 1
+		if (a > Math.random()):
+			a = 0
+			tempIndex = a + a
+		else:
+			tempIndex = a
+	
+	var c = fd[tempIndex]
+	
+	Log.trace(c, {
+		"fileName": "Test.hx"
+		"lineNumber": 54
+		"className": "Test"
+		"methodName": "fds",
+	})
+	
+	var tempString = null
+	
+	if (a > Math.random()):
+		var fff = "444" + Std.string(Math.random())
+		tempString = fff + fff
+	else:
+		tempString = "jkljkl"
+	
+	var a = tempString
+	
+	Log.trace("" + a + " is a number", {
+		"fileName": "Test.hx"
+		"lineNumber": 62
+		"className": "Test"
+		"methodName": "fds",
+	})

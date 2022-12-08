@@ -1,0 +1,12 @@
+-cp ../src/
+-cp .
+
+-lib reflaxe
+
+-D gdscript-output=output
+
+--no-output
+
+Test
+
+--macro gdcompiler.GDCompiler.Start()
