@@ -17,7 +17,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			fileOutputExtension: ".gdscript",
 			requireDefine: "gdscript-output",
 			outputDirDefineName: "gdscript-output",
-			fileOutputType: SingleFile,
+			fileOutputType: FilePerClass,
 			smartDCE: true
 		});
 	}
@@ -49,7 +49,19 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			functions.push(funcDeclaration + gdScriptVal);
 		}
 
-		return variables.join("\n\n") + "\n\n" + functions.join("\n\n");
+		if(variables.length <= 0 && functions.length <= 0) {
+			return null;
+		}
+
+		var header = "";
+
+		if(classType.superClass != null) {
+			header += "extends " + classType.superClass.t.get().name + "\n";
+		}
+
+		header += "class_name " + classType.name + "\n\n";
+
+		return header + variables.join("\n\n") + "\n\n" + functions.join("\n\n");
 	}
   
 	 public function compileEnum(enumType: EnumType, constructs: Map<String, haxe.macro.EnumField>): Null<String> {

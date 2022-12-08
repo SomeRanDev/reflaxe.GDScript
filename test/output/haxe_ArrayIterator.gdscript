@@ -1,0 +1,9 @@
+class_name ArrayIterator
+
+var current
+
+func hasNext():
+	return self.current < self.array.length
+
+func next():
+	return self.array[self.current++]

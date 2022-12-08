@@ -1,3 +1,5 @@
+class_name Test
+
 var bla
 
 func get_fdsfds():
@@ -101,14 +103,3 @@ func fds():
 		"className": "Test"
 		"methodName": "fds",
 	})
-
-var current
-
-func hasNext():
-	return self.current < self.array.length
-
-func next():
-	return self.array[self.current++]
-
-
-

@@ -3,9 +3,7 @@
 
 -lib reflaxe
 
--D gdscript-output=Test.gdscript
-
---no-output
+-D gdscript-output=output
 
 Test
 
