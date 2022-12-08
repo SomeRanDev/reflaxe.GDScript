@@ -30,29 +30,33 @@ func fds():
 	if (a < Math.random()):
 		pass
 	
-	match (a):
+	var tempVoid = null
+	
+	match ((a)):
 		2.0, 4.0:
 			if (a < Math.random()):
-				Log.trace("2.0", {
+				tempVoid = Log.trace("2.0", {
 					"fileName": "Test.hx"
 					"lineNumber": 32
 					"className": "Test"
 					"methodName": "fds",
 				})
 			else:
-				Log.trace("fjdksl", {
+				tempVoid = Log.trace("fjdksl", {
 					"fileName": "Test.hx"
 					"lineNumber": 35
 					"className": "Test"
 					"methodName": "fds",
 				})
 		_:
-			Log.trace("fjdksl", {
+			tempVoid = Log.trace("fjdksl", {
 				"fileName": "Test.hx"
 				"lineNumber": 35
 				"className": "Test"
 				"methodName": "fds",
 			})
+	
+	tempVoid
 	
 	Log.trace(b, {
 		"fileName": "Test.hx"
@@ -97,3 +101,14 @@ func fds():
 		"className": "Test"
 		"methodName": "fds",
 	})
+
+var current
+
+func hasNext():
+	return self.current < self.array.length
+
+func next():
+	return self.array[self.current++]
+
+
+

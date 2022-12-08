@@ -3,104 +3,291 @@ package gdcompiler;
 #if (macro || gdscript_runtime)
 
 import haxe.macro.Context;
+import haxe.macro.Expr;
 import haxe.macro.Type;
 
-using gdcompiler.helpers.SyntaxHelper;
+import reflaxe.BaseCompiler;
+import reflaxe.helpers.OperatorHelper;
 
-import gdcompiler.conversion.GDScriptCompiler;
-import gdcompiler.conversion.EverythingIsExprConversion;
+using reflaxe.helpers.SyntaxHelper;
 
-
-
-class GDCompiler {
-	static var moduleTypes: Array<ModuleType>;
-
+class GDCompiler extends reflaxe.BaseCompiler {
 	public static function Start() {
-		Context.onAfterTyping(onAfterTyping);
-		Context.onAfterGenerate(onAfterGenerate);
+		reflaxe.ReflectCompiler.AddCompiler(new GDCompiler(), {
+			fileOutputExtension: ".gdscript",
+			requireDefine: "gdscript-output",
+			outputDirDefineName: "gdscript-output",
+			fileOutputType: SingleFile,
+			smartDCE: true
+		});
 	}
 
-	public static function onAfterTyping(mtypes: Array<ModuleType>) {
-		moduleTypes = mtypes;
-	}
-
-	public static function onAfterGenerate() {
-		// convert module members to gdscript
-		for(mt in moduleTypes) {
-			switch(mt) {
-				case TClassDecl(clsTypeRef): {
-					if(clsTypeRef.get().name == "Test") {
-						transpileClass(clsTypeRef.get());
-					}
-				}
-				case _: {}
-			}
-		}
-	}
-
-	static function toGDScript(expr: TypedExpr): String {
-		final ec = new GDScriptCompiler(expr);
-		return ec.optimizeAndUnwrap();
-	}
-
-	static function transpileClass(cls: ClassType) {
-		final fieldList = cls.fields.get();
+	public function compileClass(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
 		final variables = [];
 		final functions = [];
 
-		for(field in fieldList) {
-			if(field.isExtern) {
-				continue;
+		for(v in varFields) {
+			final field = v.field;
+			final variableDeclaration = "var " + field.name;
+			final gdScriptVal = if(field.expr() != null) {
+				" = " + compileClassVarExpr(field.expr());
+			} else {
+				"";
 			}
+			variables.push(variableDeclaration + gdScriptVal);
+		}
 
-			switch(field.kind) {
-				case FVar(readVarAccess, writeVarAccess): {
-					final shouldGenerate = switch([readVarAccess, writeVarAccess]) {
-						case [AccNormal | AccNo, AccNormal | AccNo]: true;
-						case _: false;
-					}
-					if(shouldGenerate) {
-						final variableDeclaration = "var " + field.name;
-						final gdScriptVal = if(field.expr() != null) {
-							" = " + toGDScript(field.expr());
-						} else {
-							"";
-						}
-						variables.push(variableDeclaration + gdScriptVal);
-					}
+		for(f in funcFields) {
+			final field = f.field;
+			final tfunc = f.tfunc;
+			final funcDeclaration = "func " + field.name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
+			final gdScriptVal = if(tfunc.expr != null) {
+				compileClassFuncExpr(tfunc.expr).tab();
+			} else {
+				"pass";
+			}
+			functions.push(funcDeclaration + gdScriptVal);
+		}
+
+		return variables.join("\n\n") + "\n\n" + functions.join("\n\n");
+	}
+  
+	 public function compileEnum(enumType: EnumType, constructs: Map<String, haxe.macro.EnumField>): Null<String> {
+		return null;
+	}
+  
+	 public function compileExpression(expr: TypedExpr): Null<String> {
+		var result = "";
+		switch(expr.expr) {
+			case TConst(constant): {
+				result = constantToGDScript(constant);
+			}
+			case TLocal(v): {
+				result = v.name;
+			}
+			case TArray(e1, e2): {
+				result = compileExpression(e1) + "[" + compileExpression(e2) + "]";
+			}
+			case TBinop(op, e1, e2): {
+				result = binopToGDScript(op, e1, e2);
+			}
+			case TField(e, fa): {
+				result = fieldAccessToGDScript(e, fa);
+			}
+			case TTypeExpr(m): {
+				result = moduleNameToGDScript(m);
+			}
+			case TParenthesis(e): {
+				result = "(" + compileExpression(e) + ")";
+			}
+			case TObjectDecl(fields): {
+				result = "{\n";
+				for(i in 0...fields.length) {
+					final field = fields[i];
+					result += "\t\"" + field.name + "\": " + compileExpression(field.expr) + (i == fields.length - 1 ? "," : "") + "\n"; 
 				}
-				case FMethod(methodKind): {
-					var foundFunction = false;
-					if(field.expr() != null) {
-						switch(field.expr().expr) {
-							case TFunction(tfunc): {
-								functions.push(transpileClassFunction(field, tfunc));
-								foundFunction = true;
-							}
-							case _: {}
-						}
-					}
-					if(!foundFunction) {
-						Context.error("Function information not found.", field.pos);
-					}
+				result += "}";
+			}
+			case TArrayDecl(el): {
+				result = "[" + el.map(e -> compileExpression(e)).join(", ") + "]";
+			}
+			case TCall(e, el): {
+				result = compileExpression(e) + "(" + el.map(e -> compileExpression(e)).join(", ") + ")";
+			}
+			case TNew(classTypeRef, _, el): {
+				final className = classTypeRef.get().name;
+				result = className + ".new(" + el.map(e -> compileExpression(e)).join(", ") + ")";
+			}
+			case TUnop(op, postFix, e): {
+				result = unopToGDScript(op, e, postFix);
+			}
+			case TFunction(tfunc): {
+				result = "func(" + tfunc.args.map(a -> a.v.name + (a.value != null ? compileExpression(a.value) : "")) + "):\n";
+				result += toIndentedScope(tfunc.expr);
+			}
+			case TVar(tvar, expr): {
+				result = "var " + tvar.name;
+				if(expr != null) {
+					result += " = " + compileExpression(expr);
 				}
+			}
+			case TBlock(el): {
+				result = "if true:\n";
+
+				if(el.length > 0) {
+					result += el.map(e -> {
+						var content = compileExpression(e);
+						compileExpression(e).tab();
+					}).join("\n");
+				} else {
+					result += "\tpass";
+				}
+			}
+			case TFor(tvar, iterExpr, blockExpr): {
+				result = "for " + tvar.name + " in " + compileExpression(iterExpr) + ":\n";
+				result += toIndentedScope(blockExpr);
+			}
+			case TIf(econd, ifExpr, elseExpr): {
+				result = "if " + compileExpression(econd) + ":\n";
+				result += toIndentedScope(ifExpr);
+				if(elseExpr != null) {
+					result += "\n";
+					result += "else:\n";
+					result += toIndentedScope(elseExpr);
+				}
+			}
+			case TWhile(econd, blockExpr, normalWhile): {
+				final gdCond = compileExpression(econd);
+				if(normalWhile) {
+					result = "while " + gdCond + ":\n";
+					result += toIndentedScope(blockExpr);
+				} else {
+					result = "while true:\n";
+					result += toIndentedScope(blockExpr);
+					result += "\tif " + gdCond + ":\n";
+					result += "\t\tbreak";
+				}
+			}
+			case TSwitch(e, cases, edef): {
+				result = "match " + compileExpression(e) + ":";
+				for(c in cases) {
+					result += "\n";
+					result += "\t" + c.values.map(v -> compileExpression(v)).join(", ") + ":\n";
+					result += toIndentedScope(c.expr).tab();
+				}
+				if(edef != null) {
+					result += "\n";
+					result += "\t_:\n";
+					result += toIndentedScope(edef).tab();
+				}
+			}
+			case TTry(e, catches): {
+				// TODO
+			}
+			case TReturn(maybeExpr): {
+				if(maybeExpr != null) {
+					result = "return " + compileExpression(maybeExpr);
+				} else {
+					result = "return";
+				}
+			}
+			case TBreak: {
+				result = "break";
+			}
+			case TContinue: {
+				result = "continue";
+			}
+			case TThrow(expr): {
+				result = "throw " + compileExpression(expr);
+			}
+			case TCast(expr, maybeModuleType): {
+				result = compileExpression(expr);
+				if(maybeModuleType != null) {
+					result += " as " + moduleNameToGDScript(maybeModuleType);
+				}
+			}
+			case TMeta(metadataEntry, expr): {
+				result = compileExpression(expr);
+			}
+			case TEnumParameter(expr, enumField, index): {
+				result = Std.string(index + 2);
+			}
+			case TEnumIndex(expr): {
+				result = "[1]";
+			}
+			case _: {}
+		}
+		return result;
+	}
+
+	function toIndentedScope(e: TypedExpr): String {
+		return switch(e.expr) {
+			case TBlock(el): {
+				if(el.length > 0) {
+					el.map(e -> compileExpression(e).tab()).join("\n");
+				} else {
+					"\tpass";
+				}
+			}
+			case _: {
+				compileExpression(e).tab();
 			}
 		}
-		
-		final gdscriptContent = variables.join("\n\n") + "\n\n" + functions.join("\n\n");
-		saveGDScriptFile(cls.name, gdscriptContent);
 	}
 
-	static function saveGDScriptFile(filename: String, content: String) {
-		sys.io.File.saveContent(filename + ".gdscript", content);
+	function constantToGDScript(constant: TConstant): String {
+		switch(constant) {
+			case TInt(i): return Std.string(i);
+			case TFloat(s): return s;
+			case TString(s): return "\"" + s + "\"";
+			case TBool(b): return b ? "true" : "false";
+			case TNull: return "null";
+			case TThis: return "self";
+			case TSuper: return "super";
+			case _: {}
+		}
+		return "";
 	}
 
-	static function transpileClassFunction(classField: ClassField,  tfunc: TFunc): String {
-		final eiec = new EverythingIsExprConversion(tfunc.expr, null);
-		final convertedExpr = eiec.convertedExpr();
-		final gdScript = toGDScript(convertedExpr);
-		final funcHeader = "func " + classField.name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
-		return funcHeader + gdScript.tab();
+	function binopToGDScript(op: Binop, e1: TypedExpr, e2: TypedExpr): String {
+		final gdExpr1 = compileExpression(e1);
+		final gdExpr2 = compileExpression(e2);
+		final operatorStr = OperatorHelper.binopToString(op);
+		return gdExpr1 + " " + operatorStr + " " + gdExpr2;
+	}
+
+	function unopToGDScript(op: Unop, e: TypedExpr, isPostfix: Bool): String {
+		final gdExpr = compileExpression(e);
+		final operatorStr = OperatorHelper.unopToString(op);
+		return isPostfix ? (gdExpr + operatorStr) : (operatorStr + gdExpr);
+	}
+
+	function fieldAccessToGDScript(e: TypedExpr, fa: FieldAccess): String {
+		final gdExpr = compileExpression(e);
+		final fieldName = switch(fa) {
+			case FInstance(_, _, classFieldRef): classFieldRef.get().name;
+			case FStatic(_, classFieldRef): classFieldRef.get().name;
+			case FAnon(classFieldRef): classFieldRef.get().name;
+			case FDynamic(s): s;
+			case FClosure(_, classFieldRef): classFieldRef.get().name;
+			case FEnum(_, enumField): enumField.name;
+		}
+		return gdExpr + "." + fieldName;
+	}
+
+	function moduleNameToGDScript(m: ModuleType): String {
+		return switch(m) {
+			case TClassDecl(classTypeRef): classTypeRef.get().name;
+			case TEnumDecl(enumTypeRef): enumTypeRef.get().name;
+			case TTypeDecl(defTypeRef): {
+				final realType = defTypeRef.get().type;
+				typeNameToGDScript(realType, defTypeRef.get().pos);
+			}
+			case TAbstract(abstractTypeRef): {
+				final realType = abstractTypeRef.get().type;
+				typeNameToGDScript(realType, abstractTypeRef.get().pos);
+			}
+		}
+	}
+
+	function typeNameToGDScript(t: Type, errorPos: Position): String {
+		final ct = haxe.macro.TypeTools.toComplexType(t);
+		final typeName = switch(ct) {
+			case TPath(typePath): {
+				// copy TypePath and ignore "params" since GDScript is typeless
+				haxe.macro.ComplexTypeTools.toString(TPath({
+					name: typePath.name,
+					pack: typePath.pack,
+					sub: typePath.sub,
+					params: null
+				}));
+			}
+			case _: null;
+		}
+		if(typeName == null) {
+			Context.error("Incomplete Feature: Cannot convert this type to GDScript at the moment.", errorPos);
+		}
+		return typeName;
 	}
 }
 
