@@ -15,14 +15,14 @@ class GDCompiler extends reflaxe.BaseCompiler {
 	public static function Start() {
 		reflaxe.ReflectCompiler.AddCompiler(new GDCompiler(), {
 			fileOutputExtension: ".gdscript",
-			requireDefine: "gdscript-output",
 			outputDirDefineName: "gdscript-output",
 			fileOutputType: FilePerClass,
+			targetCodeInjectionName: "__gdscript__",
 			smartDCE: true
 		});
 	}
 
-	public function compileClass(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
+	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
 		final variables = [];
 		final functions = [];
 
@@ -64,11 +64,11 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		return header + variables.join("\n\n") + "\n\n" + functions.join("\n\n");
 	}
   
-	 public function compileEnum(enumType: EnumType, constructs: Map<String, haxe.macro.EnumField>): Null<String> {
+	 public function compileEnumImpl(enumType: EnumType, constructs: Map<String, haxe.macro.EnumField>): Null<String> {
 		return null;
 	}
   
-	 public function compileExpression(expr: TypedExpr): Null<String> {
+	 public function compileExpressionImpl(expr: TypedExpr): Null<String> {
 		var result = "";
 		switch(expr.expr) {
 			case TConst(constant): {

@@ -1,10 +1,7 @@
 -cp ../src/
--cp .
 
--lib reflaxe
+../extraParams.hxml
 
 -D gdscript-output=output
 
 Test
-
---macro gdcompiler.GDCompiler.Start()
