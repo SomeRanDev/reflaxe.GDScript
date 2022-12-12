@@ -12,16 +12,6 @@ import reflaxe.helpers.OperatorHelper;
 using reflaxe.helpers.SyntaxHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
-	public static function Start() {
-		reflaxe.ReflectCompiler.AddCompiler(new GDCompiler(), {
-			fileOutputExtension: ".gdscript",
-			outputDirDefineName: "gdscript-output",
-			fileOutputType: FilePerClass,
-			targetCodeInjectionName: "__gdscript__",
-			smartDCE: true
-		});
-	}
-
 	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
 		final variables = [];
 		final functions = [];

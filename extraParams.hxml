@@ -5,4 +5,4 @@
 
 -lib reflaxe
 
---macro gdcompiler.GDCompiler.Start()
+--macro gdcompiler.GDCompilerInit.Start()
