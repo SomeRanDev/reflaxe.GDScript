@@ -1,26 +1,26 @@
-# Haxe: Compile To GDScript
-Compile Haxe to GDScript 2.0 like any other Haxe target.
+# Haxe: GDScript Target
+Compile Haxe to GDScript 2.0 like any other Haxe target. Made using [Reflaxe](https://github.com/RobertBorghese/reflaxe).
 
 This project is incomplete and experimental. No guarantee it will be completed.
 
-May not work at the moment, but this is how I plan for it to work:
+How to install:
 
 ```hxml
-# Set output folder to "./output"
--D gdscript-output=output
+# In your compile.hxml file...
 
 # Enable the library
--lib gdscript-compiler
+# This will not work currently as this lib hasn't been added to haxelib
+-lib gdscript-target
 
-# We do not want to output any other target
---no-output
+# Set output folder to "./output"
+-D gdscript-output=output
 ```
 
 ## How it outputs
 
 * As GDScript outputs one file per class, each class, regardless of module, receives its own file.
 
-* The next issue is namespaces. The only option really is to generate class names that use underscores to differentiate the Haxe class path within the GDScript class name.
+* A custom version of the Haxe standard library is made for GDScript (check out `std/gdscript/_std`)
 
 * If GDScript is being generated, conditional compilation can be used with the `gdscript` define.
 ```haxe
