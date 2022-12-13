@@ -11,27 +11,29 @@ extern class String {
 	public function new(string: String);
 
 	// ----------
-	// @:native
-	@:native("length()")
+	// @:nativeName
+	@:nativeName("length()")
 	public var length(default, null): Int;
 
-	@:native("to_upper")
+	@:nativeName("to_upper")
 	public function toUpperCase(): String;
 
-	@:native("to_lower")
+	@:nativeName("to_lower")
 	public function toLowerCase(): String;
 
-	@:native("find")
+	@:nativeName("find")
 	public function indexOf(str: String, startIndex: Int = 0): Int;
 	
+	@:nativeName("substr")
 	public function substr(pos: Int, len: Int = -1): String;
 
 	// ----------
-	// extern inline
-	public static extern inline function fromCharCode(code: Int): String {
-		return untyped __gdscript__("char({})", code);
-	}
+	// @:native
+	@:native("char")
+	public static function fromCharCode(code: Int): String;
 
+	// ----------
+	// extern inline
 	public extern inline function charAt(index: Int): String {
 		return untyped __gdscript__("{}[{}]", this,  index);
 	}

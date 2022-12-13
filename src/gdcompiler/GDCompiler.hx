@@ -10,6 +10,8 @@ import reflaxe.BaseCompiler;
 import reflaxe.helpers.OperatorHelper;
 
 using reflaxe.helpers.SyntaxHelper;
+using reflaxe.helpers.ModuleTypeHelper;
+using reflaxe.helpers.NameMetaHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
 	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
@@ -245,31 +247,25 @@ class GDCompiler extends reflaxe.BaseCompiler {
 	}
 
 	function fieldAccessToGDScript(e: TypedExpr, fa: FieldAccess): String {
-		final gdExpr = compileExpression(e);
-		final fieldName = switch(fa) {
-			case FInstance(_, _, classFieldRef): classFieldRef.get().name;
-			case FStatic(_, classFieldRef): classFieldRef.get().name;
-			case FAnon(classFieldRef): classFieldRef.get().name;
-			case FDynamic(s): s;
-			case FClosure(_, classFieldRef): classFieldRef.get().name;
-			case FEnum(_, enumField): enumField.name;
+		final nameMeta: NameAndMeta = switch(fa) {
+			case FInstance(_, _, classFieldRef): classFieldRef.get();
+			case FStatic(_, classFieldRef): classFieldRef.get();
+			case FAnon(classFieldRef): classFieldRef.get();
+			case FClosure(_, classFieldRef): classFieldRef.get();
+			case FEnum(_, enumField): enumField;
+			case FDynamic(s): { name: s, meta: null };
 		}
-		return gdExpr + "." + fieldName;
+
+		return if(nameMeta.hasMeta(":native")) {
+			nameMeta.getNameOrNative();
+		} else {
+			final gdExpr = compileExpression(e);
+			return gdExpr + "." + nameMeta.getNameOrNativeName();
+		}
 	}
 
 	function moduleNameToGDScript(m: ModuleType): String {
-		return switch(m) {
-			case TClassDecl(classTypeRef): classTypeRef.get().name;
-			case TEnumDecl(enumTypeRef): enumTypeRef.get().name;
-			case TTypeDecl(defTypeRef): {
-				final realType = defTypeRef.get().type;
-				typeNameToGDScript(realType, defTypeRef.get().pos);
-			}
-			case TAbstract(abstractTypeRef): {
-				final realType = abstractTypeRef.get().type;
-				typeNameToGDScript(realType, abstractTypeRef.get().pos);
-			}
-		}
+		return m.getNameOrNative();
 	}
 
 	function typeNameToGDScript(t: Type, errorPos: Position): String {

@@ -2,6 +2,8 @@ package gdcompiler;
 
 #if (macro || gdscript_runtime)
 
+import haxe.macro.Expr;
+
 import reflaxe.ReflectCompiler;
 
 class GDCompilerInit {
@@ -14,8 +16,6 @@ class GDCompilerInit {
 			targetCodeInjectionName: "__gdscript__",
 			smartDCE: true
 		});
-
-		gdcompiler.mods.BytesMod.apply();
 	}
 }
 
