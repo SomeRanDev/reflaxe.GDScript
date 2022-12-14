@@ -9,9 +9,11 @@ import haxe.macro.Type;
 import reflaxe.BaseCompiler;
 import reflaxe.helpers.OperatorHelper;
 
+using reflaxe.helpers.BaseCompilerHelper;
 using reflaxe.helpers.SyntaxHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
+using reflaxe.helpers.TypedExprHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
 	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
@@ -96,7 +98,12 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = "[" + el.map(e -> compileExpression(e)).join(", ") + "]";
 			}
 			case TCall(e, el): {
-				result = compileExpression(e) + "(" + el.map(e -> compileExpression(e)).join(", ") + ")";
+				final nfc = this.compileNativeFunctionCodeMeta(e, el);
+				result = if(nfc != null) {
+					nfc;
+				} else {
+					compileExpression(e) + "(" + el.map(e -> compileExpression(e)).join(", ") + ")";
+				}
 			}
 			case TNew(classTypeRef, _, el): {
 				final className = classTypeRef.get().name;

@@ -33,11 +33,15 @@ extern class String {
 	public static function fromCharCode(code: Int): String;
 
 	// ----------
-	// extern inline
-	public extern inline function charAt(index: Int): String {
-		return untyped __gdscript__("{}[{}]", this,  index);
-	}
+	// @:nativeFunctionCode
+	@:nativeFunctionCode("{this}[{index}]")
+	public function charAt(index: Int): String;
 
+	@:nativeFunctionCode("{this}")
+	public function toString(): String;
+
+	// ----------
+	// extern inline
 	public extern inline function charCodeAt(index: Int): Null<Int> {
 		return if(index >= 0 && index < length) {
 			ordAt(index);
@@ -64,10 +68,6 @@ extern class String {
 		} else {
 			substr(startIndex, endIndex - startIndex);
 		}
-	}
-
-	public extern inline function toString(): String {
-		return this;
 	}
 
 	// ----------------------------

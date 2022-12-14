@@ -17,15 +17,12 @@ extern class Std {
 	@:native("int")
 	public static function int(x: Float): Int;
 
-	public extern inline static function parseInt(x: String): Null<Int> {
-		return untyped __gdscript__("{}.to_int()", x);
-	}
+	@:nativeFunctionCode("{arg0}.to_int()")
+	public static function parseInt(x: String): Null<Int>;
 
-	public extern inline static function parseFloat(x: String): Float {
-		return untyped __gdscript__("{}.to_float()", x);
-	}
+	@:nativeFunctionCode("{arg0}.to_int()")
+	public  static function parseFloat(x: String): Float;
 
-	public extern inline static function random(x: Int): Int {
-		return untyped __gdscript__("floor(randf() * {})", x);
-	}
+	@:nativeFunctionCode("floor(randf() * {arg0})")
+	public static function random(x: Int): Int;
 }
