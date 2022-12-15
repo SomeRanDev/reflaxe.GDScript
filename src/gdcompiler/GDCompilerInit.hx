@@ -9,7 +9,7 @@ import reflaxe.ReflectCompiler;
 class GDCompilerInit {
 	public static function Start() {
 		ReflectCompiler.AddCompiler(new GDCompiler(), {
-			fileOutputExtension: ".gdscript",
+			fileOutputExtension: ".gd",
 			outputDirDefineName: "gdscript-output",
 			fileOutputType: FilePerClass,
 			ignoreTypes: ["haxe.iterators.ArrayIterator"],

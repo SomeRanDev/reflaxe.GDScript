@@ -17,7 +17,7 @@ using reflaxe.helpers.TypedExprHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
 	public override function onCompileStart() {
-		setExtraFile("StaticVars.gdscript", "class_name StaticVars\n\n");
+		setExtraFile("HxStaticVars.gd", "class_name StaticVars\n\n");
 	}
 
 	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
@@ -34,7 +34,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			}
 			final decl = variableDeclaration + gdScriptVal;
 			if(v.isStatic) {
-				appendToExtraFile("StaticVars.gdscript", decl + "\n\n");
+				appendToExtraFile("HxStaticVars.gd", decl + "\n\n");
 			} else {
 				variables.push(decl);
 			}

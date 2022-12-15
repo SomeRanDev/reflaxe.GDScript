@@ -1,12 +1,13 @@
 -cp ../std
 -cp ../std/gdscript/_std
 -cp ../src/
--cp src
+-cp haxe-src
 
 ../extraParams.hxml
 
--D gdscript-output=output
+-D gdscript-output=gdscript
 
+Test
 TestSyntax
 TestString
 TestStd
