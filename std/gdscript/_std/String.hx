@@ -34,7 +34,7 @@ extern class String {
 
 	// ----------
 	// @:nativeFunctionCode
-	@:nativeFunctionCode("{this}[{index}]")
+	@:nativeFunctionCode("{this}[{arg0}]")
 	public function charAt(index: Int): String;
 
 	@:nativeFunctionCode("{this}")
