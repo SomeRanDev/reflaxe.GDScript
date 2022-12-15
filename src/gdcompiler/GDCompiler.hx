@@ -34,7 +34,8 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		for(f in funcFields) {
 			final field = f.field;
 			final tfunc = f.tfunc;
-			final funcDeclaration = "func " + field.name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
+			final prefix = f.isStatic ? "static " : "";
+			final funcDeclaration = prefix + "func " + field.name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
 			final gdScriptVal = if(tfunc.expr != null) {
 				compileClassFuncExpr(tfunc.expr).tab();
 			} else {
