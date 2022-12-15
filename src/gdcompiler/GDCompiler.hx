@@ -101,7 +101,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = "{\n";
 				for(i in 0...fields.length) {
 					final field = fields[i];
-					result += "\t\"" + field.name + "\": " + compileExpression(field.expr) + (i == fields.length - 1 ? "," : "") + "\n"; 
+					result += "\t\"" + field.name + "\": " + compileExpression(field.expr) + (i < fields.length - 1 ? "," : "") + "\n"; 
 				}
 				result += "}";
 			}
