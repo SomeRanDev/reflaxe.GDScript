@@ -16,6 +16,10 @@ using reflaxe.helpers.NameMetaHelper;
 using reflaxe.helpers.TypedExprHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
+	public override function onCompileStart() {
+		setExtraFile("StaticVars.gdscript", "class_name StaticVars\n\n");
+	}
+
 	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
 		final variables = [];
 		final functions = [];
@@ -28,14 +32,20 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			} else {
 				"";
 			}
-			variables.push(variableDeclaration + gdScriptVal);
+			final decl = variableDeclaration + gdScriptVal;
+			if(v.isStatic) {
+				appendToExtraFile("StaticVars.gdscript", decl + "\n\n");
+			} else {
+				variables.push(decl);
+			}
 		}
 
 		for(f in funcFields) {
 			final field = f.field;
 			final tfunc = f.tfunc;
+			final name = field.name == "new" ? "_init" : field.name;
 			final prefix = f.isStatic ? "static " : "";
-			final funcDeclaration = prefix + "func " + field.name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
+			final funcDeclaration = prefix + "func " + name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
 			final gdScriptVal = if(tfunc.expr != null) {
 				compileClassFuncExpr(tfunc.expr).tab();
 			} else {
@@ -267,8 +277,25 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		return if(nameMeta.hasMeta(":native")) {
 			nameMeta.getNameOrNative();
 		} else {
+			final name = nameMeta.getNameOrNativeName();
+
+			// Check if this is a static variable,
+			// and if so use the StaticVars singleton.
+			switch(fa) {
+				case FStatic(clsRef, cfRef): {
+					final cf = cfRef.get();
+					switch(cf.kind) {
+						case FVar(read, write): {
+							return "StaticVars." + name;
+						}
+						case _:
+					}
+				}
+				case _:
+			}
+
 			final gdExpr = compileExpression(e);
-			return gdExpr + "." + nameMeta.getNameOrNativeName();
+			return gdExpr + "." + name;
 		}
 	}
 

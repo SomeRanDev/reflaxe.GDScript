@@ -11,3 +11,4 @@ TestSyntax
 TestString
 TestStd
 TestMath
+TestStaticVar
