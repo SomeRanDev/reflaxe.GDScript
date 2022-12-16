@@ -7,7 +7,6 @@
 
 -D gdscript-output=gdscript/out
 
-Test
 TestSyntax
 TestString
 TestStd
