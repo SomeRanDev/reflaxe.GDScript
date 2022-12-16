@@ -27,4 +27,4 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-HxStaticVars="*res://gdscript/HxStaticVars.gd"
+HxStaticVars="*res://gdscript/out/HxStaticVars.gd"
