@@ -19,7 +19,7 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://gdscript/HxStaticVars.gd"
 }, {
-"base": "RefCounted",
+"base": "Node",
 "class": &"Test",
 "language": &"GDScript",
 "path": "res://gdscript/Test.gd"
@@ -38,11 +38,6 @@ _global_script_classes=[{
 "class": &"TestString",
 "language": &"GDScript",
 "path": "res://gdscript/TestString.gd"
-}, {
-"base": "RefCounted",
-"class": &"TestSyntax",
-"language": &"GDScript",
-"path": "res://gdscript/TestSyntax.gd"
 }]
 _global_script_class_icons={
 "Log": "",
@@ -50,8 +45,7 @@ _global_script_class_icons={
 "Test": "",
 "TestMath": "",
 "TestStd": "",
-"TestString": "",
-"TestSyntax": ""
+"TestString": ""
 }
 
 [application]
