@@ -20,43 +20,45 @@ class GDCompilerInit {
 			smartDCE: true
 		});
 
-		ExpressionModifier.mod(function(e: Expr) {
-			switch(e.expr) {
-				case EUnop(op, postFix, e): {
-					switch(op) {
-						case OpIncrement: {
-							return if(postFix) {
-								macro {
-									$e += 1;
-									$e - 1;
-								}
-							} else {
-								macro {
-									$e += 1;
-									$e;
-								}
+		ExpressionModifier.mod(transformUnopIncDecfunction);
+	}
+
+	static function transformUnopIncDecfunction(e: Expr): Null<Expr> {
+		switch(e.expr) {
+			case EUnop(op, postFix, e): {
+				switch(op) {
+					case OpIncrement: {
+						return if(postFix) {
+							macro {
+								$e += 1;
+								$e - 1;
+							}
+						} else {
+							macro {
+								$e += 1;
+								$e;
 							}
 						}
-						case OpDecrement: {
-							return if(postFix) {
-								macro {
-									$e -= 1;
-									$e + 1;
-								}
-							} else {
-								macro {
-									$e -= 1;
-									$e;
-								}
-							}
-						}
-						case _:
 					}
+					case OpDecrement: {
+						return if(postFix) {
+							macro {
+								$e -= 1;
+								$e + 1;
+							}
+						} else {
+							macro {
+								$e -= 1;
+								$e;
+							}
+						}
+					}
+					case _:
 				}
-				case _:
 			}
-			return null;
-		});
+			case _:
+		}
+		return null;
 	}
 
 	// the "utility_functions" from the Godot extension_api.json
