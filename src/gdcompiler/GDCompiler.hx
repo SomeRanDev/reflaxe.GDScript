@@ -13,7 +13,9 @@ using reflaxe.helpers.BaseCompilerHelper;
 using reflaxe.helpers.SyntaxHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
+using reflaxe.helpers.OperatorHelper;
 using reflaxe.helpers.TypedExprHelper;
+using reflaxe.helpers.TypeHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
 	public override function onCompileStart() {
@@ -252,10 +254,21 @@ class GDCompiler extends reflaxe.BaseCompiler {
 	}
 
 	function binopToGDScript(op: Binop, e1: TypedExpr, e2: TypedExpr): String {
-		final gdExpr1 = compileExpression(e1);
-		final gdExpr2 = compileExpression(e2);
+		var gdExpr1 = compileExpression(e1);
+		var gdExpr2 = compileExpression(e2);
 		final operatorStr = OperatorHelper.binopToString(op);
+
+		// Wrap primitives with str(...) when added with String
+		if(op.isAddition()) {
+			if(checkForPrimitiveStringAddition(e1, e2)) gdExpr2 = "str(" + gdExpr2 + ")";
+			if(checkForPrimitiveStringAddition(e2, e1)) gdExpr1 = "str(" + gdExpr1 + ")";
+		}
+
 		return gdExpr1 + " " + operatorStr + " " + gdExpr2;
+	}
+
+	inline function checkForPrimitiveStringAddition(strExpr: TypedExpr, primExpr: TypedExpr) {
+		return strExpr.t.isString() && primExpr.t.isPrimitive();
 	}
 
 	function unopToGDScript(op: Unop, e: TypedExpr, isPostfix: Bool): String {

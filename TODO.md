@@ -5,7 +5,7 @@
  - [x] Implement smarter EIE unwrap to create less code blocks.
  - [x] Add expression optimizer to move variable declarations down that are unused before reassignment.
  - [x] Inline `trace` and implement `haxe.Log`?
- - [ ] Adding int to string doesn't convert the int?
+ - [x] Adding int to string doesn't convert the int?
  - [ ] Checking if custom struct has field (struct.fieldName != null) should be converted to (struct.has("fieldName"))
  - [ ] Static var support
  - [ ] Dynamic function support
