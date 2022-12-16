@@ -19,7 +19,7 @@ using reflaxe.helpers.TypeHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
 	public override function onCompileStart() {
-		setExtraFile("HxStaticVars.gd", "class_name StaticVars\n\n");
+		setExtraFile("HxStaticVars.gd", "extends Node\nclass_name StaticVars\n\n");
 	}
 
 	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
