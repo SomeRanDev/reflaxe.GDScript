@@ -5,7 +5,7 @@
 
 ../extraParams.hxml
 
--D gdscript-output=gdscript
+-D gdscript-output=gdscript/out
 
 Test
 TestSyntax
