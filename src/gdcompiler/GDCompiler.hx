@@ -82,7 +82,10 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = constantToGDScript(constant);
 			}
 			case TLocal(v): {
-				result = v.name;
+				result = compileVarName(v.name, expr);
+			}
+			case TIdent(s): {
+				result = compileVarName(s, expr);
 			}
 			case TArray(e1, e2): {
 				result = compileExpression(e1) + "[" + compileExpression(e2) + "]";
@@ -129,10 +132,10 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = "func(" + tfunc.args.map(a -> a.v.name + (a.value != null ? compileExpression(a.value) : "")) + "):\n";
 				result += toIndentedScope(tfunc.expr);
 			}
-			case TVar(tvar, expr): {
-				result = "var " + tvar.name;
-				if(expr != null) {
-					result += " = " + compileExpression(expr);
+			case TVar(tvar, maybeExpr): {
+				result = "var " + compileVarName(tvar.name, expr);
+				if(maybeExpr != null) {
+					result += " = " + compileExpression(maybeExpr);
 				}
 			}
 			case TBlock(el): {
@@ -219,7 +222,6 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			case TEnumIndex(expr): {
 				result = "[1]";
 			}
-			case _: {}
 		}
 		return result;
 	}
