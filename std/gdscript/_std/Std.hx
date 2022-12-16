@@ -11,7 +11,7 @@ extern class Std {
 	public extern inline static function instance<T: {}, S: T>(value: T, c: Class<S>): S return downcast(value, c);
 	public extern inline static function downcast<T: {}, S: T>(value: T, c: Class<S>): S return cast value;
 
-	@:native("String")
+	@:native("str")
 	public static function string(s: Dynamic): String;
 
 	@:native("int")
