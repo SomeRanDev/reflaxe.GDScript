@@ -38,6 +38,11 @@ _global_script_classes=[{
 "class": &"TestString",
 "language": &"GDScript",
 "path": "res://gdscript/TestString.gd"
+}, {
+"base": "RefCounted",
+"class": &"TestSyntax",
+"language": &"GDScript",
+"path": "res://gdscript/TestSyntax.gd"
 }]
 _global_script_class_icons={
 "Log": "",
@@ -45,7 +50,8 @@ _global_script_class_icons={
 "Test": "",
 "TestMath": "",
 "TestStd": "",
-"TestString": ""
+"TestString": "",
+"TestSyntax": ""
 }
 
 [application]

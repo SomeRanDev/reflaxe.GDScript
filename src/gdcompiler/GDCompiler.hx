@@ -320,6 +320,16 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			}
 
 			final gdExpr = compileExpression(e);
+
+			// Check if we're accessing an anonymous type.
+			// If so, it's a Dictionary in GDScript and .get should be used.
+			switch(fa) {
+				case FAnon(classFieldRef): {
+					return gdExpr + ".get(\"" + classFieldRef.get().name + "\")";
+				}
+				case _:
+			}
+
 			return gdExpr + "." + name;
 		}
 	}
