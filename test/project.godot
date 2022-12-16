@@ -10,17 +10,54 @@ config_version=5
 
 _global_script_classes=[{
 "base": "RefCounted",
+"class": &"Log",
+"language": &"GDScript",
+"path": "res://gdscript/Log.gd"
+}, {
+"base": "RefCounted",
 "class": &"StaticVars",
 "language": &"GDScript",
 "path": "res://gdscript/HxStaticVars.gd"
+}, {
+"base": "RefCounted",
+"class": &"Test",
+"language": &"GDScript",
+"path": "res://gdscript/Test.gd"
+}, {
+"base": "RefCounted",
+"class": &"TestMath",
+"language": &"GDScript",
+"path": "res://gdscript/TestMath.gd"
+}, {
+"base": "RefCounted",
+"class": &"TestStd",
+"language": &"GDScript",
+"path": "res://gdscript/TestStd.gd"
+}, {
+"base": "RefCounted",
+"class": &"TestString",
+"language": &"GDScript",
+"path": "res://gdscript/TestString.gd"
+}, {
+"base": "RefCounted",
+"class": &"TestSyntax",
+"language": &"GDScript",
+"path": "res://gdscript/TestSyntax.gd"
 }]
 _global_script_class_icons={
-"StaticVars": ""
+"Log": "",
+"StaticVars": "",
+"Test": "",
+"TestMath": "",
+"TestStd": "",
+"TestString": "",
+"TestSyntax": ""
 }
 
 [application]
 
 config/name="Haxe-to-GDScript-Test"
+run/main_scene="res://test_scene.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
 

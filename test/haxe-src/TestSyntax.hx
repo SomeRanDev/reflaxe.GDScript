@@ -9,7 +9,7 @@ class TestSyntax {
 	public function set_fdsfds(v) return 54;
 
 	public function new() {
-		bla++;
+		trace(bla++);
 		trace(bla);
 	}
 
