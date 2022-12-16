@@ -25,16 +25,28 @@ class GDCompilerInit {
 					switch(op) {
 						case OpIncrement: {
 							return if(postFix) {
-								macro ($e += 1) - 1;
+								macro {
+									$e += 1;
+									$e - 1;
+								}
 							} else {
-								macro ($e += 1);
+								macro {
+									$e += 1;
+									$e;
+								}
 							}
 						}
 						case OpDecrement: {
 							return if(postFix) {
-								macro ($e -= 1) - 1;
+								macro {
+									$e -= 1;
+									$e + 1;
+								}
 							} else {
-								macro ($e -= 1);
+								macro {
+									$e -= 1;
+									$e;
+								}
 							}
 						}
 						case _:

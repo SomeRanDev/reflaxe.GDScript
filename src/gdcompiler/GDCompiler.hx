@@ -260,6 +260,18 @@ class GDCompiler extends reflaxe.BaseCompiler {
 
 	function unopToGDScript(op: Unop, e: TypedExpr, isPostfix: Bool): String {
 		final gdExpr = compileExpression(e);
+
+		// OpIncrement and OpDecrement not supported in GDScript
+		switch(op) {
+			case OpIncrement: {
+				return gdExpr + " += 1";
+			}
+			case OpDecrement: {
+				return gdExpr + " -= 1";
+			}
+			case _:
+		}
+
 		final operatorStr = OperatorHelper.unopToString(op);
 		return isPostfix ? (gdExpr + operatorStr) : (operatorStr + gdExpr);
 	}
