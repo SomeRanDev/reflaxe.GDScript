@@ -18,30 +18,60 @@ using reflaxe.helpers.TypedExprHelper;
 using reflaxe.helpers.TypeHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
+	// track name of class when compiling class
+	var className: String = "";
+
 	public override function onCompileStart() {
-		setExtraFile("HxStaticVars.gd", "extends Node\nclass_name StaticVars\n\n");
+		setExtraFile("HxStaticVars.gd", "extends Node\n\n");
+	}
+
+	function isGodotNode(t: ClassType) {
+		return if(t.isExtern && t.pack.length == 1 && t.pack[0] == "godot" && t.name == "Node") {
+			true;
+		} else if(t.superClass != null) {
+			isGodotNode(t.superClass.t.get());
+		} else {
+			false;
+		}
+	}
+
+	function compileClassName(classType: ClassType): String {
+		return classType.getNameOrNative();
 	}
 
 	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
 		final variables = [];
 		final functions = [];
+		final staticVars = [];
 
+		className = classType.name;
+
+		var header = "";
+
+		if(classType.superClass != null) {
+			header += "extends " + compileClassName(classType.superClass.t.get()) + "\n";
+		}
+
+		header += "class_name " + compileClassName(classType) + "\n\n";
+
+		// instance vars
 		for(v in varFields) {
 			final field = v.field;
-			final variableDeclaration = "var " + field.name;
+			final varName = compileVarName(field.name, null, field);
 			final gdScriptVal = if(field.expr() != null) {
-				" = " + compileClassVarExpr(field.expr());
+				compileClassVarExpr(field.expr());
 			} else {
 				"";
 			}
-			final decl = variableDeclaration + gdScriptVal;
 			if(v.isStatic) {
-				appendToExtraFile("HxStaticVars.gd", decl + "\n\n");
+				staticVars.push({ name: varName, expr: gdScriptVal });
 			} else {
+				final decl = "var " + varName + (gdScriptVal.length == 0 ? "" : (" = " + gdScriptVal));
 				variables.push(decl);
 			}
 		}
 
+		// class functions
 		for(f in funcFields) {
 			final field = f.field;
 			final tfunc = f.tfunc;
@@ -56,22 +86,43 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			functions.push(funcDeclaration + gdScriptVal);
 		}
 
+		// static vars
+		if(staticVars.length > 0) {
+			var declaration = "var " + className + ": Dictionary = {\n";
+
+			final fields = [];
+			for(v in staticVars) {
+				fields.push("\t\"" + v.name + "\": " + (v.expr != null ? v.expr : "null"));
+			}
+
+			declaration += fields.join(",\n") + "\n";
+			declaration += "}";
+
+			appendToExtraFile("HxStaticVars.gd", declaration);
+		}
+
+		// if there are no instance variables or functions,
+		// we don't need to generate a class
 		if(variables.length <= 0 && functions.length <= 0) {
 			return null;
 		}
 
-		var header = "";
+		return {
+			var result = header;
 
-		if(classType.superClass != null) {
-			header += "extends " + classType.superClass.t.get().name + "\n";
+			if(variables.length > 0) {
+				result += variables.join("\n\n") + "\n\n";
+			}
+
+			if(functions.length > 0) {
+				result += functions.join("\n\n") + "\n\n";
+			}
+
+			result;
 		}
-
-		header += "class_name " + classType.name + "\n\n";
-
-		return header + variables.join("\n\n") + "\n\n" + functions.join("\n\n");
 	}
-  
-	 public function compileEnumImpl(enumType: EnumType, constructs: Map<String, haxe.macro.EnumField>): Null<String> {
+
+	public function compileEnumImpl(enumType: EnumType, constructs: Map<String, haxe.macro.EnumField>): Null<String> {
 		return null;
 	}
   
@@ -122,7 +173,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				}
 			}
 			case TNew(classTypeRef, _, el): {
-				final className = classTypeRef.get().name;
+				final className = compileClassName(classTypeRef.get());
 				result = className + ".new(" + el.map(e -> compileExpression(e)).join(", ") + ")";
 			}
 			case TUnop(op, postFix, e): {
@@ -307,13 +358,13 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			final name = nameMeta.getNameOrNativeName();
 
 			// Check if this is a static variable,
-			// and if so use the StaticVars singleton.
+			// and if so use singleton.
 			switch(fa) {
 				case FStatic(clsRef, cfRef): {
 					final cf = cfRef.get();
 					switch(cf.kind) {
 						case FVar(read, write): {
-							return "StaticVars." + name;
+							return "HxStaticVars." + className + "." + name;
 						}
 						case _:
 					}
@@ -337,6 +388,10 @@ class GDCompiler extends reflaxe.BaseCompiler {
 	}
 
 	function moduleNameToGDScript(m: ModuleType): String {
+		switch(m) {
+			case TClassDecl(clsRef): compileClassName(clsRef.get());
+			case _:
+		}
 		return m.getNameOrNative();
 	}
 
