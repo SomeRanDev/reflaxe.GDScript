@@ -23,6 +23,7 @@ class GDCompilerInit {
 		ExpressionModifier.mod(transformUnopIncDecfunction);
 	}
 
+	// transform untyped prefix and suffix increment and decrement
 	static function transformUnopIncDecfunction(e: Expr): Null<Expr> {
 		switch(e.expr) {
 			case EUnop(op, postFix, e): {
