@@ -11,9 +11,15 @@ class TestSyntax {
 	public function new() {
 		trace(bla++);
 		trace(bla);
+		fds();
 	}
 
 	public function fds() {
+
+		haxe.Log.trace = function(input: Dynamic, ?infos) {
+			untyped __gdscript__("print({})", input + Std.string(123));
+		}
+
 		trace(bla);
 
 		var a = 0.0;

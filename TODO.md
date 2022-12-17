@@ -8,7 +8,7 @@
  - [x] Adding int to string doesn't convert the int?
  - [x] Checking if custom struct has field (struct.fieldName != null) should be converted to (struct.has("fieldName"))
  - [x] Static var support
- - [ ] Dynamic function support
+ - [x] Dynamic function support
  - [ ] `_std/Sys.hx`
  - [ ] Add all the other std lib stuff
  - [ ] Godot bindings (`std/godot`) (maybe bindings maker in `gdscript` package?)

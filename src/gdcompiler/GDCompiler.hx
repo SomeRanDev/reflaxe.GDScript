@@ -18,9 +18,6 @@ using reflaxe.helpers.TypedExprHelper;
 using reflaxe.helpers.TypeHelper;
 
 class GDCompiler extends reflaxe.BaseCompiler {
-	// track name of class when compiling class
-	var className: String = "";
-
 	public override function onCompileStart() {
 		setExtraFile("HxStaticVars.gd", "extends Node\n\n");
 	}
@@ -43,8 +40,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		final variables = [];
 		final functions = [];
 		final staticVars = [];
-
-		className = classType.name;
+		final className = classType.name;
 
 		var header = "";
 
@@ -76,19 +72,30 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			final field = f.field;
 			final tfunc = f.tfunc;
 			final name = field.name == "new" ? "_init" : field.name;
-			final prefix = f.isStatic ? "static " : "";
-			final funcDeclaration = prefix + "func " + name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
-			final gdScriptVal = if(tfunc.expr != null) {
-				compileClassFuncExpr(tfunc.expr).tab();
+
+			if(f.kind == MethDynamic) {
+				final callable = compileClassVarExpr(field.expr());
+				if(f.isStatic) {
+					staticVars.push({ name: name, expr: callable });
+				} else {
+					final decl = "var " + name + " = " + callable;
+					variables.push(decl);
+				}
 			} else {
-				"pass";
+				final prefix = f.isStatic ? "static " : "";
+				final funcDeclaration = prefix + "func " + name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
+				final gdScriptVal = if(tfunc.expr != null) {
+					compileClassFuncExpr(tfunc.expr).tab();
+				} else {
+					"pass";
+				}
+				functions.push(funcDeclaration + gdScriptVal);
 			}
-			functions.push(funcDeclaration + gdScriptVal);
 		}
 
 		// static vars
 		if(staticVars.length > 0) {
-			var declaration = "var " + className + ": Dictionary = {\n";
+			var declaration = "var _" + className + ": Dictionary = {\n";
 
 			final fields = [];
 			for(v in staticVars) {
@@ -96,7 +103,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			}
 
 			declaration += fields.join(",\n") + "\n";
-			declaration += "}";
+			declaration += "}\n\n";
 
 			appendToExtraFile("HxStaticVars.gd", declaration);
 		}
@@ -169,7 +176,12 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = if(nfc != null) {
 					nfc;
 				} else {
-					compileExpression(e) + "(" + el.map(e -> compileExpression(e)).join(", ") + ")";
+					final callOp = if(isCallableVar(e)) {
+						".call(";
+					} else {
+						"(";
+					}
+					compileExpression(e) + callOp + el.map(e -> compileExpression(e)).join(", ") + ")";
 				}
 			}
 			case TNew(classTypeRef, _, el): {
@@ -180,7 +192,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = unopToGDScript(op, e, postFix);
 			}
 			case TFunction(tfunc): {
-				result = "func(" + tfunc.args.map(a -> a.v.name + (a.value != null ? compileExpression(a.value) : "")) + "):\n";
+				result = "func(" + tfunc.args.map(a -> a.v.name + (a.value != null ? " = " + compileExpression(a.value) : "")).join(", ") + "):\n";
 				result += toIndentedScope(tfunc.expr);
 			}
 			case TVar(tvar, maybeExpr): {
@@ -362,9 +374,15 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			switch(fa) {
 				case FStatic(clsRef, cfRef): {
 					final cf = cfRef.get();
+					final className = compileClassName(clsRef.get());
 					switch(cf.kind) {
 						case FVar(read, write): {
-							return "HxStaticVars." + className + "." + name;
+							return "HxStaticVars._" + className + "." + name;
+						}
+						case FMethod(kind): {
+							if(kind == MethDynamic) {
+								return "HxStaticVars._" + className + "." + name;
+							}
 						}
 						case _:
 					}
@@ -413,6 +431,31 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			Context.error("Incomplete Feature: Cannot convert this type to GDScript at the moment.", errorPos);
 		}
 		return typeName;
+	}
+
+	// In GDScript, a Callable is called differently from a function.
+	// To help decern whether this is a variable containing a Callable,
+	// or this is a normal function/method, this function is used.
+	function isCallableVar(e: TypedExpr) {
+		return switch(e.expr) {
+			case TField(_, fa): {
+				switch(fa) {
+					case FInstance(_, _, clsFieldRef) |
+						FStatic(_, clsFieldRef) |
+						FClosure(_, clsFieldRef): {
+						final clsField = clsFieldRef.get();
+						switch(clsField.kind) {
+							case FMethod(methKind): {
+								methKind == MethDynamic;
+							}
+							case _: true;
+						}
+					}
+					case _: true;
+				}
+			}
+			case _: true;
+		}
 	}
 }
 
