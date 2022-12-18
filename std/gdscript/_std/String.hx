@@ -8,6 +8,7 @@ extern class String {
 
 	// ----------
 	// constructor
+	@:nativeFunctionCode("{arg0}")
 	public function new(string: String);
 
 	// ----------
