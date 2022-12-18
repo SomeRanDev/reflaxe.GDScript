@@ -286,7 +286,9 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				}
 			}
 			case TTry(e, catches): {
-				// TODO
+				result = compileExpression(e);
+				final msg = "GDScript does not support try-catch. The expressions contained in the try block will be compiled, and the catches will be ignored.";
+				Context.warning(msg, expr.pos);
 			}
 			case TReturn(maybeExpr): {
 				if(maybeExpr != null) {
