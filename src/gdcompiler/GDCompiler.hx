@@ -7,6 +7,7 @@ import haxe.macro.Expr;
 import haxe.macro.Type;
 
 import reflaxe.BaseCompiler;
+import reflaxe.compiler.EverythingIsExprSanitizer;
 import reflaxe.helpers.OperatorHelper;
 
 using reflaxe.helpers.BaseCompilerHelper;
@@ -175,7 +176,13 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = moduleNameToGDScript(m);
 			}
 			case TParenthesis(e): {
-				result = "(" + compileExpression(e) + ")";
+				final gdScript = compileExpression(e);
+				final expr = if(!EverythingIsExprSanitizer.isBlocklikeExpr(e)) {
+					"(" + gdScript + ")";
+				} else {
+					gdScript;
+				}
+				result = expr;
 			}
 			case TObjectDecl(fields): {
 				result = "{\n";
