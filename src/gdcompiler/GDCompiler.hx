@@ -497,6 +497,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 					case _: true;
 				}
 			}
+			case TParenthesis(e2) | TMeta(_, e2): isCallableVar(e2);
 			case _: true;
 		}
 	}
