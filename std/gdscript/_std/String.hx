@@ -77,8 +77,8 @@ extern class String {
 	// (gotta keep these private cause @:coreApi requires all 
 	//  fields that don't match the api to be explicitly private).
 	// ----------------------------
-	@:native("ord_at") private function ordAt(at: Int): Int;
-	@:native("find_last") private function findLast(what: String): Int;
-	@:native("findn") private function findNoCase(what: String, from: Int = 0): Int;
-	@:native("length") private function getLength(): Int;
+	@:nativeName("ord_at") private function ordAt(at: Int): Int;
+	@:nativeName("find_last") private function findLast(what: String): Int;
+	@:nativeName("findn") private function findNoCase(what: String, from: Int = 0): Int;
+	@:nativeName("length") private function getLength(): Int;
 }
