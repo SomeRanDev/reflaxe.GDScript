@@ -84,7 +84,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				}
 			} else {
 				final prefix = f.isStatic ? "static " : "";
-				final funcDeclaration = prefix + "func " + name + "(" + tfunc.args.map(a -> compileVarName(a.v.name)).join(", ") + "):\n";
+				final funcDeclaration = prefix + "func " + name + "(" + tfunc.args.map(compileFunctionArgument).join(", ") + "):\n";
 				var gdScriptVal = if(tfunc.expr != null) {
 					final result = compileClassFuncExpr(tfunc.expr).tab();
 					if(StringTools.trim(result).length == 0) {
@@ -142,6 +142,14 @@ class GDCompiler extends reflaxe.BaseCompiler {
 
 			result;
 		}
+	}
+
+	function compileFunctionArgument(arg: { v: TVar, value: Null<TypedExpr> }) {
+		var result = compileVarName(arg.v.name);
+		if(arg.value != null) {
+			result += " = " + compileExpression(arg.value);
+		}
+		return result;
 	}
 
 	public function compileEnumImpl(enumType: EnumType, constructs: Map<String, haxe.macro.EnumField>): Null<String> {
@@ -228,7 +236,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = unopToGDScript(op, e, postFix);
 			}
 			case TFunction(tfunc): {
-				result = "func(" + tfunc.args.map(a -> compileVarName(a.v.name) + (a.value != null ? " = " + compileExpression(a.value) : "")).join(", ") + "):\n";
+				result = "func(" + tfunc.args.map(compileFunctionArgument).join(", ") + "):\n";
 				result += toIndentedScope(tfunc.expr);
 			}
 			case TVar(tvar, maybeExpr): {
