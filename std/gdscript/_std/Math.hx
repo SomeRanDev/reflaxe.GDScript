@@ -4,11 +4,11 @@ extern class Math {
 	public static var PI(get, never): Float;
 	public static extern inline function get_PI(): Float return untyped __gdscript__("PI");
 
-	public static var NEGATIVE_INFINITY(get, never): Float;
-	public static extern inline function get_NEGATIVE_INFINITY(): Float return untyped __gdscript__("-INF");
+	@:native("-INF")
+	public static var NEGATIVE_INFINITY(default, null): Float;
 
-	public static var POSITIVE_INFINITY(get, never): Float;
-	public static extern inline function get_POSITIVE_INFINITY(): Float return untyped __gdscript__("INF");
+	@:native("INF")
+	public static var POSITIVE_INFINITY(default, null): Float;
 
 	public static var NaN(get, never): Float;
 	public static extern inline function get_NaN(): Float return untyped __gdscript__("NAN");
@@ -45,6 +45,5 @@ extern class Math {
 
 	@:native("is_nan") public static function isNaN(f: Float): Bool;
 
-	// TODO
-	public static extern inline function isFinite(f: Float): Bool { return true; }
+	@:native("is_finite") public static function isFinite(f: Float): Bool;
 }
