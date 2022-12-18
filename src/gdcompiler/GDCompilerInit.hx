@@ -15,8 +15,9 @@ class GDCompilerInit {
 			outputDirDefineName: "gdscript-output",
 			fileOutputType: FilePerClass,
 			ignoreTypes: ["haxe.iterators.ArrayIterator"],
-			reservedVarNames: gdUtilityFuncs(),
+			reservedVarNames: reservedNames(),
 			targetCodeInjectionName: "__gdscript__",
+			wrapLambdaCaptureVarsInArray: true,
 			smartDCE: true
 		});
 
@@ -60,6 +61,11 @@ class GDCompilerInit {
 			case _:
 		}
 		return null;
+	}
+
+	static function reservedNames() {
+		final names = ["assert"];
+		return names.concat(gdUtilityFuncs());
 	}
 
 	// the "utility_functions" from the Godot extension_api.json

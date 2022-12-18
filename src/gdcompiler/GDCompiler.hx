@@ -71,7 +71,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		for(f in funcFields) {
 			final field = f.field;
 			final tfunc = f.tfunc;
-			final name = field.name == "new" ? "_init" : field.name;
+			final name = field.name == "new" ? "_init" : compileVarName(field.name);
 
 			if(f.kind == MethDynamic) {
 				final callable = compileClassVarExpr(field.expr());
@@ -83,12 +83,18 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				}
 			} else {
 				final prefix = f.isStatic ? "static " : "";
-				final funcDeclaration = prefix + "func " + name + "(" + tfunc.args.map(a -> a.v.name).join(", ") + "):\n";
-				final gdScriptVal = if(tfunc.expr != null) {
-					compileClassFuncExpr(tfunc.expr).tab();
+				final funcDeclaration = prefix + "func " + name + "(" + tfunc.args.map(a -> compileVarName(a.v.name)).join(", ") + "):\n";
+				var gdScriptVal = if(tfunc.expr != null) {
+					final result = compileClassFuncExpr(tfunc.expr).tab();
+					if(StringTools.trim(result).length == 0) {
+						"\tpass";
+					} else {
+						result;
+					}
 				} else {
-					"pass";
+					"\tpass";
 				}
+				
 				functions.push(funcDeclaration + gdScriptVal);
 			}
 		}
@@ -112,6 +118,14 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		// we don't need to generate a class
 		if(variables.length <= 0 && functions.length <= 0) {
 			return null;
+		}
+
+		// TODO - Try this again after Godot beta??
+		// Possible bug with GDScript 2.0 beta at the moment, but static
+		// functions don't work unless there's a constructor defined.
+		// So a blank GDScript constructor is created if one does not exist.
+		if(classType.constructor == null) {
+			functions.insert(0, "func _init():\n\tpass");
 		}
 
 		return {
@@ -141,6 +155,9 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			}
 			case TLocal(v): {
 				result = compileVarName(v.name, expr);
+				if(v.meta != null && v.meta.has != null && v.meta.has(":arrayWrap")) {
+					result = result + "[0]";	
+				}
 			}
 			case TIdent(s): {
 				result = compileVarName(s, expr);
@@ -192,13 +209,18 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = unopToGDScript(op, e, postFix);
 			}
 			case TFunction(tfunc): {
-				result = "func(" + tfunc.args.map(a -> a.v.name + (a.value != null ? " = " + compileExpression(a.value) : "")).join(", ") + "):\n";
+				result = "func(" + tfunc.args.map(a -> compileVarName(a.v.name) + (a.value != null ? " = " + compileExpression(a.value) : "")).join(", ") + "):\n";
 				result += toIndentedScope(tfunc.expr);
 			}
 			case TVar(tvar, maybeExpr): {
 				result = "var " + compileVarName(tvar.name, expr);
 				if(maybeExpr != null) {
-					result += " = " + compileExpression(maybeExpr);
+					final e = compileExpression(maybeExpr);
+					if(tvar.meta != null && tvar.meta.has != null && tvar.meta.has(":arrayWrap")) {
+						result += " = [" + e + "]";	
+					} else {
+						result += " = " + e;
+					}
 				}
 			}
 			case TBlock(el): {
@@ -401,7 +423,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				case _:
 			}
 
-			return gdExpr + "." + name;
+			return gdExpr + "." + compileVarName(name);
 		}
 	}
 
