@@ -45,7 +45,7 @@ extern class String {
 	// extern inline
 	public extern inline function charCodeAt(index: Int): Null<Int> {
 		return if(index >= 0 && index < length) {
-			ordAt(index);
+			unicodeAt(index);
 		} else {
 			null;
 		}
@@ -53,9 +53,9 @@ extern class String {
 
 	public extern inline function lastIndexOf(str: String, startIndex: Int = -1): Int {
 		return if(startIndex < 0) {
-			findLast(str);
+			rfind(str);
 		} else {
-			substring(0, startIndex).findLast(str);
+			substring(0, startIndex).rfind(str);
 		}
 	}
 
@@ -77,8 +77,8 @@ extern class String {
 	// (gotta keep these private cause @:coreApi requires all 
 	//  fields that don't match the api to be explicitly private).
 	// ----------------------------
-	@:nativeName("ord_at") private function ordAt(at: Int): Int;
-	@:nativeName("find_last") private function findLast(what: String): Int;
+	@:nativeName("unicode_at") private function unicodeAt(at: Int): Int;
+	@:nativeName("rfind") private function rfind(what: String): Int;
 	@:nativeName("findn") private function findNoCase(what: String, from: Int = 0): Int;
 	@:nativeName("length") private function getLength(): Int;
 }
