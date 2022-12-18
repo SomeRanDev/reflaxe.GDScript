@@ -202,8 +202,20 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				}
 			}
 			case TNew(classTypeRef, _, el): {
-				final className = compileClassName(classTypeRef.get());
-				result = className + ".new(" + el.map(e -> compileExpression(e)).join(", ") + ")";
+				final nfc = this.compileNativeFunctionCodeMeta(expr, el);
+				result = if(nfc != null) {
+					nfc;
+				} else {
+					final meta = expr.getDeclarationMeta().meta;
+					final native = { name: "", meta: meta }.getNameOrNative();
+					final args = el.map(e -> compileExpression(e)).join(", ");
+					if(native.length > 0) {
+						native + "(" + args + ")";
+					} else {
+						final className = compileClassName(classTypeRef.get());
+						className + ".new(" + args + ")";
+					}
+				}
 			}
 			case TUnop(op, postFix, e): {
 				result = unopToGDScript(op, e, postFix);
