@@ -14,6 +14,7 @@ using reflaxe.helpers.BaseCompilerHelper;
 using reflaxe.helpers.SyntaxHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
+using reflaxe.helpers.NullableMetaAccessHelper;
 using reflaxe.helpers.OperatorHelper;
 using reflaxe.helpers.TypedExprHelper;
 using reflaxe.helpers.TypeHelper;
@@ -164,7 +165,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			}
 			case TLocal(v): {
 				result = compileVarName(v.name, expr);
-				if(v.meta != null && v.meta.has != null && v.meta.has(":arrayWrap")) {
+				if(v.meta.maybeHas(":arrayWrap")) {
 					result = result + "[0]";	
 				}
 			}
@@ -243,7 +244,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = "var " + compileVarName(tvar.name, expr);
 				if(maybeExpr != null) {
 					final e = compileExpression(maybeExpr);
-					if(tvar.meta != null && tvar.meta.has != null && tvar.meta.has(":arrayWrap")) {
+					if(tvar.meta.maybeHas(":arrayWrap")) {
 						result += " = [" + e + "]";	
 					} else {
 						result += " = " + e;
