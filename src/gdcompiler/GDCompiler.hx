@@ -304,7 +304,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = "continue";
 			}
 			case TThrow(expr): {
-				result = "throw " + compileExpression(expr);
+				result = "assert(false, " + compileExpression(expr) + ")";
 			}
 			case TCast(expr, maybeModuleType): {
 				result = compileExpression(expr);
