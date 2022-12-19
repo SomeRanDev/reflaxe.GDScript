@@ -419,7 +419,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		return if(nameMeta.hasMeta(":native")) {
 			nameMeta.getNameOrNative();
 		} else {
-			final name = nameMeta.getNameOrNativeName();
+			final name = compileVarName(nameMeta.getNameOrNativeName());
 
 			// Check if this is a static variable,
 			// and if so use singleton.
@@ -453,7 +453,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				case _:
 			}
 
-			return gdExpr + "." + compileVarName(name);
+			return gdExpr + "." + name;
 		}
 	}
 
