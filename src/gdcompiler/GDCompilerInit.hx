@@ -64,7 +64,9 @@ class GDCompilerInit {
 	}
 
 	static function reservedNames() {
-		final names = ["assert"];
+		final names = [
+			"assert" // built-in GDScript function
+		];
 		return names.concat(gdUtilityFuncs());
 	}
 
