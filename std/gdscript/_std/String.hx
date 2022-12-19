@@ -55,7 +55,7 @@ extern class String {
 		return if(startIndex < 0) {
 			rfind(str);
 		} else {
-			substring(0, startIndex).rfind(str);
+			substring(0, startIndex + this.length).rfind(str);
 		}
 	}
 
