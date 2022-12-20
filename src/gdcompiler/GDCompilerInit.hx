@@ -18,49 +18,9 @@ class GDCompilerInit {
 			reservedVarNames: reservedNames(),
 			targetCodeInjectionName: "__gdscript__",
 			wrapLambdaCaptureVarsInArray: true,
+			convertUnopIncrement: true,
 			smartDCE: true
 		});
-
-		ExpressionModifier.mod(transformUnopIncDecfunction);
-	}
-
-	// transform untyped prefix and suffix increment and decrement
-	static function transformUnopIncDecfunction(e: Expr): Null<Expr> {
-		switch(e.expr) {
-			case EUnop(op, postFix, e): {
-				switch(op) {
-					case OpIncrement: {
-						return if(postFix) {
-							macro {
-								$e += 1;
-								$e - 1;
-							}
-						} else {
-							macro {
-								$e += 1;
-								$e;
-							}
-						}
-					}
-					case OpDecrement: {
-						return if(postFix) {
-							macro {
-								$e -= 1;
-								$e + 1;
-							}
-						} else {
-							macro {
-								$e -= 1;
-								$e;
-							}
-						}
-					}
-					case _:
-				}
-			}
-			case _:
-		}
-		return null;
 	}
 
 	static function reservedNames() {
