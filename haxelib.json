@@ -1,6 +1,6 @@
 {
 	"name": "gdscript",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Compile Haxe to GDScript 2.0 as easily as you'd output to any other target.",
 	"url": "https://github.com/RobertBorghese/Haxe-to-GDScript",
 	"license": "MIT",
@@ -20,6 +20,6 @@
 		"reflaxe": "2.0.0"
 	},
 	"classPath": "src/",
-	"releasenote": "Initial release. Most syntax and Std, Math, String, Array, haxe.Log works.",
+	"releasenote": "Fixed issue with std class paths not properly shadowing when installing from haxelib.",
 	"contributors": ["RobertBorghese"]
 }
