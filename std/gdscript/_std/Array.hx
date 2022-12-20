@@ -16,10 +16,10 @@ extern class Array<T> {
 	@:nativeFunctionCode("[]")
 	public function new();
 
-	@:nativeFunctionCode("{this} + {arg0}")
+	@:nativeFunctionCode("({this} + {arg0})")
 	public function concat(a: Array<T>): Array<T>;
 
-	public extern inline function join(sep: String): String {
+	@:runtime public inline function join(sep: String): String {
 		var result: String = "";
 		final len = length;
 		for(i in 0...len) {
@@ -46,18 +46,22 @@ extern class Array<T> {
 	@:nativeName("slice")
 	public function slice(pos: Int, end: Int = 2147483647):Array<T>;
 
-	@:nativeName("sort_custom")
-	public function sort(f: (T, T) -> Int): Void;
+	@:runtime public inline function sort(f: (T, T) -> Int): Void {
+		sortCustom(function(a, b) return f(a, b) < 0);
+	}
 
-	public extern inline function splice(pos: Int, len: Int): Array<T> {
+	@:nativeName("sort_custom")
+	private function sortCustom(f: (T, T) -> Bool): Void;
+
+	@:runtime public inline function splice(pos: Int, len: Int): Array<T> {
 		final result = [];
-		var i = pos + len;
 		if(pos < 0) pos = 0;
+		var i = pos + len - 1;
 		if(i >= length) i = length - 1;
 		while(i >= pos) {
-			result.push(get(i));
-			removeAt(i);
-			i++;
+			result.push(get(pos));
+			removeAt(pos);
+			i--;
 		}
 		return result;
 	}
@@ -65,17 +69,28 @@ extern class Array<T> {
 	@:nativeName("remove_at")
 	private function removeAt(pos: Int): Void;
 
-	@:native("str({this})")
+	@:nativeFunctionCode("str({this})")
 	public function toString(): String;
 
 	@:nativeName("push_front")
 	public function unshift(x: T): Void;
 
 	@:nativeName("insert")
-	public function insert(pos: Int, x: T): Void;
+	private function gdInsert(pos: Int, x: T): Void;
 
-	@:nativeName("erase")
-	public function remove(x: T): Bool;
+	@:runtime public inline function insert(pos: Int, x: T): Void {
+		return (pos < 0) ? gdInsert(length + 1 + pos, x) : gdInsert(pos, x);
+	}
+
+	@:runtime public inline function remove(x: T): Bool {
+		final index = indexOf(x);
+		return if(index >= 0) {
+			removeAt(index);
+			true;
+		} else {
+			false;
+		}
+	}
 
 	@:nativeName("has")
 	@:pure public function contains(x : T): Bool;
@@ -86,7 +101,7 @@ extern class Array<T> {
 	@:nativeName("rfind")
 	public function lastIndexOf(x: T, fromIndex: Int = -1): Int;
 
-	public extern inline function copy(): Array<T> {
+	@:runtime public inline function copy(): Array<T> {
 		return [for (v in this) v];
 	}
 
@@ -99,11 +114,17 @@ extern class Array<T> {
 	}
 
 	@:runtime inline function map<S>(f: (T) -> S):Array<S> {
-		return [for (v in this) f(v)];
+		final temp = f;
+		final result = [];
+		for (v in this) result.push(temp(v));
+		return result;
 	}
 
 	@:runtime inline function filter(f: (T) -> Bool):Array<T> {
-		return [for (v in this) if(f(v)) v];
+		final temp = f;
+		final result = [];
+		for (v in this) if(temp(v)) result.push(v);
+		return result;
 	}
 
 	@:nativeName("resize")
