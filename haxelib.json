@@ -1,8 +1,8 @@
 {
-	"name": "gdscript-compiler",
-	"version": "1.0.0",
+	"name": "gdscript",
+	"version": "0.1.0",
 	"description": "Compile Haxe to GDScript 2.0 as easily as you'd output to any other target.",
-	"url": "https://github.com/RobertBorghese/Haxe-CompileToGDScript",
+	"url": "https://github.com/RobertBorghese/Haxe-to-GDScript",
 	"license": "MIT",
 	"tags": [
 		"godot",
@@ -17,6 +17,6 @@
 		"extension"
 	],
 	"classPath": "src/",
-	"releasenote": "Initial release.",
+	"releasenote": "Initial release. Most syntax and Std, Math, String, Array, haxe.Log works.",
 	"contributors": ["RobertBorghese"]
 }
