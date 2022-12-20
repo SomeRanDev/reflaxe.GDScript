@@ -1,9 +1,4 @@
--cp ../std
--cp ../std/gdscript/_std
--cp ../src/
 -cp haxe-src
-
-../extraParams.hxml
 
 -D gdscript-output=gdscript/out
 
