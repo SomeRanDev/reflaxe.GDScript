@@ -157,7 +157,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		return null;
 	}
   
-	 public function compileExpressionImpl(expr: TypedExpr): Null<String> {
+	public function compileExpressionImpl(expr: TypedExpr): Null<String> {
 		var result = "";
 		switch(expr.expr) {
 			case TConst(constant): {
