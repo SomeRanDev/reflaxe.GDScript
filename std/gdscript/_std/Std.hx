@@ -2,13 +2,13 @@ package;
 
 extern class Std {
 	@:deprecated('Std.is is deprecated. Use Std.isOfType instead.')
-	public extern inline static function is(v: Dynamic, t: Dynamic): Bool return isOfType(v, t);
+	@:runtime public inline static function is(v: Dynamic, t: Dynamic): Bool return isOfType(v, t);
 
 	@:nativeFunctionCode("({arg0} is {arg1})")
 	public static function isOfType(v: Dynamic, t: Dynamic): Bool;
 
 	@:deprecated('Std.instance() is deprecated. Use Std.downcast() instead.')
-	public extern inline static function instance<T: {}, S: T>(value: T, c: Class<S>): S return downcast(value, c);
+	@:runtime public inline static function instance<T: {}, S: T>(value: T, c: Class<S>): S return downcast(value, c);
 
 	@:nativeFunctionCode("({arg0} as {arg1})")
 	public static function downcast<T: {}, S: T>(value: T, c: Class<S>): S;

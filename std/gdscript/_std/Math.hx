@@ -2,7 +2,7 @@ package;
 
 extern class Math {
 	public static var PI(get, never): Float;
-	public static extern inline function get_PI(): Float return untyped __gdscript__("PI");
+	@:runtime public static inline function get_PI(): Float return untyped __gdscript__("PI");
 
 	@:native("-INF")
 	public static var NEGATIVE_INFINITY(default, null): Float;
@@ -11,7 +11,7 @@ extern class Math {
 	public static var POSITIVE_INFINITY(default, null): Float;
 
 	public static var NaN(get, never): Float;
-	public static extern inline function get_NaN(): Float return untyped __gdscript__("NAN");
+	@:runtime public static inline function get_NaN(): Float return untyped __gdscript__("NAN");
 
 	@:native("abs") public static function abs(v: Float): Float;
 	@:native("min") public static function min(a: Float, b: Float): Float;
@@ -33,9 +33,9 @@ extern class Math {
 
 	@:native("sqrt") public static function sqrt(v: Float): Float;
 
-	public static extern inline function round(v: Float): Int return Std.int(fround(v));
-	public static extern inline function floor(v: Float): Int return Std.int(ffloor(v));
-	public static extern inline function ceil(v: Float): Int return Std.int(fceil(v));
+	@:runtime public static inline function round(v: Float): Int return Std.int(fround(v));
+	@:runtime public static inline function floor(v: Float): Int return Std.int(ffloor(v));
+	@:runtime public static inline function ceil(v: Float): Int return Std.int(fceil(v));
 
 	@:native("round") public static function fround(v: Float): Float;
 	@:native("floor") public static function ffloor(v: Float): Float;

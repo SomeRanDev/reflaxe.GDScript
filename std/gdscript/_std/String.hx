@@ -42,8 +42,8 @@ extern class String {
 	public function toString(): String;
 
 	// ----------
-	// extern inline
-	public extern inline function charCodeAt(index: Int): Null<Int> {
+	// @:runtime inline
+	@:runtime public inline function charCodeAt(index: Int): Null<Int> {
 		return if(index >= 0 && index < length) {
 			unicodeAt(index);
 		} else {
@@ -51,7 +51,7 @@ extern class String {
 		}
 	}
 
-	public extern inline function lastIndexOf(str: String, startIndex: Int = -1): Int {
+	@:runtime public inline function lastIndexOf(str: String, startIndex: Int = -1): Int {
 		return if(startIndex < 0) {
 			rfind(str);
 		} else {
@@ -59,11 +59,11 @@ extern class String {
 		}
 	}
 
-	public extern inline function split(delimiter: String): Array<String> {
+	@:runtime public inline function split(delimiter: String): Array<String> {
 		return untyped __gdscript__("Array({}.split({}))", this, delimiter);
 	}
 
-	public extern inline function substring(startIndex: Int, endIndex: Int = -1): String {
+	@:runtime public inline function substring(startIndex: Int, endIndex: Int = -1): String {
 		return if(endIndex < 0) {
 			substr(startIndex);
 		} else {
