@@ -7,8 +7,13 @@
 
 -D gdscript-output=gdscript/out
 
+--no-opt
+
+Assert
+TestAll
 TestSyntax
 TestString
 TestStd
 TestMath
 TestStaticVar
+TestArray
