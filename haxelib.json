@@ -16,6 +16,9 @@
 		"metadata",
 		"extension"
 	],
+	"dependencies": {
+		"reflaxe": "2.0.0"
+	},
 	"classPath": "src/",
 	"releasenote": "Initial release. Most syntax and Std, Math, String, Array, haxe.Log works.",
 	"contributors": ["RobertBorghese"]

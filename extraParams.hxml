@@ -1,8 +1,2 @@
--cp std
--cp std/gdscript/_std
-
 -D gdscript
-
--lib reflaxe
-
 --macro gdcompiler.GDCompilerInit.Start()
