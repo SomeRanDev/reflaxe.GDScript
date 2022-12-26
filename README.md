@@ -13,6 +13,8 @@ How to install:
 -D gdscript-output=output
 ```
 
+Check out `/test` for a sample project that tests all Haxe syntax and every Haxe std class that's been ported so far. Tested successfully on Godot 4 Beta 8 (*Beta 10 has a bug that makes the tests fail but it's not this project's fault I swear.*)
+
 ## How it outputs
 
 - [x] As GDScript outputs one file per class, each class, regardless of module, receives its own file.
