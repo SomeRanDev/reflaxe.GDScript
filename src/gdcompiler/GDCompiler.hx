@@ -209,12 +209,17 @@ class GDCompiler extends reflaxe.BaseCompiler {
 				result = if(nfc != null) {
 					nfc;
 				} else {
-					final callOp = if(isCallableVar(e)) {
-						".call(";
+					final enumCall = compileEnumFieldCall(e, el);
+					if(enumCall != null) {
+						enumCall;
 					} else {
-						"(";
+						final callOp = if(isCallableVar(e)) {
+							".call(";
+						} else {
+							"(";
+						}
+						compileExpression(e) + callOp + el.map(e -> compileExpression(e)).join(", ") + ")";
 					}
-					compileExpression(e) + callOp + el.map(e -> compileExpression(e)).join(", ") + ")";
 				}
 			}
 			case TNew(classTypeRef, _, el): {
@@ -325,17 +330,25 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			case TCast(expr, maybeModuleType): {
 				result = compileExpression(expr);
 				if(maybeModuleType != null) {
-					result += " as " + moduleNameToGDScript(maybeModuleType);
+					result = "(" + result + " as " + moduleNameToGDScript(maybeModuleType) + ")";
 				}
 			}
 			case TMeta(metadataEntry, expr): {
 				result = compileExpression(expr);
 			}
 			case TEnumParameter(expr, enumField, index): {
-				result = Std.string(index + 2);
+				result = compileExpression(expr);
+				switch(enumField.type) {
+					case TFun(args, _): {
+						if(index < args.length) {
+							result += "." + args[index].name;
+						}
+					}
+					case _:
+				}
 			}
 			case TEnumIndex(expr): {
-				result = "[1]";
+				result = compileExpression(expr) + "._index";
 			}
 		}
 		return result;
@@ -439,6 +452,9 @@ class GDCompiler extends reflaxe.BaseCompiler {
 						case _:
 					}
 				}
+				case FEnum(_, enumField): {
+					return "{ \"_index\": " + enumField.index + " }";
+				}
 				case _:
 			}
 
@@ -509,6 +525,41 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			case TConst(c): c != TSuper;
 			case TParenthesis(e2) | TMeta(_, e2): isCallableVar(e2);
 			case _: true;
+		}
+	}
+
+	// This is called for called expressions.
+	// If the typed expression is an enum field, transpile as a
+	// Dictionary with the enum data.
+	function compileEnumFieldCall(e: TypedExpr, el: Array<TypedExpr>): Null<String> {
+		final ef = switch(e.expr) {
+			case TField(_, fa): {
+				switch(fa) {
+					case FEnum(_, ef): ef;
+					case _: null;
+				}
+			}
+			case _: null;
+		}
+
+		return if(ef != null) {
+			var result = "";
+			switch(ef.type) {
+				case TFun(args, _): {
+					result = "{ \"_index\": " + ef.index + ", ";
+					final fields = [];
+					for(i in 0...el.length) {
+						if(args[i] != null) {
+							fields.push("\"" + args[i].name + "\": " + compileExpression(el[i]));
+						}
+					}
+					result += fields.join(", ") + " }";
+				}
+				case _:
+			}
+			result;
+		} else {
+			null;
 		}
 	}
 }

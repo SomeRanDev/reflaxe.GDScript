@@ -8,6 +8,7 @@ class TestAll {
 		TestString.test();
 		TestStaticVar.test();
 		TestArray.test();
+		TestEnum.test();
 
 		trace("Tests successful!!");
 	}
