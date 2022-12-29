@@ -9,6 +9,7 @@ class TestAll {
 		TestStaticVar.test();
 		TestArray.test();
 		TestEnum.test();
+		TestMeta.test();
 
 		trace("Tests successful!!");
 	}

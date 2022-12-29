@@ -6,6 +6,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+import haxe.display.Display.MetadataTarget;
+
 import reflaxe.BaseCompiler;
 import reflaxe.compiler.EverythingIsExprSanitizer;
 import reflaxe.helpers.OperatorHelper;
@@ -46,6 +48,9 @@ class GDCompiler extends reflaxe.BaseCompiler {
 
 		var header = "";
 
+		final clsMeta = compileMetadata(classType.meta, MetadataTarget.Class);
+		header += clsMeta;
+
 		if(classType.superClass != null) {
 			header += "extends " + compileClassName(classType.superClass.t.get()) + "\n";
 		}
@@ -64,7 +69,8 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			if(v.isStatic) {
 				staticVars.push({ name: varName, expr: gdScriptVal });
 			} else {
-				final decl = "var " + varName + (gdScriptVal.length == 0 ? "" : (" = " + gdScriptVal));
+				final meta = compileMetadata(field.meta, MetadataTarget.ClassField);
+				final decl = meta + "var " + varName + (gdScriptVal.length == 0 ? "" : (" = " + gdScriptVal));
 				variables.push(decl);
 			}
 		}
@@ -74,18 +80,19 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			final field = f.field;
 			final tfunc = f.tfunc;
 			final name = field.name == "new" ? "_init" : compileVarName(field.name);
+			final meta = compileMetadata(field.meta, MetadataTarget.ClassField);
 
 			if(f.kind == MethDynamic) {
 				final callable = compileClassVarExpr(field.expr());
 				if(f.isStatic) {
 					staticVars.push({ name: name, expr: callable });
 				} else {
-					final decl = "var " + name + " = " + callable;
+					final decl = meta + "var " + name + " = " + callable;
 					variables.push(decl);
 				}
 			} else {
 				final prefix = f.isStatic ? "static " : "";
-				final funcDeclaration = prefix + "func " + name + "(" + tfunc.args.map(compileFunctionArgument).join(", ") + "):\n";
+				final funcDeclaration = meta + prefix + "func " + name + "(" + tfunc.args.map(compileFunctionArgument).join(", ") + "):\n";
 				var gdScriptVal = if(tfunc.expr != null) {
 					final result = compileClassFuncExpr(tfunc.expr).tab();
 					if(StringTools.trim(result).length == 0) {
@@ -149,6 +156,17 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		var result = compileVarName(arg.v.name);
 		if(arg.value != null) {
 			result += " = " + compileExpression(arg.value);
+		}
+		return result;
+	}
+
+	function getNativeMetaString(metaAccess: Null<MetaAccess>) {
+		var result = "";
+		final nativeMeta = metaAccess.extractNativeMeta();
+		if(nativeMeta != null) {
+			for(m in nativeMeta) {
+				result += "@" + m + "\n";
+			}
 		}
 		return result;
 	}
