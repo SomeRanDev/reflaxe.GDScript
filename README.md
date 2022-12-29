@@ -35,9 +35,15 @@ doSomethingOnlyForGDScript();
 untyped __gdscript__("print(123)");
 ```
 
-- [ ] GDScript meta can be defined using `@:meta`, though there should be defined metadata for each existing attribute in GDScript.
+- [x] GDScript meta can be defined using `@:meta`, though there should be defined metadata for each existing attribute in GDScript.
 ```haxe
 @:meta(onready) var someVal = get_node("myNode")
 ```
 
-- [ ] (Unfinished) Haxe enum support
+- [x] Haxe enum support.
+```haxe
+var myEnum = SomeEnumCase(123, "Hello!");
+```
+```gdscript
+var myEnum = { "_index": 2, "num": 123, "text": "Hello!" }
+```
