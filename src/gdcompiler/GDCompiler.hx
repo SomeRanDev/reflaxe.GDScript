@@ -391,7 +391,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		switch(constant) {
 			case TInt(i): return Std.string(i);
 			case TFloat(s): return s;
-			case TString(s): return "\"" + s + "\"";
+			case TString(s): return "\"" + StringTools.replace(s, "\"", "\\\"") + "\"";
 			case TBool(b): return b ? "true" : "false";
 			case TNull: return "null";
 			case TThis: return "self";
