@@ -11,7 +11,7 @@
  - [x] Dynamic function support
  - [x] Enum
  - [x] Meta
- - [ ] `_std/Sys.hx`
+ - [x] `_std/Sys.hx`
  - [ ] `_std/Date.hx`
  - [ ] `_std/EReg.hx`
  - [ ] `_std/Reflect.hx`
