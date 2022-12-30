@@ -14,3 +14,4 @@ TestStaticVar
 TestArray
 TestEnum
 TestMeta
+TestSys

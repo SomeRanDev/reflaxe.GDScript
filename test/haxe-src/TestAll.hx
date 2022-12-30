@@ -10,6 +10,7 @@ class TestAll {
 		TestArray.test();
 		TestEnum.test();
 		TestMeta.test();
+		TestSys.test();
 
 		trace("Tests successful!!");
 	}
