@@ -12,5 +12,11 @@
  - [x] Enum
  - [x] Meta
  - [ ] `_std/Sys.hx`
- - [ ] Add all the other std lib stuff
+ - [ ] `_std/Date.hx`
+ - [ ] `_std/EReg.hx`
+ - [ ] `_std/Reflect.hx`
+ - [ ] `_std/Type.hx`
+ - [ ] `_std/ds/IntMap.hx`
+ - [ ] `_std/ds/ObjectMap.hx`
+ - [ ] `_std/ds/StringMap.hx`
  - [ ] Godot bindings (`std/godot`) (maybe bindings maker in `gdscript` package?)
