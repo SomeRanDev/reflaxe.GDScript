@@ -11,6 +11,7 @@ class TestAll {
 		TestEnum.test();
 		TestMeta.test();
 		TestSys.test();
+		TestEReg.test();
 
 		trace("Tests successful!!");
 	}
