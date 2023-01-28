@@ -12,6 +12,7 @@ class TestAll {
 		TestMeta.test();
 		TestSys.test();
 		TestEReg.test();
+		TestReflect.test();
 
 		trace("Tests successful!!");
 	}

@@ -13,8 +13,8 @@
  - [x] Meta
  - [x] `_std/Sys.hx`
  - [ ] `_std/Date.hx`
- - [ ] `_std/EReg.hx`
- - [ ] `_std/Reflect.hx`
+ - [x] `_std/EReg.hx`
+ - [x] `_std/Reflect.hx`
  - [ ] `_std/Type.hx`
  - [ ] `_std/ds/IntMap.hx`
  - [ ] `_std/ds/ObjectMap.hx`

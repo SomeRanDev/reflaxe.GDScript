@@ -64,10 +64,13 @@ class GDCompilerInit {
 	}
 
 	static function reservedNames() {
-		final names = [
-			"assert" // built-in GDScript function
+		return gdKeywords().concat(gdUtilityFuncs());
+	}
+
+	static function gdKeywords(): Array<String> {
+		return [
+			"func", "assert"
 		];
-		return names.concat(gdUtilityFuncs());
 	}
 
 	// the "utility_functions" from the Godot extension_api.json
