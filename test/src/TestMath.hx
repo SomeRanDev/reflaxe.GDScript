@@ -26,7 +26,11 @@ class TestMath {
 		assertFloat(Math.cos(0), 1);
 		assertFloat(Math.tan(4), 1.157821);
 		assertFloat(Math.asin(1), 1.570796);
-		assert(Math.isNaN(Math.acos(100)));
+
+		// https://github.com/godotengine/godot/commit/50c5ed4876250f785be54b8f6124e7663afa38dc
+		// acos now safe to call
+		assertFloat(Math.acos(100), 0);
+
 		assertFloat(Math.atan(12), 1.4876);
 		assertFloat(Math.atan2(-3, 3), -0.78539);
 

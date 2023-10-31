@@ -1,7 +1,7 @@
 package;
 
 @:native("assert")
-extern function godot_assert(cond: Bool, errMsg: Null<String> = null);
+extern function godot_assert(cond: Bool, errMsg: Null<String> = null): Void;
 
 extern inline function assert(cond: Bool, errMsg: String = "Test assert failed.") {
 	godot_assert(cond, errMsg);

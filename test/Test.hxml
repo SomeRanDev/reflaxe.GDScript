@@ -1,6 +1,6 @@
--cp haxe-src
+-cp src
 
--D gdscript-output=gdscript/out
+-D gdscript-output=godot_project/gdscript/out
 
 --no-opt
 
