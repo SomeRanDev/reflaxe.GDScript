@@ -1,4 +1,5 @@
 test/gdscript/out
 test/project.godot
+_Build/
 Submit.bat
 gdscript.zip

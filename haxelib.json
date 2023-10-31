@@ -17,9 +17,14 @@
 		"extension"
 	],
 	"dependencies": {
-		"reflaxe": "2.0.0"
+		"reflaxe": "git:https://github.com/SomeRanDev/reflaxe"
 	},
 	"classPath": "src/",
 	"releasenote": "Fixed issue with std class paths not properly shadowing when installing from haxelib.",
-	"contributors": ["RobertBorghese"]
+	"contributors": ["RobertBorghese", "SomeRanDev"],
+	"reflaxe": {
+		"name": "GDScript",
+		"abbv": "gdscript",
+		"stdPaths": ["std", "std/gdscript/_std"]
+	}
 }
