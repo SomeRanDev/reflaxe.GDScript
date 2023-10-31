@@ -8,11 +8,14 @@ import haxe.macro.Type;
 
 import haxe.display.Display.MetadataTarget;
 
-import reflaxe.BaseCompiler;
+import reflaxe.data.ClassVarData;
+import reflaxe.data.ClassFuncData;
+import reflaxe.data.EnumOptionData;
+
+import reflaxe.DirectToStringCompiler;
 import reflaxe.compiler.EverythingIsExprSanitizer;
 import reflaxe.helpers.OperatorHelper;
 
-using reflaxe.helpers.BaseCompilerHelper;
 using reflaxe.helpers.SyntaxHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
@@ -21,7 +24,7 @@ using reflaxe.helpers.OperatorHelper;
 using reflaxe.helpers.TypedExprHelper;
 using reflaxe.helpers.TypeHelper;
 
-class GDCompiler extends reflaxe.BaseCompiler {
+class GDCompiler extends reflaxe.DirectToStringCompiler {
 	public override function onCompileStart() {
 		setExtraFile("HxStaticVars.gd", "extends Node\n\n");
 	}
@@ -40,7 +43,7 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		return classType.getNameOrNative();
 	}
 
-	public function compileClassImpl(classType: ClassType, varFields: ClassFieldVars, funcFields: ClassFieldFuncs): Null<String> {
+	public function compileClassImpl(classType: ClassType, varFields: Array<ClassVarData>, funcFields: Array<ClassFuncData>): Null<String> {
 		final variables = [];
 		final functions = [];
 		final staticVars = [];
@@ -85,7 +88,10 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			if(f.kind == MethDynamic) {
 				final callable = compileClassVarExpr(field.expr());
 				if(f.isStatic) {
-					staticVars.push({ name: name, expr: callable });
+					staticVars.push({
+						name: name,
+						expr: callable
+					});
 				} else {
 					final decl = meta + "var " + name + " = " + callable;
 					variables.push(decl);
@@ -93,8 +99,8 @@ class GDCompiler extends reflaxe.BaseCompiler {
 			} else {
 				final prefix = f.isStatic ? "static " : "";
 				final funcDeclaration = meta + prefix + "func " + name + "(" + tfunc.args.map(compileFunctionArgument).join(", ") + "):\n";
-				var gdScriptVal = if(tfunc.expr != null) {
-					final result = compileClassFuncExpr(tfunc.expr).tab();
+				var gdScriptVal = if(f.expr != null) {
+					final result = compileClassFuncExpr(f.expr).tab();
 					if(StringTools.trim(result).length == 0) {
 						"\tpass";
 					} else {
@@ -171,11 +177,11 @@ class GDCompiler extends reflaxe.BaseCompiler {
 		return result;
 	}
 
-	public function compileEnumImpl(enumType: EnumType, constructs: Map<String, haxe.macro.EnumField>): Null<String> {
+	public function compileEnumImpl(enumType: EnumType, options:Array<EnumOptionData>): Null<String> {
 		return null;
 	}
   
-	public function compileExpressionImpl(expr: TypedExpr): Null<String> {
+	public function compileExpressionImpl(expr: TypedExpr, isTopLevel: Bool): Null<String> {
 		var result = "";
 		switch(expr.expr) {
 			case TConst(constant): {
