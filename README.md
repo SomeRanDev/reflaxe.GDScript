@@ -1,21 +1,64 @@
-# Haxe: GDScript Target
-Compile Haxe to GDScript 2.0 like any other Haxe target. Made using [Reflaxe](https://github.com/RobertBorghese/reflaxe).
+<img src="img/Logo.png" /> 
 
-How to install:
+<a href="https://discord.com/channels/162395145352904705/1052688097592225904"><img src="https://discordapp.com/api/guilds/162395145352904705/widget.png?style=shield" alt="Reflaxe Thread"/></a>
 
-```hxml
-# In your compile.hxml file...
+_Compile Haxe to GDScript 2.0 like any other Haxe target. Made using [Reflaxe](https://github.com/RobertBorghese/reflaxe)._
 
-# Enable the library
--lib gdscript
+&nbsp;
 
-# Set output folder to "./output"
--D gdscript-output=output
+**Haxe Code**
+
+```haxe
+function main() {
+    trace("Hello world!");
+
+    final num = if(Math.random() < 0.5) {
+        123;
+    } else {
+        321;
+    }
+}
 ```
 
-Check out `/test` for a sample project that tests all Haxe syntax and every Haxe std class that's been ported so far. Tested successfully on Godot 4 Beta 8 (*Beta 10 has a bug that makes the tests fail but it's not this project's fault I swear.*)
+**Reflaxe/GDScript Output**
 
-## How it outputs
+```gdscript
+class_name Main
+
+func main():
+    HxStaticVars._Log.trace.call("Hello world!", { "fileName": "src/Main.hx", "lineNumber": 2, "className": "Main", "methodName": "main" })
+
+    var num
+    if (randf() < 0.5):
+        num = 123
+    else:
+        num = 321
+```
+
+&nbsp;
+
+# Table of Contents
+
+| Topic                                  | Description                                        |
+| -------------------------------------- | -------------------------------------------------- |
+| [Installation](#installation)          | How to install and use this project.               |
+| [Goals](#goals)                        | The checklist for the goals of this project        |
+
+&nbsp;
+
+# Installation
+
+This project is currently in development, so install using `haxelib git`:
+
+| #   | What to do                                           | What to write                            |
+| --- | ---------------------------------------------------- | ---------------------------------------- |
+| 1   | Install via git.                                     | <pre>haxelib git gdscript https://github.com/SomeRanDev/reflaxe.GDScript nightly</pre>   |
+| 2   | Add the lib to your `.hxml` file or compile command. | <pre lang="hxml">-lib gdscript</pre>  |
+| 3   | Set the output folder for the compiled C++.          | <pre lang="hxml">-D gdscript-output=out</pre> |
+
+&nbsp;
+
+## Goals
 
 - [x] As GDScript outputs one file per class, each class, regardless of module, receives its own file.
 
