@@ -3,11 +3,11 @@ package;
 @:require(sys)
 extern class Sys {
 	@:runtime public inline static function print(v: Dynamic): Void {
-		untyped __gdscript__("print(str({}))", v);
+		untyped __gdscript__("print(str({0}))", v);
 	}
 
 	@:runtime public inline static function println(v: Dynamic): Void {
-		untyped __gdscript__("print(str({}) + \"\n\")", v);
+		untyped __gdscript__("print(str({0}) + \"\n\")", v);
 	}
 
 	@:runtime public inline static function args(): Array<String> {
@@ -15,11 +15,11 @@ extern class Sys {
 	}
 
 	@:runtime public inline static function getEnv(s: String): String {
-		return untyped __gdscript__("OS.get_environment({})", s);
+		return untyped __gdscript__("OS.get_environment({0})", s);
 	}
 
 	@:runtime public inline static function putEnv(s: String, v: Null<String>): Void {
-		return untyped __gdscript__("OS.set_environment({}, {})", s, v == null ? "" : v);
+		return untyped __gdscript__("OS.set_environment({0}, {1})", s, v == null ? "" : v);
 	}
 
 	@:runtime public inline static function environment(): Map<String, String> {
@@ -27,7 +27,7 @@ extern class Sys {
 	}
 
 	@:runtime public inline static function sleep(seconds: Float): Void {
-		untyped __gdscript__("OS.delay_msec({} * 1000)", seconds);
+		untyped __gdscript__("OS.delay_msec({0} * 1000)", seconds);
 	}
 
 	@:runtime public inline static function setTimeLocale(loc: String): Bool {
@@ -52,7 +52,7 @@ extern class Sys {
 
 	@:runtime public inline static function command(cmd: String, ?args: Array<String>): Int {
 		if(args == null) args = [];
-		return untyped __gdscript__("OS.execute({}, PackedStringArray({}))", cmd, args);
+		return untyped __gdscript__("OS.execute({0}, PackedStringArray({1}))", cmd, args);
 	}
 
 	@:runtime public inline static function exit(code: Int): Void {

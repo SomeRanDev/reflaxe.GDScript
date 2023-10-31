@@ -2,18 +2,18 @@ package;
 
 class Reflect {
 	@:runtime public inline static function hasField(o: Dynamic, fieldName: String): Bool {
-		return untyped __gdscript__("{} in {}", fieldName, o);
+		return untyped __gdscript__("{0} in {1}", fieldName, o);
 	}
 
 	@:runtime public inline static function field(o: Dynamic, fieldName: String): Dynamic {
-		return untyped __gdscript__("{}.get({})", o, fieldName);
+		return untyped __gdscript__("{0}.get({1})", o, fieldName);
 	}
 
 	public static function setField(o: Dynamic, fieldName: String, value: Dynamic): Void {
 		return if(isEnumValue(o)) {
-			untyped __gdscript__("{}[{}] = {}", o, fieldName, value);
+			untyped __gdscript__("{0}[{1}] = {2}", o, fieldName, value);
 		} else {
-			untyped __gdscript__("{}.set({}, {})", o, fieldName, value);
+			untyped __gdscript__("{0}.set({1}, {2})", o, fieldName, value);
 		}
 	}
 
@@ -34,7 +34,7 @@ class Reflect {
 	}
 
 	@:runtime public inline static function callMethod(o: Dynamic, func: haxe.Constraints.Function, args: Array<Dynamic>): Dynamic {
-		return untyped __gdscript__("{}.callv({})", func, args);
+		return untyped __gdscript__("{0}.callv({1})", func, args);
 	}
 
 	public static function fields(o: Dynamic): Array<String> {
@@ -49,13 +49,13 @@ class Reflect {
 	}
 
 	@:runtime public inline static function isFunction(f: Dynamic): Bool {
-		return untyped __gdscript__("{} is Callable", f);
+		return untyped __gdscript__("{0} is Callable", f);
 	}
 
 	public static function compare<T>(a: T, b: T): Int {
-		return if(untyped __gdscript__("{} < {}", a, b)) {
+		return if(untyped __gdscript__("{0} < {1}", a, b)) {
 			-1;
-		} else if(untyped __gdscript__("{} > {}", a, b)) {
+		} else if(untyped __gdscript__("{0} > {1}", a, b)) {
 			1;
 		} else {
 			0;
@@ -67,11 +67,11 @@ class Reflect {
 	}
 
 	@:runtime public inline static function isObject(v: Dynamic): Bool {
-		return untyped __gdscript__("{} is Object", v);
+		return untyped __gdscript__("{0} is Object", v);
 	}
 
 	@:runtime public inline static function isEnumValue(v: Dynamic): Bool {
-		return untyped __gdscript__("{} is Dictionary", v);
+		return untyped __gdscript__("{0} is Dictionary", v);
 	}
 
 	public static function deleteField(o: Dynamic, fieldName: String): Bool {
@@ -83,7 +83,7 @@ class Reflect {
 	public static function copy<T>(o: Null<T>): Null<T> {
 		if(o == null) return null;
 		if(isEnumValue(o)) {
-			return untyped __gdscript__("{}.duplicate()", o);
+			return untyped __gdscript__("{0}.duplicate()", o);
 		}
 		throw "Only anonymous structures (Dictionaries) may be used with `Reflect.copy`.";
 	}

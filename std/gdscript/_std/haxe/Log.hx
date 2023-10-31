@@ -14,6 +14,6 @@ class Log {
 
 	public static dynamic function trace(v: Dynamic, ?infos: PosInfos):Void {
 		var str = formatOutput(v, infos);
-		untyped __gdscript__("print({})", str);
+		untyped __gdscript__("print({0})", str);
 	}
 }
