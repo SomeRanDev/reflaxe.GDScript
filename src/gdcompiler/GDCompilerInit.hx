@@ -30,7 +30,7 @@ class GDCompilerInit {
 			metadataTemplates: [
 				ReflectCompiler.MetaTemplate(":tool", "", true, [], [Class], (e, p) -> "@tool"),
 
-				ReflectCompiler.MetaTemplate(":onready", "", true, [], [ClassField], (e, p) -> "@onready"),
+				// ReflectCompiler.MetaTemplate(":onready", "", true, [], [ClassField], (e, p) -> "@onready"),
 				ReflectCompiler.MetaTemplate(":icon", "", true, [String], [ClassField], (e, p) -> "@icon(" + p[0] + ")"),
 				ReflectCompiler.MetaTemplate(":export", "", true, [], [ClassField], (e, p) -> "@export"),
 

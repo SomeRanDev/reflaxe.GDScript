@@ -73,6 +73,14 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 				staticVars.push({ name: varName, expr: gdScriptVal });
 			} else {
 				final meta = compileMetadata(field.meta, MetadataTarget.ClassField);
+
+				//:onready
+				final meta = if(field.meta.has(":onready") && isGodotNode(classType)) {
+					"@onready " + meta;
+				} else {
+					meta;
+				}
+
 				final decl = meta + "var " + varName + (gdScriptVal.length == 0 ? "" : (" = " + gdScriptVal));
 				variables.push(decl);
 			}
