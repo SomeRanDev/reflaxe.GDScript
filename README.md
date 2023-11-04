@@ -42,8 +42,8 @@ func main():
 | Topic                                                                           | Description                                        |
 | ------------------------------------------------------------------------------- | -------------------------------------------------- |
 | [Installation](#installation)                                                   | How to install and use this project.               |
-| [Godot Bindings](#godot-bindings)                                               | How to setup the Godot bindings.                   |
 | [Adding `HxStaticVars.gd` to Autoload](#adding-hxstaticvarsgd-to-autoload)      | Setting up the required autoload GDScript code.    |
+| [Godot Bindings](#godot-bindings)                                               | How to setup the Godot bindings.                   |
 | [Goals](#goals)                                                                 | The checklist for the goals of this project        |
 
 &nbsp;
