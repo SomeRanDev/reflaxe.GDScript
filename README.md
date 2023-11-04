@@ -42,6 +42,7 @@ func main():
 | Topic                                  | Description                                        |
 | -------------------------------------- | -------------------------------------------------- |
 | [Installation](#installation)          | How to install and use this project.               |
+| [Godot Bindings](#godot-bindings)      | How to setup the Godot bindings.                   |
 | [Goals](#goals)                        | The checklist for the goals of this project        |
 
 &nbsp;
@@ -55,6 +56,22 @@ This project is currently in development, so install using `haxelib git`:
 | 1   | Install via git.                                     | <pre>haxelib git gdscript https://github.com/SomeRanDev/reflaxe.GDScript nightly</pre>   |
 | 2   | Add the lib to your `.hxml` file or compile command. | <pre lang="hxml">-lib gdscript</pre>  |
 | 3   | Set the output folder for the compiled C++.          | <pre lang="hxml">-D gdscript-output=out</pre> |
+
+&nbsp;
+
+# Godot Bindings
+
+Reflaxe/GDScript does not come with bindings to Godot types by default since the version of Godot is different for every person. However, generating the bindings is SUPER DUPER easy.
+
+Simply run this command after installing this library:
+```
+haxelib run reflaxe.GDScript
+```
+
+This will generate all the Godot bindings as `.hx` Haxe source code files in a local folder named "godot".
+
+### Godot Executable Configuration
+When you run the command, you will be asked for the path to your Godot engine executable, so be sure to find it first! If you do not want to enter it manually, you can assign it to the `GODOT_PATH` environment variable before running the command.
 
 &nbsp;
 
