@@ -2,7 +2,8 @@ package gdcompiler;
 
 #if (macro || gdscript_runtime)
 
-import haxe.macro.Context;
+//import haxe.macro.Context;
+import reflaxe.helpers.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
@@ -20,6 +21,7 @@ using reflaxe.helpers.SyntaxHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
 using reflaxe.helpers.NullableMetaAccessHelper;
+using reflaxe.helpers.NullHelper;
 using reflaxe.helpers.OperatorHelper;
 using reflaxe.helpers.TypedExprHelper;
 using reflaxe.helpers.TypeHelper;
@@ -40,6 +42,7 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 	}
 
 	function compileClassName(classType: ClassType): String {
+		//if(classType.has)
 		return classType.getNameOrNative();
 	}
 
@@ -52,7 +55,9 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		var header = "";
 
 		final clsMeta = compileMetadata(classType.meta, MetadataTarget.Class);
-		header += clsMeta;
+		if(clsMeta != null) {
+			header += clsMeta;
+		}
 
 		if(classType.superClass != null) {
 			header += "extends " + compileClassName(classType.superClass.t.get()) + "\n";
@@ -64,8 +69,10 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		for(v in varFields) {
 			final field = v.field;
 			final varName = compileVarName(field.name, null, field);
-			final gdScriptVal = if(field.expr() != null) {
-				compileClassVarExpr(field.expr());
+
+			final e = field.expr();
+			final gdScriptVal = if(e != null) {
+				compileClassVarExpr(e);
 			} else {
 				"";
 			}
@@ -91,10 +98,11 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 			final field = f.field;
 			final tfunc = f.tfunc;
 			final name = field.name == "new" ? "_init" : compileVarName(field.name);
-			final meta = compileMetadata(field.meta, MetadataTarget.ClassField);
+			final meta = compileMetadata(field.meta, MetadataTarget.ClassField) ?? "";
 
 			if(f.kind == MethDynamic) {
-				final callable = compileClassVarExpr(field.expr());
+				final e = field.expr();
+				final callable = e == null ? "func():\n\tpass" : compileClassVarExpr(e);
 				if(f.isStatic) {
 					staticVars.push({
 						name: name,
@@ -106,7 +114,7 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 				}
 			} else {
 				final prefix = f.isStatic ? "static " : "";
-				final funcDeclaration = meta + prefix + "func " + name + "(" + tfunc.args.map(compileFunctionArgument).join(", ") + "):\n";
+				final funcDeclaration = meta + prefix + "func " + name + "(" + (tfunc?.args ?? []).map(compileFunctionArgument).join(", ") + "):\n";
 				var gdScriptVal = if(f.expr != null) {
 					final result = compileClassFuncExpr(f.expr).tab();
 					if(StringTools.trim(result).length == 0) {
@@ -217,7 +225,7 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 				result = moduleNameToGDScript(m);
 			}
 			case TParenthesis(e): {
-				final gdScript = compileExpression(e);
+				final gdScript = compileExpressionOrError(e);
 				final expr = if(!EverythingIsExprSanitizer.isBlocklikeExpr(e)) {
 					"(" + gdScript + ")";
 				} else {
@@ -259,8 +267,8 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 				result = if(nfc != null) {
 					nfc;
 				} else {
-					final meta = expr.getDeclarationMeta().meta;
-					final native = { name: "", meta: meta }.getNameOrNative();
+					final meta = expr.getDeclarationMeta()?.meta;
+					final native = meta == null ? "" : ({ name: "", meta: meta }.getNameOrNative());
 					final args = el.map(e -> compileExpression(e)).join(", ");
 					if(native.length > 0) {
 						native + "(" + args + ")";
@@ -292,10 +300,11 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 				result = "if true:\n";
 
 				if(el.length > 0) {
-					result += el.map(e -> {
-						var content = compileExpression(e);
-						compileExpression(e).tab();
-					}).join("\n");
+					result += el
+						.map(e -> compileExpression(e))
+						.filter(e -> e != null)
+						.map(e -> e.trustMe().tab())
+						.join("\n");
 				} else {
 					result += "\tpass";
 				}
@@ -339,7 +348,7 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 				}
 			}
 			case TTry(e, catches): {
-				result = compileExpression(e);
+				result = compileExpressionOrError(e);
 				final msg = "GDScript does not support try-catch. The expressions contained in the try block will be compiled, and the catches will be ignored.";
 				Context.warning(msg, expr.pos);
 			}
@@ -360,16 +369,16 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 				result = "assert(false, " + compileExpression(expr) + ")";
 			}
 			case TCast(expr, maybeModuleType): {
-				result = compileExpression(expr);
+				result = compileExpressionOrError(expr);
 				if(maybeModuleType != null) {
 					result = "(" + result + " as " + moduleNameToGDScript(maybeModuleType) + ")";
 				}
 			}
 			case TMeta(metadataEntry, expr): {
-				result = compileExpression(expr);
+				result = compileExpressionOrError(expr);
 			}
 			case TEnumParameter(expr, enumField, index): {
-				result = compileExpression(expr);
+				result = compileExpressionOrError(expr);
 				switch(enumField.type) {
 					case TFun(args, _): {
 						if(index < args.length) {
@@ -390,13 +399,18 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		return switch(e.expr) {
 			case TBlock(el): {
 				if(el.length > 0) {
-					el.map(e -> compileExpression(e).tab()).join("\n");
+					el
+						.map(e -> compileExpression(e))
+						.filter(e -> e != null)
+						.map(e -> e.trustMe().tab())
+						.join("\n");
 				} else {
 					"\tpass";
 				}
 			}
 			case _: {
-				compileExpression(e).tab();
+				final gdscript = compileExpression(e) ?? "pass";
+				gdscript.tab();
 			}
 		}
 	}
@@ -434,7 +448,7 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 	}
 
 	function unopToGDScript(op: Unop, e: TypedExpr, isPostfix: Bool): String {
-		final gdExpr = compileExpression(e);
+		final gdExpr = compileExpressionOrError(e);
 
 		// OpIncrement and OpDecrement not supported in GDScript
 		switch(op) {
@@ -528,7 +542,7 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 			case _: null;
 		}
 		if(typeName == null) {
-			Context.error("Incomplete Feature: Cannot convert this type to GDScript at the moment.", errorPos);
+			return Context.error("Incomplete Feature: Cannot convert this type to GDScript at the moment.", errorPos);
 		}
 		return typeName;
 	}
