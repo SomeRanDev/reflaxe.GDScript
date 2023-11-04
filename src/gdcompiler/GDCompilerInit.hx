@@ -70,19 +70,10 @@ class GDCompilerInit {
 	}
 
 	/**
-		We don't want this running during our "Run.hx" script.
-		
-		Kind of hacky, but if configuration args ends with [-D,reflaxe.GDScript=VER,-x,Run] this
-		is almost certainly running from our `Run.hx`.
+		We don't want this running during our "Run.hx" script, so this checks if that is occuring.
 	**/
 	static function isRunScript() {
-		final args = Compiler.getConfiguration().args;
-		return switch(args.slice(-4)) {
-			case ["-D", gdscriptVersion, "-x", "Run"] if(StringTools.startsWith(gdscriptVersion, "reflaxe.GDScript=")): {
-				true;
-			}
-			case _: false;
-		}
+		return Sys.getEnv("HAXELIB_RUN_NAME").toLowerCase() == "reflaxe.gdscript";
 	}
 
 	static function reservedNames() {
