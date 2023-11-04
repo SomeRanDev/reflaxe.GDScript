@@ -59,6 +59,18 @@ This project is currently in development, so install using `haxelib git`:
 
 &nbsp;
 
+# Adding "HxStaticVars.gd" to Autoload
+
+Once you've generated your GDScript, you should see a GDScript file named `HxStaticVars.gd` in your output folder. For your code to work properly, you MUST add this as an "autoload" script in Godot.
+
+To do this:
+* Open your Godot project in the Godot editor
+* Click: Project (top-left) > Project Settings > Autoload (tab)
+* Next to "Path" input, select the folder icon and select your `HxStaticVars.gd` file
+* Finall press "Add" on the right
+
+&nbsp;
+
 # Godot Bindings
 
 Reflaxe/GDScript does not come with bindings to Godot types by default since the version of Godot is different for every person. However, generating the bindings is SUPER DUPER easy.
