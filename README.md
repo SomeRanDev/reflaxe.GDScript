@@ -56,7 +56,7 @@ This project is currently in development, so install using `haxelib git`:
 | --- | ---------------------------------------------------- | ---------------------------------------- |
 | 1   | Install via git.                                     | <pre>haxelib git gdscript https://github.com/SomeRanDev/reflaxe.GDScript nightly</pre>   |
 | 2   | Add the lib to your `.hxml` file or compile command. | <pre lang="hxml">-lib gdscript</pre>  |
-| 3   | Set the output folder for the compiled C++.          | <pre lang="hxml">-D gdscript-output=out</pre> |
+| 3   | Set the output folder for the compiled GDScript.     | <pre lang="hxml">-D gdscript-output=out</pre> |
 
 &nbsp;
 
