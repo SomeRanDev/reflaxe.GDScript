@@ -2,6 +2,7 @@ package gdcompiler;
 
 #if (macro || gdscript_runtime)
 
+import haxe.macro.Compiler;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
@@ -15,6 +16,11 @@ using reflaxe.helpers.ExprHelper;
 
 class GDCompilerInit {
 	public static function Start() {
+		if(isRunScript()) {
+			return;
+		}
+
+		// Add our compiler to Reflaxe
 		ReflectCompiler.AddCompiler(new GDCompiler(), {
 			fileOutputExtension: ".gd",
 			outputDirDefineName: "gdscript-output",
@@ -61,6 +67,22 @@ class GDCompilerInit {
 				ReflectCompiler.MetaTemplate(":exportFlags3dNavigation", "", true, [], [ClassField], (e, p) -> "@export_flags_3d_navigation")
 			]
 		});
+	}
+
+	/**
+		We don't want this running during our "Run.hx" script.
+		
+		Kind of hacky, but if configuration args ends with [-D,reflaxe.GDScript=VER,-x,Run] this
+		is almost certainly running from our `Run.hx`.
+	**/
+	static function isRunScript() {
+		final args = Compiler.getConfiguration().args;
+		return switch(args.slice(-4)) {
+			case ["-D", gdscriptVersion, "-x", "Run"] if(StringTools.startsWith(gdscriptVersion, "reflaxe.GDScript=")): {
+				true;
+			}
+			case _: false;
+		}
 	}
 
 	static function reservedNames() {
