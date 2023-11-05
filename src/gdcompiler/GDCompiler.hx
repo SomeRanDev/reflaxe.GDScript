@@ -461,8 +461,23 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 			if(native.length > 0) {
 				native + "(" + args + ")";
 			} else {
-				final className = compileClassName(classTypeRef.get());
-				className + ".new(" + args + ")";
+				final cls = classTypeRef.get();
+				final className = compileClassName(cls);
+				final meta = cls.meta.maybeExtract(":bindings_api_type");
+
+				// Check for @:bindings_api_type("builtin_classes") metadata
+				final builtin_class = meta.filter(m -> switch(m.params) {
+					case [macro "builtin_classes"]: true;
+					case _: false;
+				}).length > 0;
+
+				trace(meta);
+				trace(cls.name);
+				if(builtin_class) {
+					className + "(" + args + ")";
+				} else {
+					className + ".new(" + args + ")";
+				}
 			}
 		}
 	}
