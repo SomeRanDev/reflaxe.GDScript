@@ -471,8 +471,6 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 					case _: false;
 				}).length > 0;
 
-				trace(meta);
-				trace(cls.name);
 				if(builtin_class) {
 					className + "(" + args + ")";
 				} else {
