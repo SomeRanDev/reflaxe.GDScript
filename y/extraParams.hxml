@@ -1,0 +1,2 @@
+-D gdscript
+--macro gdcompiler.GDCompilerInit.Start()

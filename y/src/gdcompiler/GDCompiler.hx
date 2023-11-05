@@ -209,7 +209,7 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 					result = result + "[0]";	
 				}
 			}
-			case TIdent(s): {
+			case TIdent(s): {		
 				result = compileVarName(s, expr);
 			}
 			case TArray(e1, e2): {

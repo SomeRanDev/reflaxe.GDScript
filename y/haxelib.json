@@ -1,0 +1,30 @@
+{
+	"name": "gdscript",
+	"version": "0.1.1",
+	"description": "Compile Haxe to GDScript 2.0 as easily as you'd output to any other target.",
+	"url": "https://github.com/RobertBorghese/Haxe-to-GDScript",
+	"license": "MIT",
+	"tags": [
+		"godot",
+		"gdscript",
+		"macro",
+		"compiler",
+		"target",
+		"game",
+		"engine",
+		"externs",
+		"metadata",
+		"extension"
+	],
+	"dependencies": {
+		"reflaxe": "git:https://github.com/SomeRanDev/reflaxe"
+	},
+	"classPath": "src/",
+	"releasenote": "Fixed issue with std class paths not properly shadowing when installing from haxelib.",
+	"contributors": ["RobertBorghese", "SomeRanDev"],
+	"reflaxe": {
+		"name": "GDScript",
+		"abbv": "gdscript",
+		"stdPaths": ["std", "std/gdscript/_std"]
+	}
+}
