@@ -249,34 +249,37 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 				result = if(nfc != null) {
 					nfc;
 				} else {
-					final enumCall = compileEnumFieldCall(e, el);
-					if(enumCall != null) {
-						enumCall;
+					final code = switch(e.expr) {
+						case TField(_, fa): {
+							switch(fa) {
+								case FEnum(_, ef): {
+									final enumCall = compileEnumFieldCall(e, el);
+									if(enumCall != null) enumCall;
+									else null;
+								}
+								case FStatic(classTypeRef, _.get() => cf) if(cf.meta.maybeHas(":constructor")): {
+									newToGDScript(classTypeRef, expr, el);
+								}
+								case _: null;
+							}
+						}
+						case _: null;
+					}
+
+					if(code != null) {
+						code;
 					} else {
 						final callOp = if(isCallableVar(e)) {
 							".call(";
 						} else {
 							"(";
 						}
-						compileExpression(e) + callOp + el.map(e -> compileExpression(e)).join(", ") + ")";
+						compileExpression(e) + callOp + el.map(e -> compileExpressionOrError(e)).join(", ") + ")";
 					}
 				}
 			}
 			case TNew(classTypeRef, _, el): {
-				final nfc = this.compileNativeFunctionCodeMeta(expr, el);
-				result = if(nfc != null) {
-					nfc;
-				} else {
-					final meta = expr.getDeclarationMeta()?.meta;
-					final native = meta == null ? "" : ({ name: "", meta: meta }.getNameOrNative());
-					final args = el.map(e -> compileExpression(e)).join(", ");
-					if(native.length > 0) {
-						native + "(" + args + ")";
-					} else {
-						final className = compileClassName(classTypeRef.get());
-						className + ".new(" + args + ")";
-					}
-				}
+				result = newToGDScript(classTypeRef, expr, el);
 			}
 			case TUnop(op, postFix, e): {
 				result = unopToGDScript(op, e, postFix);
@@ -445,6 +448,38 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 
 	inline function checkForPrimitiveStringAddition(strExpr: TypedExpr, primExpr: TypedExpr) {
 		return strExpr.t.isString() && primExpr.t.isPrimitive();
+	}
+
+	function newToGDScript(classTypeRef: Ref<ClassType>, originalExpr: TypedExpr, el: Array<TypedExpr>) {
+		final nfc = this.compileNativeFunctionCodeMeta(originalExpr, el);
+		return if(nfc != null) {
+			nfc;
+		} else {
+			final meta = originalExpr.getDeclarationMeta()?.meta;
+			final native = meta == null ? "" : ({ name: "", meta: meta }.getNameOrNative());
+			final args = el.map(e -> compileExpression(e)).join(", ");
+			if(native.length > 0) {
+				native + "(" + args + ")";
+			} else {
+				final cls = classTypeRef.get();
+				final className = compileClassName(cls);
+				final meta = cls.meta.maybeExtract(":bindings_api_type");
+
+				// Check for @:bindings_api_type("builtin_classes") metadata
+				final builtin_class = meta.filter(m -> switch(m.params) {
+					case [macro "builtin_classes"]: true;
+					case _: false;
+				}).length > 0;
+
+				trace(meta);
+				trace(cls.name);
+				if(builtin_class) {
+					className + "(" + args + ")";
+				} else {
+					className + ".new(" + args + ")";
+				}
+			}
+		}
 	}
 
 	function unopToGDScript(op: Unop, e: TypedExpr, isPostfix: Bool): String {
