@@ -9,11 +9,16 @@ function main() {
 		case [cwd]: {
 			cwd;
 		}
+		case []: { // Add compatibility with --run cause why not
+			null;
+		}
 		case args: {
 			args[args.length - 1];
 		}
 	}
-	Sys.setCwd(cwd);
+	if(cwd != null) {
+		Sys.setCwd(cwd);
+	}
 
 	// We start!!
 	Sys.println("Generating Godot bindings...");
@@ -68,9 +73,14 @@ function main() {
 		}
 	}
 
+	final versionArray = godotVersion.split(".");
+	final is4_2orAbove = Std.parseInt(versionArray[0]) >= 4 && Std.parseInt(versionArray[1]) >= 2;
+
+	final dumpType = is4_2orAbove ? "--dump-extension-api-with-docs" : "--dump-extension-api";
+
 	// Generate `extension_api.json`
-	Sys.println('>> ${godotPath} --dump-extension-api-with-docs --headless');
-	final process = new Process(godotPath, ["--dump-extension-api-with-docs", "--headless"]);
+	Sys.println('>> ${godotPath} ${dumpType} --headless');
+	final process = new Process(godotPath, [dumpType, "--headless"]);
 	process.exitCode(true);
 
 	// Install `godot-api-generator`
