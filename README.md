@@ -78,7 +78,7 @@ Reflaxe/GDScript does not come with bindings to Godot types by default since the
 
 Simply run this command after installing this library:
 ```
-haxelib run reflaxe.GDScript
+haxelib run gdscript
 ```
 
 This will generate all the Godot bindings as `.hx` Haxe source code files in a local folder named "godot".
