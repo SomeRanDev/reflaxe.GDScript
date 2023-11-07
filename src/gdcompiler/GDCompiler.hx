@@ -18,6 +18,7 @@ import reflaxe.compiler.EverythingIsExprSanitizer;
 import reflaxe.helpers.OperatorHelper;
 
 import gdcompiler.config.Define;
+import gdcompiler.config.Meta;
 
 using reflaxe.helpers.BaseTypeHelper;
 using reflaxe.helpers.ModuleTypeHelper;
@@ -81,7 +82,7 @@ script="$pluginGDSource"
 				'"${cls.name}"',
 				'"${cls.superClass.trustMe().t.get().name}"',
 				'preload("${cls.globalName()}.gd")',
-				'preload("res://icon.svg")'
+				'preload("${cls.meta.extractStringFromFirstMeta(Meta.Icon) ?? "res://icon.svg"}")'
 			];
 			return 'add_custom_type(${args.join(", ")})';
 		}).join("\n");
@@ -92,7 +93,7 @@ script="$pluginGDSource"
 				'"${cls.name}"',
 				'"${cls.superClass.trustMe().t.get().name}"',
 				'preload("${cls.globalName()}.gd")',
-				'preload("res://icon.svg")'
+				'preload("${cls.meta.extractStringFromFirstMeta(Meta.Icon) ?? "res://icon.svg"}")'
 			];
 			return 'add_custom_type(${args.join(", ")})';
 		}).join("\n");
@@ -173,8 +174,16 @@ func _exit_tree():
 		var header = "";
 
 		final clsMeta = compileMetadata(classType.meta, MetadataTarget.Class);
+	
+		//:icon
+		final clsMeta = if(classType.meta.has(Meta.Icon)) {
+			"@icon(" + classType.meta.extractStringFromFirstMeta(Meta.Icon) + ")" + (clsMeta ?? "");
+		} else {
+			clsMeta;
+		}
+
 		if(clsMeta != null) {
-			header += clsMeta;
+			header += StringTools.trim(clsMeta) + "\n";
 		}
 
 		if(classType.superClass != null) {
@@ -201,7 +210,7 @@ func _exit_tree():
 
 				//:onready
 				final meta = if(field.meta.has(":onready") && isGodotNode(classType)) {
-					"@onready " + meta;
+					"@onready " + (meta ?? "");
 				} else {
 					meta;
 				}

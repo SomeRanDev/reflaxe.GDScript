@@ -37,7 +37,6 @@ class GDCompilerInit {
 				ReflectCompiler.MetaTemplate(":tool", "", true, [], [Class], (e, p) -> "@tool"),
 
 				// ReflectCompiler.MetaTemplate(":onready", "", true, [], [ClassField], (e, p) -> "@onready"),
-				ReflectCompiler.MetaTemplate(":icon", "", true, [String], [ClassField], (e, p) -> "@icon(" + p[0] + ")"),
 				ReflectCompiler.MetaTemplate(":export", "", true, [], [ClassField], (e, p) -> "@export"),
 
 				ReflectCompiler.MetaTemplate(":exportEnum", "", true, null, [ClassField], (e, p) -> "@export_enum(" + p.join(", ") + ")"),
