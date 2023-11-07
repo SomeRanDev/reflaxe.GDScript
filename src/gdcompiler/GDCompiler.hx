@@ -177,7 +177,7 @@ func _exit_tree():
 	
 		//:icon
 		final clsMeta = if(classType.meta.has(Meta.Icon)) {
-			"@icon(" + classType.meta.extractStringFromFirstMeta(Meta.Icon) + ")" + (clsMeta ?? "");
+			"@icon(\"" + classType.meta.extractStringFromFirstMeta(Meta.Icon) + "\")" + (clsMeta ?? "");
 		} else {
 			clsMeta;
 		}
