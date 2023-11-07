@@ -88,35 +88,39 @@ When you run the command, you will be asked for the path to your Godot engine ex
 
 &nbsp;
 
-## Goals
+## How Does It Work?
 
-- [x] As GDScript outputs one file per class, each class, regardless of module, receives its own file.
+- As GDScript outputs one file per class, each class, regardless of module, receives its own file.
+- A custom version of the Haxe standard library is made for GDScript (check out `std/gdscript/_std`)
+- Bindings to the Godot classes/functions are generated using [Godot Bindings Generator for Haxe](https://github.com/SomeRanDev/Haxe-GodotBindingsGenerator)
 
-- [x] A custom version of the Haxe standard library is made for GDScript (check out `std/gdscript/_std`)
-
-- [x] Bindings to the Godot classes/functions (check out `std/godot`)
-
-- [x] If GDScript is being generated, conditional compilation can be used with the `gdscript` define.
+### Inject GDScript
+- GDScript can be injected directly using:
 ```haxe
-#if gdscript
-doSomethingOnlyForGDScript();
-#end
-```
-
-- [x] GDScript can be injected directly using:
-```haxe
+// Haxe
 untyped __gdscript__("print(123)");
+
+//GDScript
+print(123);
 ```
 
-- [x] GDScript meta can be defined using `@:meta`, though there should be defined metadata for each existing attribute in GDScript.
+### GDScript Annotations
+- GDScript meta can be defined using `@:meta`, though there should be defined metadata for each existing attribute in GDScript.
 ```haxe
+// Haxe
 @:meta(onready) var someVal = get_node("myNode")
+
+// GDScript
+@onready
+var someVal = get_node("myNode")
 ```
 
-- [x] Haxe enum support.
+### Enum Support
+- Haxe enums are converted into simple dictionaries in GDScript.
 ```haxe
+// Haxe
 var myEnum = SomeEnumCase(123, "Hello!");
-```
-```gdscript
+
+// GDScript
 var myEnum = { "_index": 2, "num": 123, "text": "Hello!" }
 ```
