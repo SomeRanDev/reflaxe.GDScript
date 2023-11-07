@@ -94,7 +94,7 @@ When you run the command, you will be asked for the path to your Godot engine ex
 
 - [x] A custom version of the Haxe standard library is made for GDScript (check out `std/gdscript/_std`)
 
-- [ ] Bindings to the Godot classes/functions (check out `std/godot`)
+- [x] Bindings to the Godot classes/functions (check out `std/godot`)
 
 - [x] If GDScript is being generated, conditional compilation can be used with the `gdscript` define.
 ```haxe
