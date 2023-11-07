@@ -63,7 +63,7 @@ This project is currently in development, so install using `haxelib git`:
 
 # Loading Your GDScript Output as a Plugin
 
-If you choose to output a Godot plugin, the setup process is very easy. Generate the GDScript code into a folder in your addons folder for your Godot project. For example:
+If you choose to output a Godot plugin, the setup process is very easy. Generate the GDScript code into a folder in your "addons" folder for your Godot project. For example:
 ```
 -D gdscript-output=MY_GODOT_PROJECT/addons/haxe_output
 ```
