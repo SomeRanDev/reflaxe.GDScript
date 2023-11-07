@@ -57,10 +57,24 @@ This project is currently in development, so install using `haxelib git`:
 | 1   | Install via git.                                     | <pre>haxelib git gdscript https://github.com/SomeRanDev/reflaxe.GDScript nightly</pre>   |
 | 2   | Add the lib to your `.hxml` file or compile command. | <pre lang="hxml">-lib gdscript</pre>  |
 | 3   | Set the output folder for the compiled GDScript.     | <pre lang="hxml">-D gdscript-output=out</pre> |
+| 4   | Optionally, generate your code as a Godot plugin.    | <pre lang="hxml">-D generate_godot_plugin</pre> |
+
+&nbsp;
+
+# Loading Your GDScript Output as a Plugin
+
+If you choose to output a Godot plugin, the setup process is very easy. Generate the GDScript code into a folder in your addons folder for your Godot project. For example:
+```
+-D gdscript-output=MY_GODOT_PROJECT/addons/haxe_output
+```
+
+To enable the plugin, go to `Project (top-left) > Project Settings > Plugins (tab)` and click the checkbox next to your plugin's name.
 
 &nbsp;
 
 # Adding "HxStaticVars.gd" to Autoload
+
+This is NOT necessary if you're generating and using a plugin since the autoload is setup automatically.
 
 Once you've generated your GDScript, you should see a GDScript file named `HxStaticVars.gd` in your output folder. For your code to work properly, you MUST add this as an "autoload" script in Godot.
 
