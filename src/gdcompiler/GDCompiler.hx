@@ -63,10 +63,16 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 
 	/**
 		Generates the Godot plugin for the output GDScript files.
-		This is done by generating a `plugin.cfg` file its behavior code in `reflaxe_gdscript_output.gd`.
+		This is done by generating a `plugin.cfg` file its behavior code in `plugin.gd`.
+
+		(`plugin.gd`'s filename can be changed using `-D godot_plugin_script_name`).
 	**/
 	function generatePlugin() {
-		final pluginGDSource = "reflaxe_gdscript_output.gd";
+		var pluginGDSource = Context.definedValue(Define.GodotPluginScriptName) ?? "plugin.gd";
+
+		if(!StringTools.contains(pluginGDSource, ".")) {
+			pluginGDSource += ".gd";
+		}
 
 		setExtraFile("plugin.cfg", '[plugin]
 name="${Context.definedValue(Define.GodotPluginName) ?? "Reflaxe/GDScript Output"}"

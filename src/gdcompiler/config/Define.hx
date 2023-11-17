@@ -35,4 +35,11 @@ enum abstract Define(String) from String to String {
 		Defines the "version" entry in `plugin.cfg` if a plugin is generated.
 	**/
 	var GodotPluginVersion = "godot_plugin_version";
+
+	/**
+		-D godot_plugin_script_name=FILE_NAME.gd
+
+		Sets the name of the "script" file generated for the plugin.
+	**/
+	var GodotPluginScriptName = "godot_plugin_script_name";
 }
