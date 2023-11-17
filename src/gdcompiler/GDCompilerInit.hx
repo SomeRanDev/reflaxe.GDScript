@@ -72,7 +72,7 @@ class GDCompilerInit {
 		We don't want this running during our "Run.hx" script, so this checks if that is occuring.
 	**/
 	static function isRunScript() {
-		return (Sys.getEnv("HAXELIB_RUN_NAME") ?? "").toLowerCase() == "reflaxe.gdscript";
+		return ["reflaxe.gdscript", "gdscript"].contains((Sys.getEnv("HAXELIB_RUN_NAME") ?? "").toLowerCase());
 	}
 
 	static function reservedNames() {
