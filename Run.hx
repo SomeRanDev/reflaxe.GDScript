@@ -4,8 +4,15 @@ import sys.FileSystem;
 import sys.io.Process;
 
 function main() {
+	final args = Sys.args();
+
+	final isCpp = if(args.contains("--cpp")) {
+		args.remove("--cpp");
+		true;
+	} else false;
+
 	// Ensure we use current directory of haxelib run call.
-	final cwd = switch(Sys.args()) {
+	final cwd = switch(args) {
 		case [cwd]: {
 			cwd;
 		}
@@ -94,8 +101,11 @@ function main() {
 	}
 
 	// Generate bindings using `godot-api-generator`
-	Sys.println('>> haxelib run godot-api-generator extension_api.json godot');
-	final process = new Process("haxelib", ["run", "godot-api-generator", "./extension_api.json", "./godot"]);
+	final genArgs = ["run", "godot-api-generator", "./extension_api.json", "./godot"];
+	if(isCpp) genArgs.push("--cpp");
+
+	Sys.println('>> haxelib ${genArgs.join(" ")}');
+	final process = new Process("haxelib", genArgs);
 	if(process.exitCode(true) != 0) {
 		Sys.println("Could not run 'godot-api-generator'.\n");
 		Sys.println(process.stdout.readAll().toString());
