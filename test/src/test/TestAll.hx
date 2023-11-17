@@ -1,4 +1,4 @@
-package;
+package test;
 
 class TestAll {
 	public static function test() {

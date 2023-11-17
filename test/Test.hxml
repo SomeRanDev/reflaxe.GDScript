@@ -4,16 +4,4 @@
 
 --no-opt
 
-Assert
-TestAll
-TestSyntax
-TestString
-TestStd
-TestMath
-TestStaticVar
-TestArray
-TestEnum
-TestMeta
-TestSys
-TestEReg
-TestReflect
+test

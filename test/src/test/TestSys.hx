@@ -1,4 +1,4 @@
-package;
+package test;
 
 import Assert.assert;
 
