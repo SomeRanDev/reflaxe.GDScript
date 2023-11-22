@@ -29,6 +29,7 @@ class GDCompilerInit {
 			reservedVarNames: reservedNames(),
 			targetCodeInjectionName: "__gdscript__",
 			wrapLambdaCaptureVarsInArray: true,
+			processAvoidTemporaries: true,
 			convertUnopIncrement: true,
 			smartDCE: true,
 			allowMetaMetadata: true,
