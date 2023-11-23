@@ -86,7 +86,9 @@ class GDCompilerInit {
 		];
 	}
 
-	// the "utility_functions" from the Godot extension_api.json
+	/**
+		the "utility_functions" from the Godot `extension_api.json`.
+	**/
 	static function gdUtilityFuncs(): Array<String> {
 		return [
 			"sin","cos","tan","sinh","cosh","tanh","asin","acos","atan","atan2","sqrt","fmod",
