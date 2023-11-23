@@ -754,9 +754,11 @@ func _exit_tree():
 		return typeName;
 	}
 
-	// In GDScript, a Callable is called differently from a function.
-	// To help decern whether this is a variable containing a Callable,
-	// or this is a normal function/method, this function is used.
+	/**
+		In GDScript, a Callable is called differently from a function.
+		To help decern whether this is a variable containing a Callable,
+		or this is a normal function/method, this function is used.
+	**/
 	function isCallableVar(e: TypedExpr) {
 		return switch(e.expr) {
 			case TField(_, fa): {
@@ -781,9 +783,11 @@ func _exit_tree():
 		}
 	}
 
-	// This is called for called expressions.
-	// If the typed expression is an enum field, transpile as a
-	// Dictionary with the enum data.
+	/**
+		This is called for called expressions.
+		If the typed expression is an enum field, transpile as a
+		Dictionary with the enum data.
+	**/
 	function compileEnumFieldCall(e: TypedExpr, el: Array<TypedExpr>): Null<String> {
 		final ef = switch(e.expr) {
 			case TField(_, fa): {
