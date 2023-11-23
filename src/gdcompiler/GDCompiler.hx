@@ -181,16 +181,13 @@ func _exit_tree():
 		final className = classType.name;
 
 		var header = new StringBuf();
-
-		final clsMeta = compileMetadata(classType.meta, MetadataTarget.Class);
 	
-		//:icon
-		final clsMeta = if(classType.meta.has(Meta.Icon)) {
-			"@icon(\"" + classType.meta.extractStringFromFirstMeta(Meta.Icon) + "\")" + (clsMeta ?? "");
-		} else {
-			clsMeta;
+		// @:icon -> @icon
+		if(classType.meta.has(Meta.Icon)) {
+			header.addMulti("@icon(\"", classType.meta.extractStringFromFirstMeta(Meta.Icon), "\")");
 		}
 
+		final clsMeta = compileMetadata(classType.meta, MetadataTarget.Class);
 		if(clsMeta != null) {
 			header.add(StringTools.trim(clsMeta) + "\n");
 		}
@@ -304,7 +301,9 @@ func _exit_tree():
 		}
 
 		final gdscriptContent = {
-			var result = header;
+			var result = new StringBuf();
+
+			result.add(header);
 
 			if(variables.length > 0) {
 				result.add(variables.join("\n\n") + "\n\n");
@@ -314,7 +313,7 @@ func _exit_tree():
 				result.add(functions.join("\n\n") + "\n\n");
 			}
 
-			result.toString();
+			StringTools.trim(result.toString()) + "\n\n";
 		}
 
 		setExtraFile(classType.globalName() + ".gd", gdscriptContent);
@@ -572,7 +571,6 @@ func _exit_tree():
 		switch(e.expr) {
 			case TBlock(el): {
 				if(el.length > 0) {
-					final result = new StringBuf();
 					for(i in 0...el.length) {
 						final code = compileExpression(el[i]);
 						if(code != null) {
