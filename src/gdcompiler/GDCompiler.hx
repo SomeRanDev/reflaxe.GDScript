@@ -184,7 +184,12 @@ func _exit_tree():
 	
 		// @:icon -> @icon
 		if(classType.meta.has(Meta.Icon)) {
-			header.addMulti("@icon(\"", classType.meta.extractStringFromFirstMeta(Meta.Icon), "\")");
+			final iconPath = classType.meta.extractStringFromFirstMeta(Meta.Icon);
+			if(iconPath != null) {
+				header.addMulti("@icon(\"", iconPath, "\")");
+			} else {
+				Context.error("Icon path required.", classType.meta.getFirstPosition(Meta.Icon) ?? classType.pos);
+			}
 		}
 
 		final clsMeta = compileMetadata(classType.meta, MetadataTarget.Class);
@@ -360,7 +365,7 @@ func _exit_tree():
 				result.add(compileVarName(s, expr));
 			}
 			case TArray(e1, e2): {
-				result.addMulti(compileExpression(e1), "[", compileExpression(e2), "]");
+				result.addMulti(compileExpressionOrError(e1), "[", compileExpressionOrError(e2), "]");
 			}
 			case TBinop(op, e1, e2): {
 				result.add(binopToGDScript(op, e1, e2));
@@ -451,7 +456,7 @@ func _exit_tree():
 				result.add("var ");
 				result.add(compileVarName(tvar.name, expr));
 				if(maybeExpr != null) {
-					final e = compileExpression(maybeExpr);
+					final e = compileExpressionOrError(maybeExpr);
 					if(tvar.meta.maybeHas(":arrayWrap")) {
 						result.addMulti(" = [", e, "]");	
 					} else {
@@ -476,12 +481,12 @@ func _exit_tree():
 			}
 			case TFor(tvar, iterExpr, blockExpr): {
 				result.addMulti(
-					"for ", tvar.name, " in ", compileExpression(iterExpr), ":\n"
+					"for ", tvar.name, " in ", compileExpressionOrError(iterExpr), ":\n"
 				);
 				result.add(toIndentedScope(blockExpr));
 			}
 			case TIf(econd, ifExpr, elseExpr): {
-				result.addMulti("if ", compileExpression(econd), ":\n");
+				result.addMulti("if ", compileExpressionOrError(econd), ":\n");
 				result.add(toIndentedScope(ifExpr));
 				if(elseExpr != null) {
 					result.add("\n");
@@ -490,7 +495,7 @@ func _exit_tree():
 				}
 			}
 			case TWhile(econd, blockExpr, normalWhile): {
-				final gdCond = compileExpression(econd);
+				final gdCond = compileExpressionOrError(econd);
 				if(normalWhile) {
 					result.addMulti("while ", gdCond, ":\n");
 					result.add(toIndentedScope(blockExpr));
@@ -502,7 +507,7 @@ func _exit_tree():
 				}
 			}
 			case TSwitch(e, cases, edef): {
-				result.addMulti("match ", compileExpression(e), ":");
+				result.addMulti("match ", compileExpressionOrError(e), ":");
 				for(c in cases) {
 					result.add("\n\t");
 					result.add(c.values.map(v -> compileExpression(v)).join(", "));
@@ -533,7 +538,7 @@ func _exit_tree():
 				result.add("continue");
 			}
 			case TThrow(expr): {
-				result.addMulti("assert(false, ", compileExpression(expr), ")");
+				result.addMulti("assert(false, ", compileExpressionOrError(expr), ")");
 			}
 			case TCast(expr, maybeModuleType): {
 				final hasModuleType = maybeModuleType != null;
@@ -542,7 +547,7 @@ func _exit_tree():
 				}
 				result.add(compileExpressionOrError(expr));
 				if(hasModuleType) {
-					result.addMulti(" as ", moduleNameToGDScript(maybeModuleType), ")");
+					result.addMulti(" as ", moduleNameToGDScript(maybeModuleType.trustMe()), ")");
 				}
 			}
 			case TMeta(metadataEntry, expr): {
@@ -560,7 +565,7 @@ func _exit_tree():
 				}
 			}
 			case TEnumIndex(expr): {
-				result.addMulti(compileExpression(expr), "._index");
+				result.addMulti(compileExpressionOrError(expr), "._index");
 			}
 		}
 		return result.toString();
@@ -807,7 +812,7 @@ func _exit_tree():
 					final fields = [];
 					for(i in 0...el.length) {
 						if(args[i] != null) {
-							result.addMulti("\"", args[i].name, "\": ", compileExpression(el[i]));
+							result.addMulti("\"", args[i].name, "\": ", compileExpressionOrError(el[i]));
 							if(i < el.length - 1) {
 								result.add(", ");
 							}
