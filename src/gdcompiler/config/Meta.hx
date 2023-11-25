@@ -15,4 +15,11 @@ enum abstract Meta(String) from String to String {
 		Explicitly sets the output file path for a class.
 	**/
 	var OutputFile = ":outputFile";
+
+	/**
+		@:dontAddToPlugin
+
+		If added to a class, the class will not be loaded by the generated plugin.
+	**/
+	var DontAddToPlugin = ":dontAddToPlugin";
 }
