@@ -305,6 +305,7 @@ func _exit_tree():
 			resourceClasses.push(classType);
 		}
 
+		// Put everything together
 		final gdscriptContent = {
 			var result = new StringBuf();
 
@@ -325,7 +326,8 @@ func _exit_tree():
 		final path = if(classType.hasMeta(Meta.OutputFile)) {
 			final outputFilePath = classType.meta.extractStringFromFirstMeta(Meta.OutputFile);
 			if(outputFilePath == null) {
-				Context.error("@:outputFile requires a String path for the first argument.", classType.meta.getFirstPosition(Meta.OutputFile) ?? classType.pos);
+				final msg = "@:outputFile requires a String path for the first argument.";
+				Context.error(msg, classType.meta.getFirstPosition(Meta.OutputFile) ?? classType.pos);
 			}
 			outputFilePath;
 		} else {
