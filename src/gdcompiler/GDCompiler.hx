@@ -36,13 +36,13 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		Keeps track of all the classes that extend from `godot.Node`.
 		Important for plugin generation.
 	**/
-	var nodeClasses: Array<ClassType> = [];
+	var pluginNodeClasses: Array<ClassType> = [];
 
 	/**
 		Keeps track of all the classes that extend from `godot.Resource`.
 		Important for plugin generation.
 	**/
-	var resourceClasses: Array<ClassType> = [];
+	var pluginResourceClasses: Array<ClassType> = [];
 
 	/**
 		Runs at the start of compilation.
@@ -85,8 +85,8 @@ version="${getD(Define.GodotPluginVersion) ?? ""}"
 script="$pluginGDSource"
 ');
 
-		final enterNodes = nodeClasses.map(function(cls) {
-			// Guarenteed to have super class if in `nodeClasses`.
+		final enterNodes = pluginNodeClasses.map(function(cls) {
+			// Guaranteed to have super class if in `pluginNodeClasses`.
 			final args = [
 				'"${cls.name}"',
 				'"${cls.superClass.trustMe().t.get().name}"',
@@ -96,8 +96,8 @@ script="$pluginGDSource"
 			return 'add_custom_type(${args.join(", ")})';
 		}).join("\n");
 
-		final enterResources = resourceClasses.map(function(cls) {
-			// Guarenteed to have super class if in `resourceClasses`.
+		final enterResources = pluginResourceClasses.map(function(cls) {
+			// Guaranteed to have super class if in `pluginResourceClasses`.
 			final args = [
 				'"${cls.name}"',
 				'"${cls.superClass.trustMe().t.get().name}"',
@@ -107,8 +107,8 @@ script="$pluginGDSource"
 			return 'add_custom_type(${args.join(", ")})';
 		}).join("\n");
 
-		final exitNodes = nodeClasses.map((cls) -> 'remove_custom_type("${cls.name}")').join("\n");
-		final exitResources = resourceClasses.map((cls) -> 'remove_custom_type("${cls.name}")').join("\n");
+		final exitNodes = pluginNodeClasses.map((cls) -> 'remove_custom_type("${cls.name}")').join("\n");
+		final exitResources = pluginResourceClasses.map((cls) -> 'remove_custom_type("${cls.name}")').join("\n");
 
 		function line(s: String) return s.length > 0 ? ("\n\t" + s) : s;
 
@@ -298,11 +298,13 @@ func _exit_tree():
 		}
 
 		// Check if extends from Node or Resource
-		if(extendsFromNode(classType)) {
-			nodeClasses.push(classType);
-		}
-		if(extendsFromResource(classType)) {
-			resourceClasses.push(classType);
+		if(!classType.hasMeta(Meta.DontAddToPlugin)) {
+			if(extendsFromNode(classType)) {
+				pluginNodeClasses.push(classType);
+			}
+			if(extendsFromResource(classType)) {
+				pluginResourceClasses.push(classType);
+			}
 		}
 
 		// Put everything together
