@@ -45,6 +45,12 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 	var pluginResourceClasses: Array<ClassType> = [];
 
 	/**
+		A stack used to track any overrides to the "self" keyword.
+		If empty, "self" will be used.
+	**/
+	var selfStack: Array<String> = [];
+
+	/**
 		Runs at the start of compilation.
 		Generates the bare-bones `HxStaticVars.gd` file.
 	**/
@@ -179,6 +185,7 @@ func _exit_tree():
 		final functions = [];
 		final staticVars = [];
 		final className = classType.name;
+		final isWrapper = classType.hasMeta(Meta.Wrapper);
 
 		var header = new StringBuf();
 	
@@ -197,7 +204,9 @@ func _exit_tree():
 			header.add(StringTools.trim(clsMeta) + "\n");
 		}
 
-		if(classType.superClass != null) {
+		if(isWrapper) { // Wrapper only exists to host code, should not be treated like node itself
+			header.add("extends Object\n");
+		} else if(classType.superClass != null) {
 			header.add("extends " + compileClassName(classType.superClass.t.get()) + "\n");
 		}
 
@@ -206,7 +215,16 @@ func _exit_tree():
 		// instance vars
 		for(v in varFields) {
 			final field = v.field;
-			final varName = compileVarName(field.name, null, field);
+
+			if(field.isExtern || field.hasMeta(":extern") || field.hasMeta(":gd_extern")) {
+				continue;
+			}
+
+			final varName = if(field.hasMeta(":nativeName")) {
+				field.meta.extractStringFromFirstMeta(":nativeName");
+			} else {
+				compileVarName(field.name, null, field);
+			}
 
 			final e = field.expr();
 			final gdScriptVal = if(e != null) {
@@ -235,7 +253,13 @@ func _exit_tree():
 		for(f in funcFields) {
 			final field = f.field;
 			final tfunc = f.tfunc;
-			final name = field.name == "new" ? "_init" : compileVarName(field.name);
+			final name = if(field.name == "new") {
+				"_init";
+			} else if(field.hasMeta(":nativeName")) {
+				field.meta.extractStringFromFirstMeta(":nativeName");
+			} else {
+				compileVarName(field.name);
+			}
 			final meta = compileMetadata(field.meta, MetadataTarget.ClassField) ?? "";
 
 			if(f.kind == MethDynamic) {
@@ -251,10 +275,37 @@ func _exit_tree():
 					variables.push(decl);
 				}
 			} else {
-				final prefix = f.isStatic ? "static " : "";
-				final funcDeclaration = meta + prefix + "func " + name + "(" + (tfunc?.args ?? []).map(compileFunctionArgument).join(", ") + "):\n";
+				final args = tfunc?.args ?? [];
+				final wrapperSelfName = !isWrapper ? "" : (classType.meta.extractStringFromFirstMeta(Meta.Wrapper) ?? "_self");
+
+				final funcDeclaration = new StringBuf();
+				funcDeclaration.add(meta);
+				funcDeclaration.add(f.isStatic ? "static " : "");
+				funcDeclaration.add("func ");
+				funcDeclaration.add(name);
+				funcDeclaration.add("(");
+				if(isWrapper) {
+					funcDeclaration.add(wrapperSelfName);
+					if(args.length > 0) {
+						funcDeclaration.add(",");
+					}
+				}
+				funcDeclaration.add(args.map(compileFunctionArgument).join(", "));
+				funcDeclaration.add("):\n");
+
 				var gdScriptVal = if(f.expr != null) {
+					if(isWrapper) {
+						selfStack.push(wrapperSelfName);
+					}
+
+					// Compile function
 					final result = compileClassFuncExpr(f.expr).tab();
+
+					if(isWrapper) {
+						selfStack.pop();
+					}
+
+					// Use "pass" if function empty
 					if(StringTools.trim(result).length == 0) {
 						"\tpass";
 					} else {
@@ -263,8 +314,10 @@ func _exit_tree():
 				} else {
 					"\tpass";
 				}
+
+				funcDeclaration.add(gdScriptVal);
 				
-				functions.push(funcDeclaration + gdScriptVal);
+				functions.push(funcDeclaration.toString());
 			}
 		}
 
@@ -625,7 +678,12 @@ func _exit_tree():
 			case TString(s): return "\"" + StringTools.replace(StringTools.replace(s, "\\", "\\\\"), "\"", "\\\"") + "\"";
 			case TBool(b): return b ? "true" : "false";
 			case TNull: return "null";
-			case TThis: return "self";
+			case TThis: {
+				if(selfStack.length > 0) {
+					return selfStack[selfStack.length - 1];
+				}
+				return "self";
+			}
 			case TSuper: return "super";
 			case _: {}
 		}
@@ -713,9 +771,21 @@ func _exit_tree():
 		} else {
 			final name = compileVarName(nameMeta.getNameOrNativeName());
 
-			// Check if this is a static variable,
-			// and if so use singleton.
+			var bypassSelf = false;
+
 			switch(fa) {
+				// Check if this is a self.field with BypassWrapper
+				case FInstance(_, _, clsFieldRef): {
+					final isSelfAccess = switch(e.expr) {
+						case TConst(TThis): true;
+						case _: false;
+					}
+					if(isSelfAccess) {
+						bypassSelf = clsFieldRef.get().hasMeta(Meta.BypassWrapper);
+					}
+				}
+
+				// Check if this is a static variable, and if so use singleton.
 				case FStatic(clsRef, cfRef): {
 					final cf = cfRef.get();
 					final className = compileClassName(clsRef.get());
@@ -731,13 +801,16 @@ func _exit_tree():
 						case _:
 					}
 				}
+
+				// Check if this is an enum 
+				// TODO... is this correct??? I wrote this in 2022 but idk how this works??
 				case FEnum(_, enumField): {
 					return "{ \"_index\": " + enumField.index + " }";
 				}
 				case _:
 			}
 
-			final gdExpr = compileExpression(e);
+			final gdExpr = bypassSelf ? "self" : compileExpression(e);
 
 			// Check if we're accessing an anonymous type.
 			// If so, it's a Dictionary in GDScript and .get should be used.
