@@ -22,4 +22,21 @@ enum abstract Meta(String) from String to String {
 		If added to a class, the class will not be loaded by the generated plugin.
 	**/
 	var DontAddToPlugin = ":dontAddToPlugin";
+
+	/**
+		@:wrapper(selfName: String = "_self")
+
+		If added to a class, that class will be treated as a wrapper class. This means
+		instead of using `self`, all instance functions will be provided a `self` replacement
+		argument to use as `self`.
+	**/
+	var Wrapper = ":wrapper";
+
+	/**
+		@:bypass_wrapper
+
+		If used on a field, the effects of `@:wrapper` will be ignored when accessing it.
+	**/
+	var BypassWrapper = ":bypass_wrapper";
+	
 }
