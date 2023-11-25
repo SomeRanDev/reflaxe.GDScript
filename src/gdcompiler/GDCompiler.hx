@@ -323,7 +323,7 @@ func _exit_tree():
 		}
 
 		// @:outputFile(path: String)
-		final path = if(classType.hasMeta(Meta.OutputFile)) {
+		var path = if(classType.hasMeta(Meta.OutputFile)) {
 			final outputFilePath = classType.meta.extractStringFromFirstMeta(Meta.OutputFile);
 			if(outputFilePath == null) {
 				final msg = "@:outputFile requires a String path for the first argument.";
@@ -331,8 +331,12 @@ func _exit_tree():
 			}
 			outputFilePath;
 		} else {
-			// Default name
-			classType.globalName() + ".gd";
+			null;
+		}
+
+		// Default name
+		if(path == null) {
+			path = classType.globalName() + ".gd";
 		}
 
 		// Generate file
