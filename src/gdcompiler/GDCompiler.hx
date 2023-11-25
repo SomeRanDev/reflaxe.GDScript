@@ -321,7 +321,20 @@ func _exit_tree():
 			StringTools.trim(result.toString()) + "\n\n";
 		}
 
-		setExtraFile(classType.globalName() + ".gd", gdscriptContent);
+		// @:outputFile(path: String)
+		final path = if(classType.hasMeta(Meta.OutputFile)) {
+			final outputFilePath = classType.meta.extractStringFromFirstMeta(Meta.OutputFile);
+			if(outputFilePath == null) {
+				Context.error("@:outputFile requires a String path for the first argument.", classType.meta.getFirstPosition(Meta.OutputFile) ?? classType.pos);
+			}
+			outputFilePath;
+		} else {
+			// Default name
+			classType.globalName() + ".gd";
+		}
+
+		// Generate file
+		setExtraFile(path, gdscriptContent);
 
 		return null;
 	}
