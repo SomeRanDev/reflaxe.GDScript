@@ -8,4 +8,11 @@ enum abstract Meta(String) from String to String {
 		This defines a custom path for the type's icon.
 	**/
 	var Icon = ":icon";
+
+	/**
+		@:outputFile(path: String)
+
+		Explicitly sets the output file path for a class.
+	**/
+	var OutputFile = ":outputFile";
 }
