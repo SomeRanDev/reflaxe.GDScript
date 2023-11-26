@@ -253,13 +253,23 @@ func _exit_tree():
 		for(f in funcFields) {
 			final field = f.field;
 			final tfunc = f.tfunc;
+
+			// Let's figure out that name
 			final name = if(field.name == "new") {
 				"_init";
 			} else if(field.hasMeta(":nativeName")) {
 				field.meta.extractStringFromFirstMeta(":nativeName");
 			} else {
-				compileVarName(field.name);
+				final result = compileVarName(field.name);
+				
+				// Prepend "wrap_" to prevent conflicts with virtuals like "_ready" and "_process".
+				if(isWrapper) {
+					"wrap_" + result;
+				} else {
+					result;
+				}
 			}
+
 			final meta = compileMetadata(field.meta, MetadataTarget.ClassField) ?? "";
 
 			if(f.kind == MethDynamic) {
