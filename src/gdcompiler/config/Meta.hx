@@ -38,5 +38,4 @@ enum abstract Meta(String) from String to String {
 		If used on a field, the effects of `@:wrapper` will be ignored when accessing it.
 	**/
 	var BypassWrapper = ":bypass_wrapper";
-	
 }
