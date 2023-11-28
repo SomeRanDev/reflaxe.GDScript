@@ -20,6 +20,7 @@ import reflaxe.helpers.OperatorHelper;
 import gdcompiler.config.Define;
 import gdcompiler.config.Meta;
 
+using reflaxe.helpers.ArrayHelper;
 using reflaxe.helpers.BaseTypeHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
@@ -814,7 +815,12 @@ func _exit_tree():
 
 				// Check if this is an enum 
 				// TODO... is this correct??? I wrote this in 2022 but idk how this works??
-				case FEnum(_, enumField): {
+				case FEnum(enumRef, enumField): {
+					final enumType = enumRef.get();
+					if(enumType.isReflaxeExtern()) {
+						return enumType.getNameOrNative() + "." + enumField.name;
+					}
+
 					return "{ \"_index\": " + enumField.index + " }";
 				}
 				case _:
@@ -901,7 +907,12 @@ func _exit_tree():
 		final ef = switch(e.expr) {
 			case TField(_, fa): {
 				switch(fa) {
-					case FEnum(_, ef): ef;
+					case FEnum(enumRef, ef): {
+						if(enumRef.get().isReflaxeExtern()) {
+							return ef.name;
+						}
+						ef;
+					}
 					case _: null;
 				}
 			}
