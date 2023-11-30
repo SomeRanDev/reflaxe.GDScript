@@ -798,10 +798,11 @@ func _exit_tree():
 
 				// Check if this is a static variable, and if so use singleton.
 				case FStatic(clsRef, cfRef): {
+					final cls = clsRef.get();
 					final cf = cfRef.get();
-					final className = compileClassName(clsRef.get());
+					final className = compileClassName(cls);
 					switch(cf.kind) {
-						case FVar(read, write): {
+						case FVar(_, _) if(!cf.isExtern && !cls.isReflaxeExtern()): {
 							return "HxStaticVars._" + className + "." + name;
 						}
 						case FMethod(kind): {
