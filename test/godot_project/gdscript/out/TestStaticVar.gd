@@ -1,16 +1,16 @@
 class_name TestStaticVar
 
-func _init():
+func _init() -> void:
 	HxStaticVars._TestStaticVar.count += 1
 
-static func test():
+static func test() -> void:
 	HxStaticVars._TestStaticVar.count = 10
 
 	if true:
-		var cond = HxStaticVars._TestStaticVar.count == 10
+		var cond: bool = HxStaticVars._TestStaticVar.count == 10
 		assert(cond, "Test assert failed.")
 
-	var list = []
+	var list: Array = []
 
 	list.push_back(TestStaticVar.new())
 	list.push_back(TestStaticVar.new())
@@ -24,10 +24,10 @@ static func test():
 	list.push_back(TestStaticVar.new())
 
 	if true:
-		var cond = HxStaticVars._TestStaticVar.count == 20
+		var cond: bool = HxStaticVars._TestStaticVar.count == 20
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = HxStaticVars._OtherClass._str.length() == 0
+		var cond: bool = HxStaticVars._OtherClass.str.length() == 0
 		assert(cond, "Test assert failed.")
 
 	HxStaticVars._OtherClass.add.call()
@@ -35,13 +35,13 @@ static func test():
 	HxStaticVars._OtherClass.add.call()
 
 	if true:
-		var cond = HxStaticVars._OtherClass._str.length() == 3
+		var cond: bool = HxStaticVars._OtherClass.str.length() == 3
 		assert(cond, "Test assert failed.")
 
 	OtherClass.clear()
 
 	if true:
-		var cond = HxStaticVars._OtherClass._str.length() == 0
+		var cond: bool = HxStaticVars._OtherClass.str.length() == 0
 		assert(cond, "Test assert failed.")
 
 	var old = HxStaticVars._OtherClass.add
@@ -52,7 +52,7 @@ static func test():
 	HxStaticVars._OtherClass.add.call()
 
 	if true:
-		var cond = HxStaticVars._OtherClass._str == "||"
+		var cond: bool = HxStaticVars._OtherClass.str == "||"
 		assert(cond, "Test assert failed.")
 
 	if (HxStaticVars._OtherClass.add != null):

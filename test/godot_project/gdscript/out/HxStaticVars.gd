@@ -2,14 +2,14 @@ extends Node
 
 var _Log: Dictionary = {
 	"trace": func(v, infos = null):
-	var _str = Log.formatOutput(v, infos)
-	print(_str)
+	var str: String = Log.formatOutput(v, infos)
+	print(str)
 }
 
 var _OtherClass: Dictionary = {
-	"_str": "",
+	"str": "",
 	"add": func():
-	HxStaticVars._OtherClass._str += "|"
+	HxStaticVars._OtherClass.str += "|"
 }
 
 var _TestStaticVar: Dictionary = {

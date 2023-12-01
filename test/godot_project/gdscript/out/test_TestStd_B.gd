@@ -1,5 +1,5 @@
 class_name B
 
-func _init():
+func _init() -> void:
 	pass
 

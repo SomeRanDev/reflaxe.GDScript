@@ -3,19 +3,19 @@ class_name Reflect
 func _init():
 	pass
 
-static func hasField(o, fieldName):
+static func hasField(o, fieldName: String) -> bool:
 	return fieldName in o
 
-static func field(o, fieldName):
+static func field(o, fieldName: String):
 	return o.get(fieldName)
 
-static func setField(o, fieldName, value):
-	if (o is Dictionary):
+static func setField(o, fieldName: String, value) -> void:
+	if ((o as Variant) is Dictionary):
 		o[fieldName] = value
 	else:
 		o.set(fieldName, value)
 
-static func getProperty(o, fieldName):
+static func getProperty(o, fieldName: String):
 	var tempResult
 
 	if ("get_" + fieldName in o):
@@ -25,31 +25,31 @@ static func getProperty(o, fieldName):
 
 	return tempResult
 
-static func setProperty(o, fieldName, value):
+static func setProperty(o, fieldName: String, value) -> void:
 	if ("set_" + fieldName in o):
 		o.get("set_" + fieldName).call(value)
 	else:
 		Reflect.setField(o, fieldName, value)
 
-static func callMethod(o, _func, args):
+static func callMethod(o, _func, args: Array):
 	return _func.callv(args)
 
-static func fields(o):
-	var list = o.get_property_list.call()
-	var result = []
-	var _g = 0
+static func fields(o) -> Array:
+	var list: Array = o.get_property_list.call()
+	var result: Array = []
+	var _g: int = 0
 
 	while (_g < list.size()):
-		var l = list[_g]
+		var l: Dictionary = list[_g]
 		_g += 1
 		result.push_back(l.get("name"))
 
 	return result
 
-static func isFunction(f):
-	return f is Callable
+static func isFunction(f) -> bool:
+	return (f as Variant) is Callable
 
-static func compare(a, b):
+static func compare(a, b) -> int:
 	var tempResult
 
 	if (a < b):
@@ -62,17 +62,17 @@ static func compare(a, b):
 
 	return tempResult
 
-static func compareMethods(f1, f2):
+static func compareMethods(f1, f2) -> bool:
 	return f1 == f2
 
-static func isObject(v):
-	return v is Object
+static func isObject(v) -> bool:
+	return (v as Variant) is Object
 
-static func isEnumValue(v):
-	return v is Dictionary
+static func isEnumValue(v) -> bool:
+	return (v as Variant) is Dictionary
 
-static func deleteField(o, fieldName):
-	var result = fieldName in o
+static func deleteField(o, fieldName: String) -> bool:
+	var result: bool = fieldName in o
 
 	if ((result)):
 		Reflect.setField(o, fieldName, null)
@@ -82,7 +82,7 @@ static func deleteField(o, fieldName):
 static func copy(o):
 	if (o == null):
 		return null
-	if (o is Dictionary):
+	if ((o as Variant) is Dictionary):
 		return o.duplicate()
 
 	assert(false, "Only anonymous structures (Dictionaries) may be used with `Reflect.copy`.")
@@ -91,9 +91,9 @@ static func makeVarArgs(f):
 	return func(args):
 		var tempArray
 		if true:
-			var _g = []
-			var _g1 = 0
-			var _g2 = args
+			var _g: Array = []
+			var _g1: int = 0
+			var _g2: Array = args
 			while (_g1 < _g2.size()):
 				var v = _g2[_g1]
 				_g1 += 1

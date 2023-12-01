@@ -1,6 +1,6 @@
 extends B
 class_name C
 
-func _init():
+func _init() -> void:
 	super()
 

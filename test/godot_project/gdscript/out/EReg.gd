@@ -2,38 +2,42 @@ class_name EReg
 
 var regObj
 
-var regexStr
+var regexStr: String
 
 var m
 
-func _init(r, opt):
+func _init(r: String, opt: String) -> void:
 	self.m = null
 	self.regObj = RegEx.new()
 	self.regexStr = r
 
-func reset():
+func reset() -> void:
 	self.regObj.clear.call()
 	self.regObj.compile.call(self.regexStr)
 
-func match(s):
+func _match(s: String) -> bool:
 	self.reset()
 	self.m = self.regObj.search.call(s)
 
 	return !(!self.m)
 
-func matched(n):
+func matched(n: int) -> String:
 	if (self.m != null):
 		return self.m.get_string.call(n)
 
 	return ""
 
-func matchedLeft():
+func matchedLeft() -> String:
 	assert(false, "EReg.matchedLeft not implemented for GDScript.")
 
-func matchedRight():
+	return ""
+
+func matchedRight() -> String:
 	assert(false, "EReg.matchedRight not implemented for GDScript.")
 
-func matchedPos():
+	return ""
+
+func matchedPos() -> Dictionary:
 	if (self.m == null):
 		return {
 			"pos": -1,
@@ -45,7 +49,7 @@ func matchedPos():
 		"len": self.m.get_end.call() - self.m.get_start.call()
 	}
 
-func matchSub(s, pos, len = -1):
+func matchSub(s: String, pos: int, len: int = -1) -> bool:
 	self.reset()
 
 	var tempNumber
@@ -59,19 +63,19 @@ func matchSub(s, pos, len = -1):
 
 	return !(!self.m)
 
-func split(s):
+func split(s: String) -> Array:
 	if (s == null || s.length() <= 0):
 		return [s]
 
-	var result = []
-	var index = 0
+	var result: Array = []
+	var index: int = 0
 
 	while ((true)):
-		if (self.matchSub(s, index)):
-			var pos = self.matchedPos()
+		if (self.matchSub(s, index, -1)):
+			var pos: Dictionary = self.matchedPos()
 			var tempString
 			if true:
-				var endIndex = pos.get("pos")
+				var endIndex: int = pos.get("pos")
 				if (endIndex < 0):
 					tempString = s.substr(index)
 				else:
@@ -85,7 +89,7 @@ func split(s):
 		else:
 			var tempString1
 			if true:
-				var endIndex = -1
+				var endIndex: int = -1
 				if (endIndex < 0):
 					tempString1 = s.substr(index)
 				else:
@@ -95,12 +99,16 @@ func split(s):
 
 	return result
 
-func replace(s, by):
+func replace(s: String, by: String) -> String:
 	return self.regObj.sub.call(s, by)
 
-func map(s, f):
+func map(s: String, f) -> String:
 	assert(false, "EReg.map not implemented for GDScript.")
 
-static func escape(s):
+	return ""
+
+static func escape(s: String) -> String:
 	assert(false, "EReg.escape not implemented for GDScript.")
+
+	return ""
 

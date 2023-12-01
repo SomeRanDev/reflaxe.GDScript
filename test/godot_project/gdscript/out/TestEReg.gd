@@ -3,31 +3,31 @@ class_name TestEReg
 func _init():
 	pass
 
-static func test():
-	var reg = EReg.new("abc", "")
+static func test() -> void:
+	var reg: EReg = EReg.new("abc", "")
 
 	if true:
-		var cond = reg.match("abcdef")
+		var cond: bool = reg._match("abcdef")
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = reg.matched(0) == "abc"
+		var cond: bool = reg.matched(0) == "abc"
 		assert(cond, "Test assert failed.")
 
-	var pos = reg.matchedPos()
+	var pos: Dictionary = reg.matchedPos()
 
 	if true:
-		var cond = pos.get("pos") == 0
+		var cond: bool = pos.get("pos") == 0
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = pos.get("len") == 3
+		var cond: bool = pos.get("len") == 3
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = EReg.new("abc", "").matchSub("abcabc", 1)
+		var cond: bool = EReg.new("abc", "").matchSub("abcabc", 1, -1)
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = EReg.new("\\s*,\\s*", "").split("one,two ,three, four") == ["one", "two", "three", "four"]
+		var cond: bool = EReg.new("\\s*,\\s*", "").split("one,two ,three, four") == ["one", "two", "three", "four"]
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = reg.replace("123abc", "456") == "123456"
+		var cond: bool = reg.replace("123abc", "456") == "123456"
 		assert(cond, "Test assert failed.")
 

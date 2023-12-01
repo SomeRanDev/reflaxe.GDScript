@@ -3,7 +3,7 @@ class_name StringTools
 func _init():
 	pass
 
-static func startsWith(s, start):
+static func startsWith(s: String, start: String) -> bool:
 	var tempLeft
 
 	if (0 < 0):
@@ -11,7 +11,7 @@ static func startsWith(s, start):
 	else:
 		var tempString
 		if true:
-			var endIndex = 0 + s.length()
+			var endIndex: int = 0 + s.length()
 			if (endIndex < 0):
 				tempString = s.substr(0)
 			else:

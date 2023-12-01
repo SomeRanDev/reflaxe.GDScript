@@ -1,12 +1,12 @@
 class_name TestSyntax
 
-var testField
+var testField: int
 
-func _init():
+func _init() -> void:
 	self.testField = 123
 	assert(self.testField == 123, "Test assert failed.")
 
-static func test():
+static func test() -> void:
 	assert(true, "Test assert failed.")
 	assert(!false, "Test assert failed.")
 	assert(1 + 1 == 2, "Test assert failed.")
@@ -18,22 +18,22 @@ static func test():
 
 	assert(myNull == null, "Test assert failed.")
 
-	var obj = TestSyntax.new()
+	var obj: TestSyntax = TestSyntax.new()
 
 	assert(obj == obj, "Test assert failed.")
 
 	if true:
-		var cond = obj.testField == 123
+		var cond: bool = obj.testField == 123
 		assert(cond, "Test assert failed.")
 
-	var _str = "World"
+	var str: String = "World"
 
-	_str = "Hello, " + _str
-	_str += "!"
-	assert(_str == "Hello, World!", "Test assert failed.")
+	str = "Hello, " + str
+	str += "!"
+	assert(str == "Hello, World!", "Test assert failed.")
 
-	if (_str != "Goodbye World!"):
-		var num = 3
+	if (str != "Goodbye World!"):
+		var num: int = 3
 		assert(num > 1, "Test assert failed.")
 		assert(num >= 3 && num >= 2, "Test assert failed.")
 		assert(num == 3, "Test assert failed.")
@@ -42,7 +42,7 @@ static func test():
 	else:
 		assert(false, "Test assert failed.")
 
-	var num = 3
+	var num: int = 3
 
 	assert((num & 1) == 1, "Test assert failed.")
 	assert((num & 4) == 0, "Test assert failed.")
@@ -57,32 +57,32 @@ static func test():
 	}
 
 	if true:
-		var cond = dict.hey == "Hey"
+		var cond: bool = dict.hey == "Hey"
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = dict.number == 3
+		var cond: bool = dict.number == 3
 		assert(cond, "Test assert failed.")
 
 	dict.pokemon = "Pikachu"
 
 	if true:
-		var cond = dict.pokemon == "Pikachu"
+		var cond: bool = dict.pokemon == "Pikachu"
 		assert(cond, "Test assert failed.")
 
-	var arr_0 = 1
-	var arr_1 = 2
-	var arr_2 = 3
+	var arr_0: int = 1
+	var arr_1: int = 2
+	var arr_2: int = 3
 
 	assert(arr_1 == 2, "Test assert failed.")
 
 	if true:
-		var cond = 3 == 3
+		var cond: bool = 3 == 3
 		assert(cond, "Test assert failed.")
 
-	var arr2 = []
-	var bool = true
+	var arr2: Array = []
+	var _bool: bool = true
 
-	assert(bool, "Test assert failed.")
+	assert(_bool, "Test assert failed.")
 
 	var mutNum = [1000]
 
@@ -94,21 +94,21 @@ static func test():
 		if true:
 			mutNum[0] += 1
 			tempLeft = mutNum[0] - 1
-		var cond = tempLeft == 1002
+		var cond: bool = tempLeft == 1002
 		assert(cond, "Test assert failed.")
 	if true:
 		var tempLeft1
 		if true:
 			mutNum[0] -= 1
 			tempLeft1 = mutNum[0]
-		var cond = tempLeft1 == 1002
+		var cond: bool = tempLeft1 == 1002
 		assert(cond, "Test assert failed.")
 	if true:
 		var tempLeft2
 		if true:
 			mutNum[0] -= 1
 			tempLeft2 = mutNum[0]
-		var cond = tempLeft2 == 1001
+		var cond: bool = tempLeft2 == 1001
 		assert(cond, "Test assert failed.")
 
 	assert(mutNum[0] == 1001, "Test assert failed.")
@@ -120,9 +120,9 @@ static func test():
 	myFunc.call()
 	assert(mutNum[0] == 1003, "Test assert failed.")
 
-	var a = 2
-	var tempNumber = a * a
-	var blockVal = tempNumber
+	var a: int = 2
+	var tempNumber: int = a * a
+	var blockVal: int = tempNumber
 
 	assert(blockVal == 4, "Test assert failed.")
 
@@ -131,7 +131,7 @@ static func test():
 	else:
 		assert(false, "Test assert failed.")
 
-	var i = 0
+	var i: int = 0
 
 	while true:
 		var tempLeft3
@@ -142,7 +142,7 @@ static func test():
 		if (i == 800):
 			assert(i / 80 == 10, "Test assert failed.")
 
-	var j = 0
+	var j: int = 0
 
 	while true:
 		var tempRight
@@ -153,8 +153,8 @@ static func test():
 		assert(true, "Test assert failed.")
 		j += 1
 
-	var anotherNum = 3
-	var anotherNum2 = anotherNum
+	var anotherNum: int = 3
+	var anotherNum2: int = anotherNum
 
 	assert(anotherNum == anotherNum2, "Test assert failed.")
 	anotherNum += 10

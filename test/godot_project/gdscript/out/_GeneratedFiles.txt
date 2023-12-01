@@ -1,3 +1,5 @@
+version // 1
+0//1
 test_TestStd_C.gd
 test_TestStd_B.gd
 test_TestStd_A.gd
@@ -13,6 +15,7 @@ TestMeta.gd
 TestMath.gd
 TestEnum.gd
 TestEReg.gd
+TestClass.gd
 TestArray.gd
 TestAll.gd
 StringTools.gd

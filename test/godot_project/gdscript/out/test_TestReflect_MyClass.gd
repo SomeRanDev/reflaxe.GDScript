@@ -1,14 +1,14 @@
 class_name MyClass
 
-var internalProp
+var internalProp: int
 
-func _init():
+func _init() -> void:
 	self.internalProp = 1
 
-func get_myProp():
+func get_myProp() -> int:
 	return self.internalProp
 
-func set_myProp(v):
+func set_myProp(v: int) -> int:
 	self.internalProp = v
 
 	return self.internalProp

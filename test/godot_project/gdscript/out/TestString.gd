@@ -3,65 +3,65 @@ class_name TestString
 func _init():
 	pass
 
-static func test():
-	var _str = "Test"
+static func test() -> void:
+	var str: String = "Test"
 
-	assert(_str == "Test", "Test assert failed.")
+	assert(str == "Test", "Test assert failed.")
 
 	if true:
-		var cond = _str.length() == 4
+		var cond: bool = str.length() == 4
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = _str == "Test"
+		var cond: bool = str == "Test"
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = char(70) == "F"
+		var cond: bool = char(70) == "F"
 		assert(cond, "Test assert failed.")
 	if true:
 		var tempLeft
-		if (1 >= 0 && 1 < _str.length()):
-			tempLeft = _str.unicode_at(1)
+		if (1 >= 0 && 1 < str.length()):
+			tempLeft = str.unicode_at(1)
 		else:
 			tempLeft = null
-		var cond = tempLeft == 101
+		var cond: bool = tempLeft == 101
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = _str.find("es") == 1
+		var cond: bool = str.find("es") == 1
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = _str.find("Hey") == -1
+		var cond: bool = str.find("Hey") == -1
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = _str.find("Te", 2) == -1
+		var cond: bool = str.find("Te", 2) == -1
 		assert(cond, "Test assert failed.")
 	if true:
 		var tempLeft1
 		if true:
-			var startIndex = -1
+			var startIndex: int = -1
 			if (startIndex < 0):
-				tempLeft1 = _str.rfind("Te")
+				tempLeft1 = str.rfind("Te")
 			else:
 				var tempString
 				if true:
-					var endIndex = startIndex + _str.length()
+					var endIndex: int = startIndex + str.length()
 					if (endIndex < 0):
-						tempString = _str.substr(0)
+						tempString = str.substr(0)
 					else:
-						tempString = _str.substr(0, endIndex - 0)
+						tempString = str.substr(0, endIndex - 0)
 				tempLeft1 = tempString.rfind("Te")
-		var cond = tempLeft1 == 0
+		var cond: bool = tempLeft1 == 0
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = Array(_str.split("s"))[0] == "Te"
+		var cond: bool = Array(str.split("s"))[0] == "Te"
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = Array(_str.split("e")).size() == 2
+		var cond: bool = Array(str.split("e")).size() == 2
 		assert(cond, "Test assert failed.")
 
-	var str2 = "Hello, World!"
+	var str2: String = "Hello, World!"
 
 	if true:
-		var cond = str2.substr(7, 5) == "World"
+		var cond: bool = str2.substr(7, 5) == "World"
 		assert(cond, "Test assert failed.")
 	if true:
 		var tempLeft2
@@ -69,12 +69,12 @@ static func test():
 			tempLeft2 = str2.substr(7)
 		else:
 			tempLeft2 = str2.substr(7, 12 - 7)
-		var cond = tempLeft2 == "World"
+		var cond: bool = tempLeft2 == "World"
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = str2.to_lower() == "hello, world!"
+		var cond: bool = str2.to_lower() == "hello, world!"
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond = str2.to_upper() == "HELLO, WORLD!"
+		var cond: bool = str2.to_upper() == "HELLO, WORLD!"
 		assert(cond, "Test assert failed.")
 

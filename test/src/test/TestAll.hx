@@ -13,6 +13,7 @@ class TestAll {
 		TestSys.test();
 		TestEReg.test();
 		TestReflect.test();
+		TestClass.test();
 
 		trace("Tests successful!!");
 	}
