@@ -30,10 +30,12 @@ class EReg {
 
 	public function matchedLeft(): String {
 		throw "EReg.matchedLeft not implemented for GDScript.";
+		return "";
 	}
 
 	public function matchedRight(): String {
 		throw "EReg.matchedRight not implemented for GDScript.";
+		return "";
 	}
 
 	public function matchedPos(): { pos: Int, len: Int } {
@@ -90,9 +92,11 @@ class EReg {
 
 	public function map(s: String, f: (EReg)->String): String {
 		throw "EReg.map not implemented for GDScript.";
+		return "";
 	}
 
 	public static function escape(s: String): String {
 		throw "EReg.escape not implemented for GDScript.";
+		return "";
 	}
 }

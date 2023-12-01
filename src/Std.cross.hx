@@ -4,7 +4,7 @@ extern class Std {
 	@:deprecated('Std.is is deprecated. Use Std.isOfType instead.')
 	@:runtime public inline static function is(v: Dynamic, t: Dynamic): Bool return isOfType(v, t);
 
-	@:nativeFunctionCode("({arg0} is {arg1})")
+	@:nativeFunctionCode("(({arg0} as Variant) is {arg1})")
 	public static function isOfType(v: Dynamic, t: Dynamic): Bool;
 
 	@:deprecated('Std.instance() is deprecated. Use Std.downcast() instead.')

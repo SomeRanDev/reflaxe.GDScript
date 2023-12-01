@@ -49,7 +49,7 @@ class Reflect {
 	}
 
 	@:runtime public inline static function isFunction(f: Dynamic): Bool {
-		return untyped __gdscript__("{0} is Callable", f);
+		return untyped __gdscript__("({0} as Variant) is Callable", f);
 	}
 
 	public static function compare<T>(a: T, b: T): Int {
@@ -67,11 +67,11 @@ class Reflect {
 	}
 
 	@:runtime public inline static function isObject(v: Dynamic): Bool {
-		return untyped __gdscript__("{0} is Object", v);
+		return untyped __gdscript__("({0} as Variant) is Object", v);
 	}
 
 	@:runtime public inline static function isEnumValue(v: Dynamic): Bool {
-		return untyped __gdscript__("{0} is Dictionary", v);
+		return untyped __gdscript__("({0} as Variant) is Dictionary", v);
 	}
 
 	public static function deleteField(o: Dynamic, fieldName: String): Bool {

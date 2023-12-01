@@ -86,7 +86,9 @@ class GDCompilerInit {
 		"if", "elif", "else", "for", "while", "match", "break", "continue", "pass",
 		"return", "class", "class_name", "extends", "is", "in", "as", "self", "signal",
 		"func", "static", "const", "enum", "var", "breakpoint", "load", "preload",
-		"await", "yield", "assert", "void", "PI", "TAU", "INF", "NAN"
+		"await", "yield", "assert", "void", "PI", "TAU", "INF", "NAN",
+
+		"void", "bool", "int", "float"
 	];
 	static function reservedNames() {
 		return _reservedNames;
