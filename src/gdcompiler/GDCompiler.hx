@@ -22,6 +22,7 @@ import gdcompiler.config.Meta;
 
 using reflaxe.helpers.ArrayHelper;
 using reflaxe.helpers.BaseTypeHelper;
+using reflaxe.helpers.ClassFieldHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
 using reflaxe.helpers.NullableMetaAccessHelper;
@@ -496,13 +497,23 @@ func _exit_tree():
 					final code = switch(e.expr) {
 						case TField(_, fa): {
 							switch(fa) {
-								case FEnum(_, ef): {
+								// enum field access
+								case FEnum(_, _): {
 									final enumCall = compileEnumFieldCall(e, el);
 									if(enumCall != null) enumCall;
 									else null;
 								}
+								// @:constructor static function
 								case FStatic(classTypeRef, _.get() => cf) if(cf.meta.maybeHas(":constructor")): {
 									newToGDScript(classTypeRef, expr, el);
+								}
+								// Replace pad nulls with default values
+								case FInstance(clsRef, _, cfRef) | FStatic(clsRef, cfRef): {
+									final funcData = cfRef.get().findFuncData(clsRef.get());
+									if(funcData != null) {
+										el = funcData.replacePadNullsWithDefaults(el, ":default_value", generateInjectionExpression);
+									}
+									null;
 								}
 								case _: null;
 							}
