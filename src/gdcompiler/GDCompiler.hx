@@ -20,6 +20,8 @@ import reflaxe.helpers.OperatorHelper;
 import gdcompiler.config.Define;
 import gdcompiler.config.Meta;
 
+import gdcompiler.subcompilers.TypeCompiler;
+
 using reflaxe.helpers.ArrayHelper;
 using reflaxe.helpers.BaseTypeHelper;
 using reflaxe.helpers.ClassFieldHelper;
@@ -34,6 +36,11 @@ using reflaxe.helpers.TypedExprHelper;
 using reflaxe.helpers.TypeHelper;
 
 class GDCompiler extends reflaxe.DirectToStringCompiler {
+	/**
+		Type compiler.
+	**/
+	var TComp: TypeCompiler;
+
 	/**
 		Keeps track of all the classes that extend from `godot.Node`.
 		Important for plugin generation.
@@ -51,6 +58,12 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		If empty, "self" will be used.
 	**/
 	var selfStack: Array<String> = [];
+
+	public function new() {
+		super();
+
+		TComp = new TypeCompiler(this);
+	}
 
 	/**
 		Runs at the start of compilation.
@@ -177,10 +190,6 @@ func _exit_tree():
 		return extendsFrom(t, ":is_resource");
 	}
 
-	function compileClassName(classType: ClassType): String {
-		return classType.getNameOrNativeName();
-	}
-
 	public function compileClassImpl(classType: ClassType, varFields: Array<ClassVarData>, funcFields: Array<ClassFuncData>): Null<String> {
 		final variables = [];
 		final functions = [];
@@ -208,10 +217,10 @@ func _exit_tree():
 		if(isWrapper) { // Wrapper only exists to host code, should not be treated like node itself
 			header.add("extends Object\n");
 		} else if(classType.superClass != null) {
-			header.add("extends " + compileClassName(classType.superClass.t.get()) + "\n");
+			header.add("extends " + TComp.compileClassName(classType.superClass.t.get()) + "\n");
 		}
 
-		header.add("class_name " + compileClassName(classType) + "\n\n");
+		header.add("class_name " + TComp.compileClassName(classType) + "\n\n");
 
 		// instance vars
 		for(v in varFields) {
@@ -221,11 +230,7 @@ func _exit_tree():
 				continue;
 			}
 
-			final varName = if(field.hasMeta(":nativeName")) {
-				field.meta.extractStringFromFirstMeta(":nativeName");
-			} else {
-				compileVarName(field.name, null, field);
-			}
+			final varName: String = field.meta.extractStringFromFirstMeta(":nativeName") ?? compileVarName(field.name, null, field);
 
 			final e = field.expr();
 			final gdScriptVal = if(e != null) {
@@ -239,14 +244,27 @@ func _exit_tree():
 				final meta = compileMetadata(field.meta, MetadataTarget.ClassField);
 
 				//:onready
-				final meta = if(field.meta.has(":onready") && isGodotNode(classType)) {
+				final meta: String = if(field.meta.has(":onready") && isGodotNode(classType)) {
 					"@onready " + (meta ?? "");
 				} else {
-					meta;
+					meta ?? "";
 				}
 
-				final decl = meta + "var " + varName + (gdScriptVal.length == 0 ? "" : (" = " + gdScriptVal));
-				variables.push(decl);
+				final declBuffer = new StringBuf();
+				declBuffer.addMulti(meta, "var ", varName);
+
+				#if !gdscript_untyped
+				final compiledType = TComp.compileType(v.field.type, v.field.pos);
+				if(compiledType != null) {
+					declBuffer.addMulti(": ", compiledType.trustMe());
+				}
+				#end
+
+				if(gdScriptVal.length > 0) {
+					declBuffer.addMulti(" = ", gdScriptVal);
+				}
+
+				variables.push(declBuffer.toString());
 			}
 		}
 
@@ -256,16 +274,22 @@ func _exit_tree():
 			final tfunc = f.tfunc;
 
 			// Let's figure out that name
-			final name = if(field.name == "new") {
+			final name: String = if(field.name == "new") {
 				"_init";
-			} else if(field.hasMeta(":nativeName")) {
-				field.meta.extractStringFromFirstMeta(":nativeName");
 			} else {
-				final result = compileVarName(field.name);
-				
-				// Prepend "wrap_" to prevent conflicts with virtuals like "_ready" and "_process".
-				if(isWrapper) {
-					"wrap_" + result;
+				var result = null;
+				if(field.hasMeta(":nativeName")) {
+					result = field.meta.extractStringFromFirstMeta(":nativeName");
+				}
+				if(result == null) {
+					final varName = compileVarName(field.name);
+					
+					// Prepend "wrap_" to prevent conflicts with virtuals like "_ready" and "_process".
+					if(isWrapper) {
+						"wrap_" + varName;
+					} else {
+						varName;
+					}
 				} else {
 					result;
 				}
@@ -301,8 +325,17 @@ func _exit_tree():
 						funcDeclaration.add(",");
 					}
 				}
-				funcDeclaration.add(args.map(compileFunctionArgument).join(", "));
-				funcDeclaration.add("):\n");
+				funcDeclaration.add(args.map(a -> compileFunctionArgument(a, field.pos)).join(", "));
+				funcDeclaration.add(")");
+
+				#if !gdscript_untyped
+				final returnType = TComp.compileType(f.ret, field.pos);
+				if(returnType != null) {
+					funcDeclaration.addMulti(" -> ", returnType);
+				}
+				#end
+
+				funcDeclaration.add(":\n");
 
 				var gdScriptVal = if(f.expr != null) {
 					if(isWrapper) {
@@ -411,12 +444,22 @@ func _exit_tree():
 		return null;
 	}
 
-	function compileFunctionArgument(arg: { v: TVar, value: Null<TypedExpr> }) {
-		var result = compileVarName(arg.v.name);
-		if(arg.value != null) {
-			result += " = " + compileExpression(arg.value);
+	function compileFunctionArgument(arg: { v: TVar, value: Null<TypedExpr> }, pos: Position) {
+		final result = new StringBuf();
+		result.add(compileVarName(arg.v.name));
+		
+		#if !gdscript_untyped
+		final type = TComp.compileType(arg.v.t, pos);
+		if(type != null) {
+			result.addMulti(": ", type);
 		}
-		return result;
+		#end
+
+		if(arg.value != null) {
+			result.addMulti(" = ", compileExpression(arg.value));
+		}
+
+		return result.toString();
 	}
 
 	function getNativeMetaString(metaAccess: Null<MetaAccess>) {
@@ -459,7 +502,7 @@ func _exit_tree():
 				result.add(fieldAccessToGDScript(e, fa));
 			}
 			case TTypeExpr(m): {
-				result.add(moduleNameToGDScript(m));
+				result.add(TComp.compileModuleType(m));
 			}
 			case TParenthesis(e): {
 				final gdScript = compileExpressionOrError(e);
@@ -543,8 +586,12 @@ func _exit_tree():
 			}
 			case TFunction(tfunc): {
 				result.add("func(");
-				result.add(tfunc.args.map(compileFunctionArgument).join(", "));
-				result.add("):\n");
+				result.add(tfunc.args.map(a -> compileFunctionArgument(a, expr.pos)).join(", "));
+				result.add(")");
+
+				// TODO: Return type.
+
+				result.add(":\n");
 				result.add(toIndentedScope(tfunc.expr));
 			}
 			case TVar(tvar, maybeExpr): {
@@ -555,6 +602,13 @@ func _exit_tree():
 					if(tvar.meta.maybeHas(":arrayWrap")) {
 						result.addMulti(" = [", e, "]");	
 					} else {
+						#if !gdscript_untyped
+						final compiledType = TComp.compileType(tvar.t, expr.pos);
+						if(compiledType != null) {
+							result.addMulti(": ", compiledType);
+						}
+						#end
+
 						result.addMulti(" = ", e);
 					}
 				}
@@ -642,7 +696,7 @@ func _exit_tree():
 				}
 				result.add(compileExpressionOrError(expr));
 				if(hasModuleType) {
-					result.addMulti(" as ", moduleNameToGDScript(maybeModuleType.trustMe()), ")");
+					result.addMulti(" as ", TComp.compileModuleType(maybeModuleType.trustMe()), ")");
 				}
 			}
 			case TMeta(metadataEntry, expr): {
@@ -741,7 +795,7 @@ func _exit_tree():
 				native + "(" + args + ")";
 			} else {
 				final cls = classTypeRef.get();
-				final className = compileClassName(cls);
+				final className = TComp.compileClassName(cls);
 				final meta = cls.meta.maybeExtract(":bindings_api_type");
 
 				// Check for @:bindings_api_type("builtin_classes") metadata
@@ -810,7 +864,7 @@ func _exit_tree():
 				case FStatic(clsRef, cfRef): {
 					final cls = clsRef.get();
 					final cf = cfRef.get();
-					final className = compileClassName(cls);
+					final className = TComp.compileClassName(cls);
 					switch(cf.kind) {
 						case FVar(_, _) if(!cf.isExtern && !cls.isReflaxeExtern()): {
 							return "HxStaticVars._" + className + "." + name;
@@ -852,42 +906,7 @@ func _exit_tree():
 		}
 	}
 
-	function moduleNameToGDScript(m: ModuleType): String {
-		return switch(m) {
-			case TClassDecl(clsRef): compileClassName(clsRef.get());
-			case _: m.getNameOrNative();
-		}
-	}
-
-	function typeNameToGDScript(t: Type, errorPos: Position): String {
-		switch(t) {
-			case TInst(clsRef, _): {
-				final cls = clsRef.get();
-				return cls.pack.joinAppend(".") + cls.getNameOrNativeName();
-			}
-			case _:
-		}
-
-		// Old behavior
-		// TODO: Phase this out...
-		final ct = haxe.macro.TypeTools.toComplexType(t);
-		final typeName = switch(ct) {
-			case TPath(typePath): {
-				// copy TypePath and ignore "params" since GDScript is typeless
-				haxe.macro.ComplexTypeTools.toString(TPath({
-					name: typePath.name,
-					pack: typePath.pack,
-					sub: typePath.sub,
-					params: null
-				}));
-			}
-			case _: null;
-		}
-		if(typeName == null) {
-			return Context.error("Incomplete Feature: Cannot convert this type to GDScript at the moment.", errorPos);
-		}
-		return typeName;
-	}
+	
 
 	/**
 		In GDScript, a Callable is called differently from a function.
