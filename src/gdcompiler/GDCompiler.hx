@@ -853,14 +853,23 @@ func _exit_tree():
 	}
 
 	function moduleNameToGDScript(m: ModuleType): String {
-		switch(m) {
+		return switch(m) {
 			case TClassDecl(clsRef): compileClassName(clsRef.get());
-			case _:
+			case _: m.getNameOrNative();
 		}
-		return m.getNameOrNative();
 	}
 
 	function typeNameToGDScript(t: Type, errorPos: Position): String {
+		switch(t) {
+			case TInst(clsRef, _): {
+				final cls = clsRef.get();
+				return cls.pack.joinAppend(".") + cls.getNameOrNativeName();
+			}
+			case _:
+		}
+
+		// Old behavior
+		// TODO: Phase this out...
 		final ct = haxe.macro.TypeTools.toComplexType(t);
 		final typeName = switch(ct) {
 			case TPath(typePath): {
