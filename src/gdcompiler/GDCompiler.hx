@@ -178,8 +178,7 @@ func _exit_tree():
 	}
 
 	function compileClassName(classType: ClassType): String {
-		//if(classType.has)
-		return classType.getNameOrNative();
+		return classType.getNameOrNativeName();
 	}
 
 	public function compileClassImpl(classType: ClassType, varFields: Array<ClassVarData>, funcFields: Array<ClassFuncData>): Null<String> {
