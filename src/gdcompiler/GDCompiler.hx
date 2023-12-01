@@ -456,7 +456,10 @@ func _exit_tree():
 		#end
 
 		if(arg.value != null) {
-			result.addMulti(" = ", compileExpression(arg.value));
+			final valueCode = compileExpression(arg.value);
+			if(valueCode != null) {
+				result.addMulti(" = ", valueCode);
+			}
 		}
 
 		return result.toString();
