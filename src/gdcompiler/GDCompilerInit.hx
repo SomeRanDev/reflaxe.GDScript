@@ -88,7 +88,10 @@ class GDCompilerInit {
 		"func", "static", "const", "enum", "var", "breakpoint", "load", "preload",
 		"await", "yield", "assert", "void", "PI", "TAU", "INF", "NAN",
 
-		"void", "bool", "int", "float"
+		"void", "bool", "int", "float", 
+
+		// Reserved for @:wrapper argument
+		"_self"
 	];
 	static function reservedNames() {
 		return _reservedNames;
