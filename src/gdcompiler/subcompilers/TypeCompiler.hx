@@ -5,6 +5,7 @@ import gdcompiler.GDCompiler;
 import reflaxe.helpers.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import haxe.macro.TypeTools;
 
 using reflaxe.helpers.ArrayHelper;
 using reflaxe.helpers.BaseTypeHelper;
@@ -44,8 +45,10 @@ class TypeCompiler {
 	public function compileType(t: Type, errorPos: Position): Null<String> {
 		switch(t) {
 			case TAbstract(absRef, params): {
-				return if(params.length == 0) {
-					switch(absRef.get().name) {
+				final abs = absRef.get();
+
+				final primitiveResult = if(params.length == 0) {
+					switch(abs.name) {
 						case "Void": "void";
 						case "Int": "int";
 						case "Float":"float";
@@ -56,6 +59,28 @@ class TypeCompiler {
 					}
 				} else {
 					null;
+				}
+
+				if(primitiveResult != null) {
+					return primitiveResult;
+				}
+
+				// Compile internal type for Abstract
+				final absType = abs.type;
+
+				// Apply type parameters to figure out internal type.
+				final internalType = #if macro {
+					TypeTools.applyTypeParameters(absType, abs.params, params);
+				} #else absType #end;
+
+				// If Null<T>, must be Variant since built-in types cannot be assigned `null`.
+				if(internalType.isNull()) {
+					return null;
+				}
+
+				// Prevent recursion...
+				if(!internalType.equals(t)) {
+					return compileType(internalType, errorPos);
 				}
 			}
 
@@ -69,8 +94,6 @@ class TypeCompiler {
 			case TType(defRef, _): return compileType(defRef.get().type, errorPos);
 			case _:
 		}
-
-		trace(t);
 
 		// Old behavior
 		// TODO: Phase this out...
