@@ -556,7 +556,7 @@ func _exit_tree():
 								case FInstance(clsRef, _, cfRef) | FStatic(clsRef, cfRef): {
 									final funcData = cfRef.get().findFuncData(clsRef.get());
 									if(funcData != null) {
-										el = funcData.replacePadNullsWithDefaults(el, ":default_value", generateInjectionExpression);
+										el = funcData.replacePadNullsWithDefaults(el, ":noNullPad", generateInjectionExpression);
 									}
 									null;
 								}
