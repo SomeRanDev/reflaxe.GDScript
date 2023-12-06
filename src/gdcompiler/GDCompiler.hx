@@ -666,10 +666,37 @@ func _exit_tree():
 				}
 			}
 			case TSwitch(e, cases, edef): {
+				// Check if this is a switch on an extern enum...
+				final externEnumType = switch(e.unwrapParenthesis().expr) {
+					case TEnumIndex(e1): {
+						switch(e1.t) {
+							case TEnum(_.get() => e, _) if(e.isReflaxeExtern()): e;
+							case _: null;
+						}
+					}
+					case _: null;
+				}
+
 				result.addMulti("match ", compileExpressionOrError(e), ":");
 				for(c in cases) {
 					result.add("\n\t");
-					result.add(c.values.map(v -> compileExpression(v)).join(", "));
+					result.add(c.values.map(function(v: TypedExpr) {
+						// If the switch expression is an extern enum,
+						// convert the "Haxe" enum indexes to the name.
+						//
+						// This is because the Haxe indexes do not match the
+						// number values for the Godot extern enums.
+						if(externEnumType != null) {
+							switch(v.expr) {
+								case TConst(TInt(index)): {
+									return externEnumType.names[index];
+								}
+								case _:
+							}
+						}
+
+						return compileExpression(v);
+					}).join(", "));
 					result.add(":\n");
 					result.add(toIndentedScope(c.expr).toString().tab());
 				}
@@ -724,7 +751,20 @@ func _exit_tree():
 				}
 			}
 			case TEnumIndex(expr): {
-				result.addMulti(compileExpressionOrError(expr), "._index");
+				final isExtern = switch(expr.t) {
+					case TEnum(_.get() => e, _): e.isReflaxeExtern();
+					case _: false;
+				}
+
+				if(isExtern) {
+					result.add("((");
+				}
+				result.add(compileExpressionOrError(expr));
+				if(isExtern) {
+					result.add(" as Variant) as int)");
+				} else {
+					result.add("._index");
+				}
 			}
 		}
 		return result.toString();
