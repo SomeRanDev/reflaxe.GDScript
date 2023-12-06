@@ -695,7 +695,7 @@ func _exit_tree():
 							}
 						}
 
-						return compileExpression(v);
+						return compileExpressionOrError(v);
 					}).join(", "));
 					result.add(":\n");
 					result.add(toIndentedScope(c.expr).toString().tab());
