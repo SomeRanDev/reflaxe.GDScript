@@ -220,7 +220,14 @@ func _exit_tree():
 			header.add("extends " + TComp.compileClassName(classType.superClass.t.get()) + "\n");
 		}
 
-		header.add("class_name " + TComp.compileClassName(classType) + "\n\n");
+		header.addMulti("class_name ", TComp.compileClassName(classType));
+
+		// Add "_GD" to the end of class name for wrapper classes.
+		if(isWrapper) {
+			header.add("_GD");
+		}
+
+		header.add("\n\n");
 
 		// instance vars
 		for(v in varFields) {
