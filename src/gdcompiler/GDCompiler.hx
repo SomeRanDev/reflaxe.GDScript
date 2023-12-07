@@ -512,7 +512,7 @@ func _exit_tree():
 				result.add(fieldAccessToGDScript(e, fa));
 			}
 			case TTypeExpr(m): {
-				result.add(TComp.compileModuleType(m));
+				result.add(TComp.compileType(TypeHelper.fromModuleType(m), expr.pos));
 			}
 			case TParenthesis(e): {
 				final gdScript = compileExpressionOrError(e);
@@ -733,10 +733,10 @@ func _exit_tree():
 				}
 				result.add(compileExpressionOrError(expr));
 				if(hasModuleType) {
-					result.addMulti(" as ", TComp.compileModuleType(maybeModuleType.trustMe()), ")");
+					result.addMulti(" as ", TComp.compileType(TypeHelper.fromModuleType(maybeModuleType.trustMe()), expr.pos), ")");
 				}
 			}
-			case TMeta(metadataEntry, expr): {
+			case TMeta(_, expr): {
 				result.add(compileExpressionOrError(expr));
 			}
 			case TEnumParameter(expr, enumField, index): {
