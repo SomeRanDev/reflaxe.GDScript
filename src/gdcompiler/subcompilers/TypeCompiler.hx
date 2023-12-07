@@ -25,7 +25,7 @@ class TypeCompiler {
 		return classType.getNameOrNativeName();
 	}
 
-	public function compileModuleType(m: ModuleType): String {
+	function compileModuleType(m: ModuleType): String {
 		return switch(m) {
 			case TClassDecl(clsRef): {
 				compileClassName(clsRef.get());
