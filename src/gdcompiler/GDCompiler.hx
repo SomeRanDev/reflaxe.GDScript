@@ -733,7 +733,8 @@ func _exit_tree():
 				}
 				result.add(compileExpressionOrError(expr));
 				if(hasModuleType) {
-					result.addMulti(" as ", TComp.compileType(TypeHelper.fromModuleType(maybeModuleType.trustMe()), expr.pos), ")");
+					final typeCode = TComp.compileType(TypeHelper.fromModuleType(maybeModuleType.trustMe()), expr.pos);
+					result.addMulti(" as ", typeCode ?? "Variant", ")");
 				}
 			}
 			case TMeta(_, expr): {
