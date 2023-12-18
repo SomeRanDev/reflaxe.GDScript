@@ -29,8 +29,19 @@ enum abstract Meta(String) from String to String {
 		If added to a class, that class will be treated as a wrapper class. This means
 		instead of using `self`, all instance functions will be provided a `self` replacement
 		argument to use as `self`.
+
+		Class variables will still be implemented entirely in GDScript.
 	**/
 	var Wrapper = ":wrapper";
+
+	/**
+		@:wrapPublicOnly
+
+		If added to a class with `@:wrapper`, this will make it so only public function are
+		"wrapped". Private functions will be generated and called entirely within
+		GDScript.
+	**/
+	var WrapPublicOnly = ":wrapPublicOnly";
 
 	/**
 		@:bypass_wrapper
