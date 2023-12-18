@@ -79,13 +79,11 @@ class GDCompilerInit {
 	/**
 		List of reserved words found here:
 		https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html
-
-		Added "load" manually? Maybe should remove?
 	**/
 	static var _reservedNames = [
 		"if", "elif", "else", "for", "while", "match", "break", "continue", "pass",
 		"return", "class", "class_name", "extends", "is", "in", "as", "self", "signal",
-		"func", "static", "const", "enum", "var", "breakpoint", "load", "preload",
+		"func", "static", "const", "enum", "var", "breakpoint", "preload",
 		"await", "yield", "assert", "void", "PI", "TAU", "INF", "NAN",
 
 		"void", "bool", "int", "float", 

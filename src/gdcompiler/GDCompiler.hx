@@ -57,7 +57,7 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		A stack used to track any overrides to the "self" keyword.
 		If empty, "self" will be used.
 	**/
-	var selfStack: Array<String> = [];
+	var selfStack: Array<{ selfName: String, publicOnly: Bool }> = [];
 
 	public function new() {
 		super();
@@ -346,7 +346,10 @@ func _exit_tree():
 
 				var gdScriptVal = if(f.expr != null) {
 					if(isWrapper) {
-						selfStack.push(wrapperSelfName);
+						selfStack.push({
+							selfName: wrapperSelfName,
+							publicOnly: classType.hasMeta(Meta.WrapPublicOnly)
+						});
 					}
 
 					// Compile function
@@ -806,7 +809,7 @@ func _exit_tree():
 			case TNull: return "null";
 			case TThis: {
 				if(selfStack.length > 0) {
-					return selfStack[selfStack.length - 1];
+					return selfStack[selfStack.length - 1].selfName;
 				}
 				return "self";
 			}
@@ -901,13 +904,15 @@ func _exit_tree():
 
 			switch(fa) {
 				// Check if this is a self.field with BypassWrapper
-				case FInstance(_, _, clsFieldRef): {
+				case FInstance(_, _, clsFieldRef) if(selfStack.length > 0): {
 					final isSelfAccess = switch(e.expr) {
 						case TConst(TThis): true;
 						case _: false;
 					}
 					if(isSelfAccess) {
-						bypassSelf = clsFieldRef.get().hasMeta(Meta.BypassWrapper);
+						final selfData = selfStack[selfStack.length - 1];
+						final field = clsFieldRef.get();
+						bypassSelf = field.hasMeta(Meta.BypassWrapper) || (selfData.publicOnly && !field.isPublic);
 					}
 				}
 
