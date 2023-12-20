@@ -196,6 +196,7 @@ func _exit_tree():
 		final staticVars = [];
 		final className = classType.name;
 		final isWrapper = classType.hasMeta(Meta.Wrapper);
+		final isWrapPublicOnly = classType.hasMeta(Meta.WrapPublicOnly);
 
 		var header = new StringBuf();
 	
@@ -275,13 +276,19 @@ func _exit_tree():
 			}
 		}
 
+		if(isWrapper) {
+			variables.push("var wrapped_self");
+		}
+
 		// class functions
 		for(f in funcFields) {
 			final field = f.field;
 			final tfunc = f.tfunc;
+			final isConstructor = field.name == "new";
+			final wrapField = isWrapper && (!isWrapPublicOnly || field.isPublic);
 
 			// Let's figure out that name
-			final name: String = if(field.name == "new") {
+			final name: String = if(isConstructor) {
 				"_init";
 			} else {
 				var result = null;
@@ -292,7 +299,7 @@ func _exit_tree():
 					final varName = compileVarName(field.name);
 					
 					// Prepend "wrap_" to prevent conflicts with virtuals like "_ready" and "_process".
-					if(isWrapper) {
+					if(wrapField) {
 						"wrap_" + varName;
 					} else {
 						varName;
@@ -318,7 +325,7 @@ func _exit_tree():
 				}
 			} else {
 				final args = tfunc?.args ?? [];
-				final wrapperSelfName = !isWrapper ? "" : (classType.meta.extractStringFromFirstMeta(Meta.Wrapper) ?? "_self");
+				final wrapperSelfName = !isWrapper ? "" : (classType.meta.extractStringFromFirstMeta(Meta.Wrapper) ?? (wrapField ? "_self" : "wrapped_self"));
 
 				final funcDeclaration = new StringBuf();
 				funcDeclaration.add(meta);
@@ -326,7 +333,7 @@ func _exit_tree():
 				funcDeclaration.add("func ");
 				funcDeclaration.add(name);
 				funcDeclaration.add("(");
-				if(isWrapper) {
+				if(wrapField) {
 					funcDeclaration.add(wrapperSelfName);
 					if(args.length > 0) {
 						funcDeclaration.add(",");
@@ -348,15 +355,20 @@ func _exit_tree():
 					if(isWrapper) {
 						selfStack.push({
 							selfName: wrapperSelfName,
-							publicOnly: classType.hasMeta(Meta.WrapPublicOnly)
+							publicOnly: isWrapPublicOnly
 						});
 					}
 
 					// Compile function
-					final result = compileClassFuncExpr(f.expr).tab();
+					var result = compileClassFuncExpr(f.expr).tab();
 
 					if(isWrapper) {
 						selfStack.pop();
+					}
+
+					// Setup `wrapped_self`
+					if(isWrapper && isConstructor) {
+						result = "\tself.wrapped_self = _self\n" + result;
 					}
 
 					// Use "pass" if function empty
@@ -904,15 +916,21 @@ func _exit_tree():
 
 			switch(fa) {
 				// Check if this is a self.field with BypassWrapper
-				case FInstance(_, _, clsFieldRef) if(selfStack.length > 0): {
+				case FInstance(clsRef, _, clsFieldRef) if(selfStack.length > 0): {
 					final isSelfAccess = switch(e.expr) {
 						case TConst(TThis): true;
 						case _: false;
 					}
 					if(isSelfAccess) {
-						final selfData = selfStack[selfStack.length - 1];
-						final field = clsFieldRef.get();
-						bypassSelf = field.hasMeta(Meta.BypassWrapper) || (selfData.publicOnly && !field.isPublic);
+						final isSameClass = switch(e.t) {
+							case TInst(clsRef2, _) if(clsRef.get().name == clsRef2.get().name): true;
+							case _: false;
+						}
+						if(isSameClass) {
+							final selfData = selfStack[selfStack.length - 1];
+							final field = clsFieldRef.get();
+							bypassSelf = field.hasMeta(Meta.BypassWrapper) || (selfData.publicOnly && !field.isPublic);
+						}
 					}
 				}
 
