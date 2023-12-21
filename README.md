@@ -90,9 +90,14 @@ To do this:
 
 Reflaxe/GDScript does not come with bindings to Godot types by default since the version of Godot is different for every person. However, generating the bindings is SUPER DUPER easy.
 
-Simply run this command after installing this library:
+First, install the [Haxe Godot Bindings Generator](https://github.com/SomeRanDev/Haxe-GodotBindingsGenerator) library:
 ```
-haxelib run gdscript
+haxelib git godot-api-generator https://github.com/SomeRanDev/Haxe-GodotBindingsGenerator
+```
+
+Next, run this command to generate:
+```
+haxe run godot-api-generator
 ```
 
 This will generate all the Godot bindings as `.hx` Haxe source code files in a local folder named "godot".
