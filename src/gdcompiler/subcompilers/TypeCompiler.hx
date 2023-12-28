@@ -92,6 +92,13 @@ class TypeCompiler {
 			case TInst(clsRef, _): return compileModuleType(TClassDecl(clsRef));
 			case TEnum(enmRef, _): return compileModuleType(TEnumDecl(enmRef));
 			case TType(defRef, _): return compileType(defRef.get().type, errorPos);
+
+			case TMono(typeRef): {
+				final t = typeRef.get();
+				return if(t != null) compileType(t, errorPos);
+				else null; // It's okay to return `null` here.
+			}
+
 			case _:
 		}
 
