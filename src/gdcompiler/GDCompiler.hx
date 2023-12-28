@@ -547,7 +547,7 @@ func _exit_tree():
 				result.add(fieldAccessToGDScript(e, fa));
 			}
 			case TTypeExpr(m): {
-				result.add(TComp.compileType(TypeHelper.fromModuleType(m), expr.pos));
+				result.add(TComp.compileType(TypeHelper.fromModuleType(m), expr.pos) ?? "Variant");
 			}
 			case TParenthesis(e): {
 				final gdScript = compileExpressionOrError(e);
