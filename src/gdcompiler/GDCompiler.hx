@@ -59,6 +59,11 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 	**/
 	var selfStack: Array<{ selfName: String, publicOnly: Bool }> = [];
 
+	/**
+		Set to `true` when compiling an expression for a constructor.
+	**/
+	var compilingInConstructor: Bool = false;
+
 	public function new() {
 		super();
 
@@ -359,8 +364,12 @@ func _exit_tree():
 						});
 					}
 
+					if(isConstructor) compilingInConstructor = true;
+
 					// Compile function
 					var result = compileClassFuncExpr(f.expr).tab();
+
+					if(isConstructor) compilingInConstructor = false;
 
 					if(isWrapper) {
 						selfStack.pop();
@@ -557,50 +566,13 @@ func _exit_tree():
 				result.add("]");
 			}
 			case TCall(e, el): {
-				final nfc = this.compileNativeFunctionCodeMeta(e, el);
-				if(nfc != null) {
-					result.add(nfc);
-				} else {
-					final code = switch(e.expr) {
-						case TField(_, fa): {
-							switch(fa) {
-								// enum field access
-								case FEnum(_, _): {
-									final enumCall = compileEnumFieldCall(e, el);
-									if(enumCall != null) enumCall;
-									else null;
-								}
-								// @:constructor static function
-								case FStatic(classTypeRef, _.get() => cf) if(cf.meta.maybeHas(":constructor")): {
-									newToGDScript(classTypeRef, expr, el);
-								}
-								// Replace pad nulls with default values
-								case FInstance(clsRef, _, cfRef) | FStatic(clsRef, cfRef): {
-									final funcData = cfRef.get().findFuncData(clsRef.get());
-									if(funcData != null) {
-										el = funcData.replacePadNullsWithDefaults(el, ":noNullPad", generateInjectionExpression);
-									}
-									null;
-								}
-								case _: null;
-							}
-						}
-						case _: null;
-					}
+				final isEmptyConstructorSuperCall =  switch(e.unwrapParenthesis().expr) {
+					case TConst(TSuper) if(compilingInConstructor && el.length == 0): true;
+					case _: false;
+				}
 
-					if(code != null) {
-						result.add(code);
-					} else {
-						final callOp = if(isCallableVar(e)) {
-							".call(";
-						} else {
-							"(";
-						}
-						result.add(compileExpression(e));
-						result.add(callOp);
-						result.add(el.map(e -> compileExpressionOrError(e)).join(", "));
-						result.add(")");
-					}
+				if(!isEmptyConstructorSuperCall) {
+					result.add(callToGDScript(e, el, expr));
 				}
 			}
 			case TNew(classTypeRef, _, el): {
@@ -847,6 +819,58 @@ func _exit_tree():
 
 	inline function checkForPrimitiveStringAddition(strExpr: TypedExpr, primExpr: TypedExpr) {
 		return strExpr.t.isString() && primExpr.t.isPrimitive();
+	}
+
+	function callToGDScript(calledExpr: TypedExpr, arguments: Array<TypedExpr>, originalExpr: TypedExpr): StringBuf {
+		final result = new StringBuf();
+
+		final nfc = this.compileNativeFunctionCodeMeta(calledExpr, arguments);
+		if(nfc != null) {
+			result.add(nfc);
+		} else {
+			final code = switch(calledExpr.expr) {
+				case TField(_, fa): {
+					switch(fa) {
+						// enum field access
+						case FEnum(_, _): {
+							final enumCall = compileEnumFieldCall(calledExpr, arguments);
+							if(enumCall != null) enumCall;
+							else null;
+						}
+						// @:constructor static function
+						case FStatic(classTypeRef, _.get() => cf) if(cf.meta.maybeHas(":constructor")): {
+							newToGDScript(classTypeRef, originalExpr, arguments);
+						}
+						// Replace pad nulls with default values
+						case FInstance(clsRef, _, cfRef) | FStatic(clsRef, cfRef): {
+							final funcData = cfRef.get().findFuncData(clsRef.get());
+							if(funcData != null) {
+								arguments = funcData.replacePadNullsWithDefaults(arguments, ":noNullPad", generateInjectionExpression);
+							}
+							null;
+						}
+						case _: null;
+					}
+				}
+				case _: null;
+			}
+
+			if(code != null) {
+				result.add(code);
+			} else {
+				final callOp = if(isCallableVar(calledExpr)) {
+					".call(";
+				} else {
+					"(";
+				}
+				result.add(compileExpression(calledExpr));
+				result.add(callOp);
+				result.add(arguments.map(e -> compileExpressionOrError(e)).join(", "));
+				result.add(")");
+			}
+		}
+
+		return result;
 	}
 
 	function newToGDScript(classTypeRef: Ref<ClassType>, originalExpr: TypedExpr, el: Array<TypedExpr>): String {
