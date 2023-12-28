@@ -71,6 +71,17 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 	}
 
 	/**
+		Make sure "_" isn't a variable name.
+	**/
+	public override function compileVarName(name: String, expr: Null<TypedExpr> = null, field: Null<ClassField> = null): String {
+		switch(name) {
+			case "_": return "__underscore__";
+			case "__underscore__": throw "__underscore__ is a reserved variable name in Reflaxe/GDScript.";
+		}
+		return super.compileVarName(name, expr, field);
+	}
+
+	/**
 		Runs at the start of compilation.
 		Generates the bare-bones `HxStaticVars.gd` file.
 	**/
