@@ -97,7 +97,7 @@ haxelib git godot-api-generator https://github.com/SomeRanDev/Haxe-GodotBindings
 
 Next, run this command to generate:
 ```
-haxe run godot-api-generator
+haxelib run godot-api-generator
 ```
 
 This will generate all the Godot bindings as `.hx` Haxe source code files in a local folder named "godot".
