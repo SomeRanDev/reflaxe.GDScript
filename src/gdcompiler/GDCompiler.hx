@@ -838,7 +838,7 @@ func _exit_tree():
 		final originalExprType = originalExpr.t;
 		final nfc = this.compileNativeFunctionCodeMeta(calledExpr, arguments, function(index: Int) {
 			if(nfcTypes == null) nfcTypes = calledExpr.getFunctionTypeParams(originalExprType);
-			if(index >= 0 && index < nfcTypes.length) {
+			if(nfcTypes != null && index >= 0 && index < nfcTypes.length) {
 				return TComp.compileType(nfcTypes[index], calledExpr.pos);
 			}
 			return null;
