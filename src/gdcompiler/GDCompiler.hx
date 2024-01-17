@@ -833,52 +833,64 @@ func _exit_tree():
 	}
 
 	function callToGDScript(calledExpr: TypedExpr, arguments: Array<TypedExpr>, originalExpr: TypedExpr): StringBuf {
-		final result = new StringBuf();
+		// Check @:nativeTypeCode
+		var nfcTypes = null;
+		final originalExprType = originalExpr.t;
+		final nfc = this.compileNativeFunctionCodeMeta(calledExpr, arguments, function(index: Int) {
+			if(nfcTypes == null) nfcTypes = calledExpr.getFunctionTypeParams(originalExprType);
+			if(index >= 0 && index < nfcTypes.length) {
+				return TComp.compileType(nfcTypes[index], calledExpr.pos);
+			}
+			return null;
+		});
 
-		final nfc = this.compileNativeFunctionCodeMeta(calledExpr, arguments);
 		if(nfc != null) {
+			final result = new StringBuf();
 			result.add(nfc);
-		} else {
-			final code = switch(calledExpr.expr) {
-				case TField(_, fa): {
-					switch(fa) {
-						// enum field access
-						case FEnum(_, _): {
-							final enumCall = compileEnumFieldCall(calledExpr, arguments);
-							if(enumCall != null) enumCall;
-							else null;
-						}
-						// @:constructor static function
-						case FStatic(classTypeRef, _.get() => cf) if(cf.meta.maybeHas(":constructor")): {
-							newToGDScript(classTypeRef, originalExpr, arguments);
-						}
-						// Replace pad nulls with default values
-						case FInstance(clsRef, _, cfRef) | FStatic(clsRef, cfRef): {
-							final funcData = cfRef.get().findFuncData(clsRef.get());
-							if(funcData != null) {
-								arguments = funcData.replacePadNullsWithDefaults(arguments, ":noNullPad", generateInjectionExpression);
-							}
-							null;
-						}
-						case _: null;
-					}
-				}
-				case _: null;
-			}
+			return result;
+		}
 
-			if(code != null) {
-				result.add(code);
-			} else {
-				final callOp = if(isCallableVar(calledExpr)) {
-					".call(";
-				} else {
-					"(";
+		// Check FieldAccess 
+		final code = switch(calledExpr.expr) {
+			case TField(_, fa): {
+				switch(fa) {
+					// enum field access
+					case FEnum(_, _): {
+						final enumCall = compileEnumFieldCall(calledExpr, arguments);
+						if(enumCall != null) enumCall;
+						else null;
+					}
+					// @:constructor static function
+					case FStatic(classTypeRef, _.get() => cf) if(cf.meta.maybeHas(":constructor")): {
+						newToGDScript(classTypeRef, originalExpr, arguments);
+					}
+					// Replace pad nulls with default values
+					case FInstance(clsRef, _, cfRef) | FStatic(clsRef, cfRef): {
+						final funcData = cfRef.get().findFuncData(clsRef.get());
+						if(funcData != null) {
+							arguments = funcData.replacePadNullsWithDefaults(arguments, ":noNullPad", generateInjectionExpression);
+						}
+						null;
+					}
+					case _: null;
 				}
-				result.add(compileExpression(calledExpr));
-				result.add(callOp);
-				result.add(arguments.map(e -> compileExpressionOrError(e)).join(", "));
-				result.add(")");
 			}
+			case _: null;
+		}
+
+		final result = new StringBuf();
+		if(code != null) {
+			result.add(code);
+		} else {
+			final callOp = if(isCallableVar(calledExpr)) {
+				".call(";
+			} else {
+				"(";
+			}
+			result.add(compileExpression(calledExpr));
+			result.add(callOp);
+			result.add(arguments.map(e -> compileExpressionOrError(e)).join(", "));
+			result.add(")");
 		}
 
 		return result;
