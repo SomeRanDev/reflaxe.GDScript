@@ -2,6 +2,13 @@ package gdcompiler.config;
 
 enum abstract Meta(String) from String to String {
 	/**
+		@:signal
+
+		Treats the class function as a signal declaration.
+	**/
+	var Signal = ":signal";
+
+	/**
 		@:icon(path: String)
 
 		Use on a class with `godot.Node` or `godot.Resource` in its class hierarchy.

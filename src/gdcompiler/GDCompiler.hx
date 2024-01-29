@@ -302,6 +302,7 @@ func _exit_tree():
 			final tfunc = f.tfunc;
 			final isConstructor = field.name == "new";
 			final wrapField = isWrapper && (!isWrapPublicOnly || field.isPublic);
+			final isSignal = field.hasMeta(Meta.Signal);
 
 			// Let's figure out that name
 			final name: String = if(isConstructor) {
@@ -346,7 +347,7 @@ func _exit_tree():
 				final funcDeclaration = new StringBuf();
 				funcDeclaration.add(meta);
 				funcDeclaration.add(f.isStatic ? "static " : "");
-				funcDeclaration.add("func ");
+				funcDeclaration.add(isSignal ? "signal " : "func ");
 				funcDeclaration.add(name);
 				funcDeclaration.add("(");
 				if(wrapField) {
@@ -358,50 +359,54 @@ func _exit_tree():
 				funcDeclaration.add(args.map(a -> compileFunctionArgument(a, field.pos)).join(", "));
 				funcDeclaration.add(")");
 
-				#if !gdscript_untyped
-				final returnType = TComp.compileType(f.ret, field.pos);
-				if(returnType != null) {
-					funcDeclaration.addMulti(" -> ", returnType);
-				}
-				#end
+				if(!isSignal) {
 
-				funcDeclaration.add(":\n");
-
-				var gdScriptVal = if(f.expr != null) {
-					if(isWrapper) {
-						selfStack.push({
-							selfName: wrapperSelfName,
-							publicOnly: isWrapPublicOnly
-						});
+					#if !gdscript_untyped
+					final returnType = TComp.compileType(f.ret, field.pos);
+					if(returnType != null) {
+						funcDeclaration.addMulti(" -> ", returnType);
 					}
+					#end
 
-					if(isConstructor) compilingInConstructor = true;
+					funcDeclaration.add(":\n");
 
-					// Compile function
-					var result = compileClassFuncExpr(f.expr).tab();
+					var gdScriptVal = if(f.expr != null) {
+						if(isWrapper) {
+							selfStack.push({
+								selfName: wrapperSelfName,
+								publicOnly: isWrapPublicOnly
+							});
+						}
 
-					if(isConstructor) compilingInConstructor = false;
+						if(isConstructor) compilingInConstructor = true;
 
-					if(isWrapper) {
-						selfStack.pop();
-					}
+						// Compile function
+						var result = compileClassFuncExpr(f.expr).tab();
 
-					// Setup `wrapped_self`
-					if(isWrapper && isConstructor) {
-						result = "\tself.wrapped_self = _self\n" + result;
-					}
+						if(isConstructor) compilingInConstructor = false;
 
-					// Use "pass" if function empty
-					if(StringTools.trim(result).length == 0) {
-						"\tpass";
+						if(isWrapper) {
+							selfStack.pop();
+						}
+
+						// Setup `wrapped_self`
+						if(isWrapper && isConstructor) {
+							result = "\tself.wrapped_self = _self\n" + result;
+						}
+
+						// Use "pass" if function empty
+						if(StringTools.trim(result).length == 0) {
+							"\tpass";
+						} else {
+							result;
+						}
 					} else {
-						result;
+						"\tpass";
 					}
-				} else {
-					"\tpass";
-				}
 
-				funcDeclaration.add(gdScriptVal);
+					funcDeclaration.add(gdScriptVal);
+
+				}
 				
 				functions.push(funcDeclaration.toString());
 			}
