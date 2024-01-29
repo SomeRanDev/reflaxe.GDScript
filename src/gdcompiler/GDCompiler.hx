@@ -245,7 +245,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 	public function compileClassImpl(classType: ClassType, varFields: Array<ClassVarData>, funcFields: Array<ClassFuncData>): Null<String> {
 		final variables = [];
 		final functions = [];
-		final staticVars = [];
+		final staticVariables = [];
 		final className = classType.name;
 		final isWrapper = classType.hasMeta(Meta.Wrapper);
 		final isWrapPublicOnly = classType.hasMeta(Meta.WrapPublicOnly);
@@ -298,34 +298,36 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			} else {
 				"";
 			}
-			if(v.isStatic) {
-				staticVars.push({ name: varName, expr: gdScriptVal });
+
+			final meta = compileMetadata(field.meta, MetadataTarget.ClassField);
+
+			//:onready
+			final meta: String = if(!v.isStatic && field.meta.has(":onready") && isGodotNode(classType)) {
+				"@onready " + (meta ?? "");
 			} else {
-				final meta = compileMetadata(field.meta, MetadataTarget.ClassField);
-
-				//:onready
-				final meta: String = if(field.meta.has(":onready") && isGodotNode(classType)) {
-					"@onready " + (meta ?? "");
-				} else {
-					meta ?? "";
-				}
-
-				final declBuffer = new StringBuf();
-				declBuffer.addMulti(meta, "var ", varName);
-
-				#if !gdscript_untyped
-				final compiledType = TComp.compileType(v.field.type, v.field.pos);
-				if(compiledType != null) {
-					declBuffer.addMulti(": ", compiledType.trustMe());
-				}
-				#end
-
-				if(gdScriptVal.length > 0) {
-					declBuffer.addMulti(" = ", gdScriptVal);
-				}
-
-				variables.push(declBuffer.toString());
+				meta ?? "";
 			}
+
+			final declBuffer = new StringBuf();
+
+			declBuffer.add(meta);
+			if(v.isStatic) {
+				declBuffer.add("static ");
+			}
+			declBuffer.addMulti("var ", varName);
+
+			#if !gdscript_untyped
+			final compiledType = TComp.compileType(v.field.type, v.field.pos);
+			if(compiledType != null) {
+				declBuffer.addMulti(": ", compiledType.trustMe());
+			}
+			#end
+
+			if(gdScriptVal.length > 0) {
+				declBuffer.addMulti(" = ", gdScriptVal);
+			}
+
+			(v.isStatic ? staticVariables : variables).push(declBuffer.toString());
 		}
 
 		if(isWrapper) {
@@ -367,22 +369,24 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			if(f.kind == MethDynamic) {
 				final e = field.expr();
 				final callable = e == null ? "func():\n\tpass" : compileClassVarExpr(e);
+
+				final funcDeclaration = new StringBuf();
+				funcDeclaration.add(meta);
 				if(f.isStatic) {
-					staticVars.push({
-						name: name,
-						expr: callable
-					});
-				} else {
-					final decl = meta + "var " + name + " = " + callable;
-					variables.push(decl);
+					funcDeclaration.add("static ");
 				}
+				funcDeclaration.addMulti("var ", name, " = ", callable);
+
+				(f.isStatic ? staticVariables : variables).push(funcDeclaration.toString());
 			} else {
 				final args = tfunc?.args ?? [];
 				final wrapperSelfName = !isWrapper ? "" : (classType.meta.extractStringFromFirstMeta(Meta.Wrapper) ?? (wrapField ? "_self" : "wrapped_self"));
 
 				final funcDeclaration = new StringBuf();
 				funcDeclaration.add(meta);
-				funcDeclaration.add(f.isStatic ? "static " : "");
+				if(f.isStatic) {
+					funcDeclaration.add("static ");
+				}
 				funcDeclaration.add(isSignal ? "signal " : "func ");
 				funcDeclaration.add(name);
 				funcDeclaration.add("(");
@@ -448,21 +452,6 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			}
 		}
 
-		// static vars
-		if(staticVars.length > 0) {
-			var declaration = "var _" + className + ": Dictionary = {\n";
-
-			final fields = [];
-			for(v in staticVars) {
-				fields.push("\t\"" + v.name + "\": " + (v.expr != null ? v.expr : "null"));
-			}
-
-			declaration += fields.join(",\n") + "\n";
-			declaration += "}\n\n";
-
-			addToAutoLoad(declaration);
-		}
-
 		// if there are no instance variables or functions,
 		// we don't need to generate a class
 		if(variables.length <= 0 && functions.length <= 0) {
@@ -493,8 +482,12 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 			result.add(header);
 
+			if(staticVariables.length > 0) {
+				result.add(staticVariables.join("\n") + "\n\n");
+			}
+
 			if(variables.length > 0) {
-				result.add(variables.join("\n\n") + "\n\n");
+				result.add(variables.join("\n") + "\n\n");
 			}
 
 			if(functions.length > 0) {
@@ -1028,12 +1021,9 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 					final cf = cfRef.get();
 					final className = TComp.compileClassName(cls);
 					switch(cf.kind) {
-						case FVar(_, _) if(!cf.isExtern && !cls.isReflaxeExtern()): {
-							return "HxStaticVars._" + className + "." + name;
-						}
 						case FMethod(kind): {
 							if(kind == MethDynamic) {
-								return "HxStaticVars._" + className + "." + name;
+								return className + "." + name;
 							}
 						}
 						case _:
