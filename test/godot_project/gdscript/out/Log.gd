@@ -1,5 +1,9 @@
 class_name Log
 
+static var trace = func(v, infos = null):
+	var str: String = Log.formatOutput(v, infos)
+	print(str)
+
 func _init():
 	pass
 

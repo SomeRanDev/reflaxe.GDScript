@@ -74,7 +74,7 @@ static func isEnumValue(v) -> bool:
 static func deleteField(o, fieldName: String) -> bool:
 	var result: bool = fieldName in o
 
-	if ((result)):
+	if (result):
 		Reflect.setField(o, fieldName, null)
 
 	return result
@@ -88,7 +88,7 @@ static func copy(o):
 	assert(false, "Only anonymous structures (Dictionaries) may be used with `Reflect.copy`.")
 
 static func makeVarArgs(f):
-	return func(args):
+	return func(args: Array):
 		var tempArray
 		if true:
 			var _g: Array = []

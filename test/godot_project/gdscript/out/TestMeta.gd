@@ -2,7 +2,6 @@
 class_name TestMeta
 
 var prop: int
-
 @export_enum("Hello", "World")
 var enumField: int
 

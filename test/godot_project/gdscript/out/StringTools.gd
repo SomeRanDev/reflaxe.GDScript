@@ -4,19 +4,18 @@ func _init():
 	pass
 
 static func startsWith(s: String, start: String) -> bool:
-	var tempLeft
+	var tempNumber
 
 	if (0 < 0):
-		tempLeft = s.rfind(start)
+		tempNumber = s.rfind(start)
 	else:
 		var tempString
-		if true:
-			var endIndex: int = 0 + s.length()
-			if (endIndex < 0):
-				tempString = s.substr(0)
-			else:
-				tempString = s.substr(0, endIndex - 0)
-		tempLeft = tempString.rfind(start)
+		var endIndex: int = 0 + s.length()
+		if (endIndex < 0):
+			tempString = s.substr(0)
+		else:
+			tempString = s.substr(0, endIndex - 0)
+		tempNumber = (tempString).rfind(start)
 
-	return s.length() >= start.length() && tempLeft == 0
+	return s.length() >= start.length() && (tempNumber) == 0
 

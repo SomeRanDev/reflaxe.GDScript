@@ -14,7 +14,3 @@ config/name="Haxe-to-GDScript-Test"
 run/main_scene="res://test_scene.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
-
-[autoload]
-
-HxStaticVars="*res://gdscript/out/HxStaticVars.gd"

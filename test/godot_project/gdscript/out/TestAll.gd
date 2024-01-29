@@ -16,7 +16,7 @@ static func test() -> void:
 	TestEReg.test()
 	TestReflect.test()
 	TestClass.test()
-	HxStaticVars._Log.trace.call("Tests successful!!", {
+	Log.trace.call("Tests successful!!", {
 		"fileName": "src/test/TestAll.hx",
 		"lineNumber": 18,
 		"className": "test.TestAll",

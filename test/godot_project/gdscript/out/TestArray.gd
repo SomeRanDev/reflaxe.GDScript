@@ -50,14 +50,13 @@ static func test() -> void:
 			var result: Array = []
 			if true:
 				var _g: int = 0
-				var _g1: Array = arr
-				while (_g < _g1.size()):
-					var v: int = _g1[_g]
+				while (_g < arr.size()):
+					var v: int = arr[_g]
 					_g += 1
 					if (temp.call(v)):
 						result.push_back(v)
 			tempArray = result
-		var cond: bool = tempArray.size() == 2
+		var cond: bool = (tempArray).size() == 2
 		assert(cond, "Test assert failed.")
 	if true:
 		var cond: bool = arr.find(2) == 1
@@ -78,7 +77,7 @@ static func test() -> void:
 	assert(arr[2] == 2, "Test assert failed.")
 
 	if (-1 < 0):
-		arr.insert(arr.size() + 1 + ((-1)), 4)
+		arr.insert(arr.size() + 1 + (-1), 4)
 	else:
 		arr.insert(-1, 4)
 
@@ -116,12 +115,12 @@ static func test() -> void:
 						_g += 1
 						tempVar = _g - 1
 					var i: int = tempVar
-					var tempRight1
+					var tempString
 					if (i == len - 1):
-						tempRight1 = ""
+						tempString = ""
 					else:
-						tempRight1 = ", "
-					result += str(arr[i]) + tempRight1
+						tempString = ", "
+					result += str(arr[i]) + (tempString)
 			tempLeft = result
 		var cond: bool = tempLeft == "0, 1, 2, 3, 4"
 		assert(cond, "Test assert failed.")
@@ -148,10 +147,10 @@ static func test() -> void:
 		var o_value
 		var o_key
 		o_value = tempArray1[kvit_current]
-		var tempRight2
+		var tempRight1
 		kvit_current += 1
-		tempRight2 = kvit_current - 1
-		o_key = tempRight2
+		tempRight1 = kvit_current - 1
+		o_key = tempRight1
 		keyTotal += o_key
 		doubleTotal += o_value
 
@@ -170,17 +169,15 @@ static func test() -> void:
 	stack.push_back(333)
 	assert(stack[2] == 333, "Test assert failed.")
 
-	var tempCond
+	var tempBool
+	var index: int = stack.find(84)
 
-	if true:
-		var index: int = stack.find(84)
-		if (index >= 0):
-			stack.remove_at(index)
-			tempCond = true
-		else:
-			tempCond = false
-
-	if tempCond:
+	if (index >= 0):
+		stack.remove_at(index)
+		tempBool = true
+	else:
+		tempBool = false
+	if (tempBool):
 		if true:
 			var cond: bool = stack.size() == 2
 			assert(cond, "Test assert failed.")

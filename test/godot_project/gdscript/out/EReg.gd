@@ -1,9 +1,7 @@
 class_name EReg
 
 var regObj
-
 var regexStr: String
-
 var m
 
 func _init(r: String, opt: String) -> void:
@@ -70,7 +68,7 @@ func split(s: String) -> Array:
 	var result: Array = []
 	var index: int = 0
 
-	while ((true)):
+	while (true):
 		if (self.matchSub(s, index, -1)):
 			var pos: Dictionary = self.matchedPos()
 			var tempString

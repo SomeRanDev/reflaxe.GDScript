@@ -1,5 +1,5 @@
 version // 1
-0//1
+0//0
 test_TestStd_C.gd
 test_TestStd_B.gd
 test_TestStd_A.gd
@@ -21,5 +21,4 @@ TestAll.gd
 StringTools.gd
 Reflect.gd
 Log.gd
-HxStaticVars.gd
 EReg.gd
