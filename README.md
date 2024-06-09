@@ -42,7 +42,7 @@ func main():
 | Topic                                                                           | Description                                        |
 | ------------------------------------------------------------------------------- | -------------------------------------------------- |
 | [Installation](#installation)                                                   | How to install and use this project.               |
-| [Adding `HxStaticVars.gd` to Autoload](#adding-hxstaticvarsgd-to-autoload)      | Setting up the required autoload GDScript code.    |
+| [GDScript Output as a Plugin](#loading-your-gdscript-output-as-a-plugin)        | How to load your code using the plugin workflow.   |
 | [Godot Bindings](#godot-bindings)                                               | How to setup the Godot bindings.                   |
 | [Goals](#goals)                                                                 | The checklist for the goals of this project        |
 
@@ -69,20 +69,6 @@ If you choose to output a Godot plugin, the setup process is very easy. Generate
 ```
 
 To enable the plugin, go to `Project (top-left) > Project Settings > Plugins (tab)` and click the checkbox next to your plugin's name.
-
-&nbsp;
-
-# Adding "HxStaticVars.gd" to Autoload
-
-This is NOT necessary if you're generating and using a plugin since the autoload is setup automatically.
-
-Once you've generated your GDScript, you should see a GDScript file named `HxStaticVars.gd` in your output folder. For your code to work properly, you MUST add this as an "autoload" script in Godot.
-
-To do this:
-* Open your Godot project in the Godot editor
-* Click: Project (top-left) > Project Settings > Autoload (tab)
-* Next to "Path" input, select the folder icon and select your `HxStaticVars.gd` file
-* Finall press "Add" on the right
 
 &nbsp;
 
