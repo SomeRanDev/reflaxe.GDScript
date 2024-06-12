@@ -1026,7 +1026,16 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 								return className + "." + name;
 							}
 						}
-						case _:
+						case _: {
+							// If accessing a private static var from itself, don't include the class.
+							final currentModule = getCurrentModule();
+							switch(currentModule) {
+								case TClassDecl(clsRef) if(clsRef.get().equals(cls)): {
+									return name;
+								}
+								case _:
+							}
+						}
 					}
 				}
 
