@@ -31,7 +31,6 @@ class GDCompilerInit {
 			wrapLambdaCaptureVarsInArray: true,
 			processAvoidTemporaries: true,
 			convertUnopIncrement: true,
-			smartDCE: true,
 			allowMetaMetadata: true,
 			autoNativeMetaFormat: "@{}",
 			metadataTemplates: [

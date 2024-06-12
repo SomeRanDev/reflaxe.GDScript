@@ -454,7 +454,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 		// if there are no instance variables or functions,
 		// we don't need to generate a class
-		if(variables.length <= 0 && functions.length <= 0) {
+		if(staticVariables.length <= 0 && variables.length <= 0 && functions.length <= 0) {
 			return null;
 		}
 
@@ -1026,7 +1026,16 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 								return className + "." + name;
 							}
 						}
-						case _:
+						case _: {
+							// If accessing a private static var from itself, don't include the class.
+							final currentModule = getCurrentModule();
+							switch(currentModule) {
+								case TClassDecl(clsRef) if(clsRef.get().equals(cls)): {
+									return name;
+								}
+								case _:
+							}
+						}
 					}
 				}
 
