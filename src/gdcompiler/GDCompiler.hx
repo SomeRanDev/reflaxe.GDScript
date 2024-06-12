@@ -454,7 +454,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 		// if there are no instance variables or functions,
 		// we don't need to generate a class
-		if(variables.length <= 0 && functions.length <= 0) {
+		if(staticVariables.length <= 0 && variables.length <= 0 && functions.length <= 0) {
 			return null;
 		}
 
