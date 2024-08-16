@@ -511,7 +511,15 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 		// Default name
 		if(path == null) {
+			#if gdscript_output_dirs
+			if(classType.pack.length == 0) {
+				path = classType.globalName() + ".gd";
+			} else {
+				path = classType.pack.join("/") + "/" + classType.globalName() + ".gd";
+			}
+			#else
 			path = classType.globalName() + ".gd";
+			#end
 		}
 
 		// Generate file
