@@ -631,7 +631,12 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				result.add(tfunc.args.map(a -> compileFunctionArgument(a, expr.pos)).join(", "));
 				result.add(")");
 
-				// TODO: Return type.
+				#if !gdscript_untyped
+				final type = TComp.compileType(tfunc.t, expr.pos);
+				if(type != null) {
+					result.addMulti(" -> ", type);
+				}
+				#end
 
 				result.add(":\n");
 				result.add(toIndentedScope(tfunc.expr));
