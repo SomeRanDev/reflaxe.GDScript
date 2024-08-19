@@ -42,4 +42,11 @@ enum abstract Define(String) from String to String {
 		Sets the name of the "script" file generated for the plugin.
 	**/
 	var GodotPluginScriptName = "godot_plugin_script_name";
+	
+	/**
+		-D gdscript_output_dirs
+
+		If defined, the GDScript is generated in folders based on the package.
+	**/
+	var GDScriptOutputDirs = "gdscript_output_dirs";
 }
