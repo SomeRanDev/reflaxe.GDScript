@@ -463,7 +463,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		// functions don't work unless there's a constructor defined.
 		// So a blank GDScript constructor is created if one does not exist.
 		if(classType.constructor == null) {
-			functions.insert(0, "func _init():\n\tpass");
+			functions.insert(0, "func _init() -> void:\n\tpass");
 		}
 
 		// Check if extends from Node or Resource
@@ -636,7 +636,12 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				result.add(tfunc.args.map(a -> compileFunctionArgument(a, expr.pos)).join(", "));
 				result.add(")");
 
-				// TODO: Return type.
+				#if !gdscript_untyped
+				final type = TComp.compileType(tfunc.t, expr.pos);
+				if(type != null) {
+					result.addMulti(" -> ", type);
+				}
+				#end
 
 				result.add(":\n");
 				result.add(toIndentedScope(tfunc.expr));
