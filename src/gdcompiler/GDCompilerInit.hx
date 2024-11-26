@@ -5,12 +5,11 @@ package gdcompiler;
 import haxe.macro.Compiler;
 import haxe.macro.Expr;
 import haxe.macro.Type;
-
 import haxe.display.Display.MetadataTarget;
 
 import reflaxe.ReflectCompiler;
-
 import reflaxe.input.ExpressionModifier;
+import reflaxe.preprocessors.ExpressionPreprocessor;
 
 using reflaxe.helpers.ExprHelper;
 
@@ -22,14 +21,24 @@ class GDCompilerInit {
 
 		// Add our compiler to Reflaxe
 		ReflectCompiler.AddCompiler(new GDCompiler(), {
+			expressionPreprocessors: [
+				SanitizeEverythingIsExpression,
+				RemoveTemporaryVariables(OnlyFieldAccess),
+				PreventRepeatVariables,
+				WrapLambdaCaptureVariablesInArray,
+				RemoveSingleExpressionBlocks,
+				RemoveConstantBoolIfs,
+				RemoveUnnecessaryBlocks,
+				RemoveReassignedVariableDeclarations,
+				RemoveLocalVariableAliases,
+				MarkUnusedVariables,
+			],
 			fileOutputExtension: ".gd",
 			outputDirDefineName: "gdscript-output",
 			fileOutputType: FilePerClass,
 			ignoreTypes: ["haxe.iterators.ArrayIterator"],
 			reservedVarNames: reservedNames(),
 			targetCodeInjectionName: "__gdscript__",
-			wrapLambdaCaptureVarsInArray: true,
-			processAvoidTemporaries: true,
 			convertUnopIncrement: true,
 			allowMetaMetadata: true,
 			autoNativeMetaFormat: "@{}",

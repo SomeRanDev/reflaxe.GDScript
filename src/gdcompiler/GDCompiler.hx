@@ -14,8 +14,8 @@ import reflaxe.data.ClassFuncData;
 import reflaxe.data.EnumOptionData;
 
 import reflaxe.DirectToStringCompiler;
-import reflaxe.compiler.EverythingIsExprSanitizer;
 import reflaxe.helpers.OperatorHelper;
+import reflaxe.preprocessors.implementations.everything_is_expr.EverythingIsExprSanitizer;
 
 import gdcompiler.config.Define;
 import gdcompiler.config.Meta;
