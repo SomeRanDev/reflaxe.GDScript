@@ -1,10 +1,12 @@
 version // 1
-0//0
+0//1
 test_TestStd_C.gd
 test_TestStd_B.gd
 test_TestStd_A.gd
 test_TestStaticVar_OtherClass.gd
 test_TestReflect_MyClass.gd
+haxe_PosException.gd
+haxe_NotImplementedException.gd
 TestSys.gd
 TestSyntax.gd
 TestString.gd

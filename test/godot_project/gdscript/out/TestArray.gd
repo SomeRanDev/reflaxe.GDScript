@@ -110,11 +110,11 @@ static func test() -> void:
 				var _g: int = 0
 				var _g1: int = len
 				while (_g < _g1):
-					var tempVar
+					var tempNumber
 					if true:
 						_g += 1
-						tempVar = _g - 1
-					var i: int = tempVar
+						tempNumber = _g - 1
+					var i: int = tempNumber
 					var tempString
 					if (i == len - 1):
 						tempString = ""

@@ -2,11 +2,11 @@ class_name OtherClass
 
 static var str: String = ""
 static var add = func():
-	OtherClass.str += "|"
+	str += "|"
 
 func _init():
 	pass
 
 static func clear() -> void:
-	OtherClass.str = ""
+	str = ""
 

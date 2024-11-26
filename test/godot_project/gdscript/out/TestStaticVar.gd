@@ -3,13 +3,13 @@ class_name TestStaticVar
 static var count: int = 0
 
 func _init() -> void:
-	TestStaticVar.count += 1
+	count += 1
 
 static func test() -> void:
-	TestStaticVar.count = 10
+	count = 10
 
 	if true:
-		var cond: bool = TestStaticVar.count == 10
+		var cond: bool = count == 10
 		assert(cond, "Test assert failed.")
 
 	var list: Array = []
@@ -26,7 +26,7 @@ static func test() -> void:
 	list.push_back(TestStaticVar.new())
 
 	if true:
-		var cond: bool = TestStaticVar.count == 20
+		var cond: bool = count == 20
 		assert(cond, "Test assert failed.")
 	if true:
 		var cond: bool = OtherClass.str.length() == 0
