@@ -23,7 +23,7 @@ class GDCompilerInit {
 		ReflectCompiler.AddCompiler(new GDCompiler(), {
 			expressionPreprocessors: [
 				SanitizeEverythingIsExpression,
-				RemoveTemporaryVariables(OnlyFieldAccess),
+				RemoveTemporaryVariables(OnlyAvoidTemporaryFieldAccess),
 				PreventRepeatVariables,
 				WrapLambdaCaptureVariablesInArray,
 				RemoveSingleExpressionBlocks,
