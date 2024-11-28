@@ -22,9 +22,11 @@ class GDCompilerInit {
 		// Add our compiler to Reflaxe
 		ReflectCompiler.AddCompiler(new GDCompiler(), {
 			expressionPreprocessors: [
-				SanitizeEverythingIsExpression,
+				SanitizeEverythingIsExpression({
+					convertIncrementAndDecrementOperators: true
+				}),
 				RemoveTemporaryVariables(OnlyAvoidTemporaryFieldAccess),
-				PreventRepeatVariables,
+				PreventRepeatVariables({}),
 				WrapLambdaCaptureVariablesInArray,
 				RemoveSingleExpressionBlocks,
 				RemoveConstantBoolIfs,
@@ -39,7 +41,6 @@ class GDCompilerInit {
 			ignoreTypes: ["haxe.iterators.ArrayIterator"],
 			reservedVarNames: reservedNames(),
 			targetCodeInjectionName: "__gdscript__",
-			convertUnopIncrement: true,
 			allowMetaMetadata: true,
 			autoNativeMetaFormat: "@{}",
 			metadataTemplates: [
