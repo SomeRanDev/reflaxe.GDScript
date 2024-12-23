@@ -311,10 +311,15 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			final declBuffer = new StringBuf();
 
 			declBuffer.add(meta);
-			if(v.isStatic) {
-				declBuffer.add("static ");
+			if(field.hasMeta(Meta.Const)) {
+				declBuffer.add("const ");
+			} else {
+				if(v.isStatic) {
+					declBuffer.add("static ");
+				}
+				declBuffer.add("var ");
 			}
-			declBuffer.addMulti("var ", varName);
+			declBuffer.add(varName);
 
 			#if !gdscript_untyped
 			final compiledType = TComp.compileType(v.field.type, v.field.pos);

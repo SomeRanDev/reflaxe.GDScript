@@ -2,6 +2,13 @@ package gdcompiler.config;
 
 enum abstract Meta(String) from String to String {
 	/**
+		@:const
+
+		Creates a `const` variable.
+	**/
+	var Const = ":const";
+
+	/**
 		@:signal
 
 		Treats the class function as a signal declaration.
