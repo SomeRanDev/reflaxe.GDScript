@@ -57,6 +57,10 @@ class GDCompilerInit {
 				ReflectCompiler.MetaTemplate(":exportGlobalFile", "", true, [Optional], [ClassField], (e, p) -> {
 					"@export_global_file" + (p.length > 0 ? ("(" + p.join(", ") + ")") : "");
 				}),
+				ReflectCompiler.MetaTemplate(":exportToolButton", "", true, [String, String], [ClassField], (e, p) -> {
+					"@export_tool_button" + (p.length > 0 ? ("(" + p.join(", ") + ")") : "");
+				}),
+				
 
 				ReflectCompiler.MetaTemplate(":exportGlobalDir", "", true, [], [ClassField], (e, p) -> "@export_global_dir"),
 				ReflectCompiler.MetaTemplate(":exportMultiline", "", true, [], [ClassField], (e, p) -> "@export_multiline"),
