@@ -610,6 +610,11 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			case TArray(e1, e2): {
 				result.addMulti(compileExpressionOrError(e1), "[", compileExpressionOrError(e2), "]");
 			}
+			case TBinop(OpAssign, { expr: TField(e1, FAnon(classFieldRef)) }, e2): {
+				var gdExpr1 = compileExpressionOrError(e1);
+				var gdExpr2 = compileExpressionOrError(e2);
+				result.add(gdExpr1 + ".set(\"" + classFieldRef.get().name + "\", " + gdExpr2 + ")");
+			}
 			case TBinop(op, e1, e2): {
 				result.add(binopToGDScript(op, e1, e2));
 			}
