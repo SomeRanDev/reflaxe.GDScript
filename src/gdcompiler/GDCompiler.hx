@@ -384,7 +384,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 				(f.isStatic ? staticVariables : variables).push(funcDeclaration.toString());
 			} else {
-				final args = tfunc?.args ?? [];
+				final args = f.args;
 				final wrapperSelfName = !isWrapper ? "" : (classType.meta.extractStringFromFirstMeta(Meta.Wrapper) ?? (wrapField ? "_self" : "wrapped_self"));
 
 				final funcDeclaration = new StringBuf();
@@ -530,19 +530,19 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		return null;
 	}
 
-	function compileFunctionArgument(arg: { v: TVar, value: Null<TypedExpr> }, pos: Position) {
+	function compileFunctionArgument(arg: ClassFuncArg, pos: Position) {
 		final result = new StringBuf();
-		result.add(compileVarName(arg.v.name));
+		result.add(compileVarName(arg.getName()));
 		
 		#if !gdscript_untyped
-		final type = TComp.compileType(arg.v.t, pos);
+		final type = TComp.compileType(arg.type, pos);
 		if(type != null) {
 			result.addMulti(": ", type);
 		}
 		#end
 
-		if(arg.value != null) {
-			final valueCode = compileExpression(arg.value);
+		if(arg.expr != null) {
+			final valueCode = compileExpression(arg.expr);
 			if(valueCode != null) {
 				result.addMulti(" = ", valueCode);
 			}
@@ -638,7 +638,15 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			}
 			case TFunction(tfunc): {
 				result.add("func(");
-				result.add(tfunc.args.map(a -> compileFunctionArgument(a, expr.pos)).join(", "));
+				var doComma = false;
+				for(i in 0...tfunc.args.length) {
+					if(doComma) result.add(", ");
+					else doComma = true;
+
+					final arg = tfunc.args[i];
+					final reflaxeArg = new ClassFuncArg(i, arg.v.t, false, arg.v.name, arg.v.meta, arg.value, arg.v);
+					result.add(compileFunctionArgument(reflaxeArg, expr.pos));
+				}
 				result.add(")");
 
 				#if !gdscript_untyped
