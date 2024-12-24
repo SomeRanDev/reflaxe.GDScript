@@ -430,7 +430,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 						if(isConstructor) {
 							compilingInConstructor = true;
 
-							final preconstructorFieldAssignmentData = classType.extractPreconstructorFieldAssignments();
+							final preconstructorFieldAssignmentData = classType.extractPreconstructorFieldAssignments(expr);
 							if(preconstructorFieldAssignmentData != null) {
 								expr = preconstructorFieldAssignmentData.modifiedConstructor;
 							}
@@ -1093,6 +1093,21 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				case _:
 			}
 
+			// Do not use `self.` on `@:const` variables.
+			switch(fa) {
+				case FInstance(clsRef, _, clsFieldRef): {
+					final isSelfAccess = switch(e.expr) {
+						case TConst(TThis): true;
+						case _: false;
+					}
+					if(isSelfAccess && clsFieldRef.get().hasMeta(Meta.Const)) {
+						return name;
+					}
+				}
+				case _:
+			}
+
+			// Compile "accessed" expression
 			final gdExpr = bypassSelf ? "self" : compileExpression(e);
 
 			// Check if we're accessing an anonymous type.
