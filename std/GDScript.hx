@@ -20,4 +20,10 @@ extern class GDScript {
 
 	@:native("type_exists")
 	public static function typeExists(type: #if has_godot_externs godot.StringName #else String #end): Bool;
+
+	@:native("assert")
+	public static overload function assert(check: Bool): Void;
+
+	@:native("assert")
+	public static overload function assert(check: Bool, msg: String): Void;
 }
