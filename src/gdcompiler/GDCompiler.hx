@@ -307,25 +307,47 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			final name: String = field.meta.extractStringFromFirstMeta(":nativeName") ?? compileVarName(field.name, null, field);
 
 			// ----------------------
+			// The GDScript expression string override provided by metadata
+			var overrideExpression = null;
+
+			// ----------------------
 			// @:onready
 			var isOnReady = false;
-			var overrideExpression = null;
-			if(!v.isStatic && field.meta.has(Meta.OnReady) && isGodotNode(classType)) {
+			if(!v.isStatic && field.hasMeta(Meta.OnReady) && isGodotNode(classType)) {
+				isOnReady = true;
+
 				switch(field.meta.extractExpressionsFromFirstMeta(Meta.OnReady)) {
 					case [macro val = $expr]: {
-						overrideExpression = expr.getConstString();
+						overrideExpression = expr.getConstString() + ";";
 					}
 					case [macro node = $expr]: {
-						overrideExpression = "$" + expr.getConstString();
+						overrideExpression = "$" + expr.getConstString() + ";";
 					}
 					case []: {
 						// No arguments is allowed but doesn't do anything...
 					}
 					case _: {
-						Context.error("@:onready should only have one argument of either format: `val = \"gdscript_expr\"` or `node = \"Node/Path\"`.", field.pos);
+						Context.error("@:onready should have no arguments or one argument of either format: `val = \"gdscript_expr\"` or `node = \"Node/Path\"`.", field.pos);
 					}
 				}
-				isOnReady = true;
+			}
+
+			// @:const
+			var isConst = false;
+			if(!v.isStatic && field.hasMeta(Meta.Const)) {
+				isConst = true;
+
+				switch(field.meta.extractExpressionsFromFirstMeta(Meta.Const)) {
+					case [macro preload = $expr]: {
+						overrideExpression = "preload(\"" + expr.getConstString() + "\");";
+					}
+					case []: {
+						// No arguments is allowed but doesn't do anything...
+					}
+					case _: {
+						Context.error("@:const should have no arguments or one argument of format: `preload = \"Resource/Path.tres\"`.", field.pos);
+					}
+				}
 			}
 
 			// ----------------------
@@ -349,7 +371,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			final declBuffer = new StringBuf();
 
 			declBuffer.add(meta);
-			if(field.hasMeta(Meta.Const)) {
+			if(isConst) {
 				declBuffer.add("const ");
 			} else {
 				if(v.isStatic) {
