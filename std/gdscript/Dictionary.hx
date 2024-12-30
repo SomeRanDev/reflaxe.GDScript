@@ -1,5 +1,12 @@
 package gdscript;
 
+/**
+	Godot's typed Dictionary type.
+
+	For using `Dictionary` without type arguments, use `gdscript.UntypedDictionary`.
+
+	Last updated for Godot 4.4.
+**/
 @:forward
 @:forward.new
 @:forwardStatics
