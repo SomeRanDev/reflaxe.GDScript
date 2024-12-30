@@ -1,4 +1,4 @@
-package std.gdscript;
+package gdscript;
 
 @:forward
 @:forward.new
