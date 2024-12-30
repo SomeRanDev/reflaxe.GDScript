@@ -1,4 +1,4 @@
-package std.gdscript;
+package gdscript;
 
 /**
 	TODO: Implement StringName properly
