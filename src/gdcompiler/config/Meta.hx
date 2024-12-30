@@ -2,6 +2,35 @@ package gdcompiler.config;
 
 enum abstract Meta(String) from String to String {
 	/**
+		@:onready
+
+		Marks a variable as `@onready`.
+
+		---
+		
+		To assign this a specific GDScript expression, use `val = "something"`:
+		```haxe
+		// This
+		@:onready(val = "my.custom.expression()") var my_field: String;
+		```
+		```gdscript
+		# Becomes this
+		@onready var my_field: String = my.custom.expression();
+		```
+
+		To assign to a child node path, use `node = "path"`:
+		```haxe
+		// This
+		@:onready(node = "Container/Label") var my_label: godot.Label;
+		```
+		```gdscript
+		# Becomes this
+		@onready var my_label: Label = $Container/Label;
+		```
+	**/
+	var OnReady = ":onready";
+
+	/**
 		@:const
 
 		Creates a `const` variable.
