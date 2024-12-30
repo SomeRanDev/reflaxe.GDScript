@@ -11,6 +11,7 @@ using reflaxe.helpers.ArrayHelper;
 using reflaxe.helpers.BaseTypeHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
+using reflaxe.helpers.NullableMetaAccessHelper;
 using reflaxe.helpers.TypeHelper;
 
 @:access(gdcompiler.GDCompiler)
@@ -43,6 +44,19 @@ class TypeCompiler {
 	}
 
 	public function compileType(t: Type, errorPos: Position): Null<String> {
+		if(t.getMeta().maybeHas(":nativeTypeCode")) {
+			final params = t.getParams();
+			final paramCallbacks = if(params != null && params.length > 0) {
+				params.map(paramType -> (() -> compileType(paramType, errorPos) ?? "Variant"));
+			} else {
+				[];
+			}
+			final code = main.compileNativeTypeCodeMeta(t, paramCallbacks);
+			if(code != null) {
+				return code;
+			}
+		}
+
 		switch(t) {
 			case TAbstract(absRef, params): {
 				final abs = absRef.get();
@@ -89,7 +103,9 @@ class TypeCompiler {
 			case TFun(_, _): return null;
 			case _ if(t.isTypeParameter()): return null;
 
-			case TInst(clsRef, _): return compileModuleType(TClassDecl(clsRef));
+			case TInst(clsRef, _): {
+				return compileModuleType(TClassDecl(clsRef));
+			}
 			case TEnum(enmRef, _): return compileModuleType(TEnumDecl(enmRef));
 			case TType(defRef, _): return compileType(defRef.get().type, errorPos);
 

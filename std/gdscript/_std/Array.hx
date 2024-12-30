@@ -3,6 +3,7 @@ package;
 import haxe.iterators.ArrayKeyValueIterator;
 
 @:coreApi
+@:nativeTypeCode("Array[{type0}]")
 extern class Array<T> {
 	// ----------------------------
 	// Haxe String Functions

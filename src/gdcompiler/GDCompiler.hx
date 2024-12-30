@@ -634,9 +634,17 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				result.add("}");
 			}
 			case TArrayDecl(el): {
-				result.add("[");
-				result.add(el.map(e -> compileExpression(e)).join(", "));
-				result.add("]");
+				if(isTopLevel) {
+					result.add("[");
+					result.add(el.map(e -> compileExpression(e)).join(", "));
+					result.add("]");
+				} else {
+					result.add("([");
+					result.add(el.map(e -> compileExpression(e)).join(", "));
+					result.add("] as ");
+					result.add(TComp.compileType(expr.t, expr.pos));
+					result.add(")");
+				}
 			}
 			case TCall(e, el): {
 				final isEmptyConstructorSuperCall =  switch(e.unwrapParenthesis().expr) {
