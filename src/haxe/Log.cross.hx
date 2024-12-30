@@ -1,5 +1,6 @@
 package haxe;
 
+@:tool
 class Log {
 	public static function formatOutput(v: Dynamic, infos: PosInfos): String {
 		var str = Std.string(v);
