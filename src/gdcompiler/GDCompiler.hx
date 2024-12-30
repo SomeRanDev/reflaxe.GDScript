@@ -15,7 +15,6 @@ import reflaxe.data.ClassFuncData;
 import reflaxe.data.EnumOptionData;
 
 import reflaxe.DirectToStringCompiler;
-import reflaxe.helpers.OperatorHelper;
 import reflaxe.preprocessors.implementations.everything_is_expr.EverythingIsExprSanitizer;
 
 import gdcompiler.config.Define;
@@ -27,6 +26,7 @@ using reflaxe.helpers.ArrayHelper;
 using reflaxe.helpers.BaseTypeHelper;
 using reflaxe.helpers.ClassFieldHelper;
 using reflaxe.helpers.ClassTypeHelper;
+using reflaxe.helpers.ExprHelper;
 using reflaxe.helpers.ModuleTypeHelper;
 using reflaxe.helpers.NameMetaHelper;
 using reflaxe.helpers.NullableMetaAccessHelper;
@@ -254,7 +254,8 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 		var header = new StringBuf();
 	
-		// @:icon -> @icon
+		// ----------------------
+		// @:icon
 		if(classType.meta.has(Meta.Icon)) {
 			final iconPath = classType.meta.extractStringFromFirstMeta(Meta.Icon);
 			if(iconPath != null) {
@@ -264,17 +265,23 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			}
 		}
 
+		// ----------------------
+		// Class metadata string
 		final clsMeta = compileMetadata(classType.meta, MetadataTarget.Class);
 		if(clsMeta != null) {
 			header.add(StringTools.trim(clsMeta) + "\n");
 		}
 
+		// ----------------------
+		// Wrapper mode
 		if(isWrapper) { // Wrapper only exists to host code, should not be treated like node itself
 			header.add("extends Object\n");
 		} else if(classType.superClass != null) {
 			header.add("extends " + TComp.compileClassName(classType.superClass.t.get()) + "\n");
 		}
 
+		// ----------------------
+		// Class name
 		header.addMulti("class_name ", TComp.compileClassName(classType));
 
 		// Add "_GD" to the end of class name for wrapper classes.
@@ -284,31 +291,60 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 		header.add("\n\n");
 
-		// instance vars
+		// ----------------------
+		// VARIABLES
 		for(v in varFields) {
 			final field = v.field;
 
+			// ----------------------
+			// Do not generate extern variables
 			if(field.isExtern || field.hasMeta(":extern") || field.hasMeta(":gd_extern")) {
 				continue;
 			}
 
-			final varName: String = field.meta.extractStringFromFirstMeta(":nativeName") ?? compileVarName(field.name, null, field);
+			// ----------------------
+			// Name of variable
+			final name: String = field.meta.extractStringFromFirstMeta(":nativeName") ?? compileVarName(field.name, null, field);
 
-			final e = field.expr() ?? v.findDefaultExpr();
-			final gdScriptVal = if(e != null) {
-				compileClassVarExpr(e);
-			} else {
-				"";
+			// ----------------------
+			// @:onready
+			var isOnReady = false;
+			var overrideExpression = null;
+			if(!v.isStatic && field.meta.has(Meta.OnReady) && isGodotNode(classType)) {
+				switch(field.meta.extractExpressionsFromFirstMeta(Meta.OnReady)) {
+					case [macro val = $expr]: {
+						overrideExpression = expr.getConstString();
+					}
+					case [macro node = $expr]: {
+						overrideExpression = "$" + expr.getConstString();
+					}
+					case []: {
+						// No arguments is allowed but doesn't do anything...
+					}
+					case _: {
+						Context.error("@:onready should only have one argument of either format: `val = \"gdscript_expr\"` or `node = \"Node/Path\"`.", field.pos);
+					}
+				}
+				isOnReady = true;
 			}
 
-			final meta = compileMetadata(field.meta, MetadataTarget.ClassField);
-
-			//:onready
-			final meta: String = if(!v.isStatic && field.meta.has(":onready") && isGodotNode(classType)) {
-				"@onready " + (meta ?? "");
+			// ----------------------
+			// Expression assigned to variable
+			final gdScriptVal = if(overrideExpression != null) {
+				overrideExpression;
 			} else {
-				meta ?? "";
+				final e = field.expr() ?? v.findDefaultExpr();
+				if(e != null) {
+					compileClassVarExpr(e);
+				} else {
+					"";
+				}
 			}
+
+			// ----------------------
+			// Metadata string
+			final meta = compileMetadata(field.meta, MetadataTarget.ClassField) ?? "";
+			final meta = if(isOnReady) { "@onready " + meta; } else { meta; }
 
 			final declBuffer = new StringBuf();
 
@@ -321,7 +357,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				}
 				declBuffer.add("var ");
 			}
-			declBuffer.add(varName);
+			declBuffer.add(name);
 
 			#if !gdscript_untyped
 			final compiledType = TComp.compileType(v.field.type, v.field.pos);
@@ -341,15 +377,16 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			variables.push("var wrapped_self");
 		}
 
-		// class functions
+		// ----------------------
+		// FUNCTIONS
 		for(f in funcFields) {
 			final field = f.field;
-			final tfunc = f.tfunc;
 			final isConstructor = field.name == "new";
 			final wrapField = isWrapper && (!isWrapPublicOnly || field.isPublic);
 			final isSignal = field.hasMeta(Meta.Signal);
 
-			// Let's figure out that name
+			// ----------------------
+			// Name of function
 			final name: String = if(isConstructor) {
 				"_init";
 			} else {
@@ -371,9 +408,13 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				}
 			}
 
+			// ----------------------
+			// Metadata string
 			final meta = compileMetadata(field.meta, MetadataTarget.ClassField) ?? "";
 
 			if(f.kind == MethDynamic) {
+				// ----------------------
+				// Reassignable function
 				final e = field.expr();
 				final callable = e == null ? "func():\n\tpass" : compileClassVarExpr(e);
 
@@ -386,6 +427,8 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 				(f.isStatic ? staticVariables : variables).push(funcDeclaration.toString());
 			} else {
+				// ----------------------
+				// Normal function
 				final args = f.args;
 				final wrapperSelfName = !isWrapper ? "" : (classType.meta.extractStringFromFirstMeta(Meta.Wrapper) ?? (wrapField ? "_self" : "wrapped_self"));
 
@@ -407,7 +450,6 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				funcDeclaration.add(")");
 
 				if(!isSignal) {
-
 					#if !gdscript_untyped
 					final returnType = TComp.compileType(f.ret, field.pos);
 					if(returnType != null) {
