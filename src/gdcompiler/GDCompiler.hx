@@ -156,7 +156,7 @@ script="$pluginScriptName"
 			final args = [
 				'"${cls.name}"',
 				'"${cls.superClass.trustMe().t.get().name}"',
-				'preload("${cls.globalName()}.gd")',
+				'preload("${getClassGDOutputPath(cls)}")',
 				'preload("${cls.meta.extractStringFromFirstMeta(Meta.Icon) ?? "res://icon.svg"}")'
 			];
 			enterTreeLines.push('add_custom_type(${args.join(", ")})');
@@ -168,7 +168,7 @@ script="$pluginScriptName"
 			final args = [
 				'"${cls.name}"',
 				'"${cls.superClass.trustMe().t.get().name}"',
-				'preload("${cls.globalName()}.gd")',
+				'preload("${getClassGDOutputPath(cls)}")',
 				'preload("${cls.meta.extractStringFromFirstMeta(Meta.Icon) ?? "res://icon.svg"}")'
 			];
 			enterTreeLines.push('add_custom_type(${args.join(", ")})');
@@ -593,18 +593,26 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 		// Default name
 		if(path == null) {
-			path = classType.globalName() + ".gd";
-			#if gdscript_output_dirs
-			if(classType.pack.length > 0) {
-				path = classType.pack.join("/") + "/" + path;
-			}
-			#end
+			path = getClassGDOutputPath(classType);
 		}
 
 		// Generate file
 		setExtraFile(path, gdscriptContent);
 
 		return null;
+	}
+
+	function getClassGDOutputPath(classType: ClassType) {
+		var path = classType.globalName() + ".gd";
+		#if gdscript_output_dirs
+		if(classType.pack.length > 0) {
+			#if !gdscript_always_packages_in_output_filenames
+			path = classType.name + ".gd";
+			#end
+			path = classType.pack.join("/") + "/" + path;
+		}
+		#end
+		return path;
 	}
 
 	function compileFunctionArgument(arg: ClassFuncArg, pos: Position) {

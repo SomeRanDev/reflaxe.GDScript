@@ -11,7 +11,8 @@ package gdscript;
 @:forward.new
 @:forwardStatics
 @:copyType
-@:nativeTypeCode("Dictionary<{type0}, {type1}>")
+@:nativeTypeCode("Dictionary[{type0}, {type1}]")
+@:bindings_api_type("builtin_classes")
 extern abstract Dictionary<KeyType, ValueType>(Dictionary_Fields<KeyType, ValueType>) {
 	@:arrayAccess public inline function arrayAccessGet(key: String): Dynamic { return untyped __gdscript__("({0}[{1}])", this, key); }
 	@:arrayAccess public inline function arrayAccessSet(key: String, value: Dynamic): Dynamic {
@@ -29,9 +30,11 @@ extern abstract Dictionary<KeyType, ValueType>(Dictionary_Fields<KeyType, ValueT
 }
 
 @:noCompletion
+@:native("Dictionary")
 @:copyType
 @:avoid_temporaries
-@:nativeTypeCode("Dictionary<{type0}, {type1}>")
+@:nativeTypeCode("Dictionary[{type0}, {type1}]")
+@:bindings_api_type("builtin_classes")
 extern class Dictionary_Fields<KeyType, ValueType> {
 	@:overload(function(from: Dictionary<KeyType, ValueType>): Void { })
 	@:overload(function(base: Dictionary<KeyType, ValueType>, key_type: Int, key_class_name: StringName, key_script: Dynamic, value_type: Int, value_class_name: StringName, value_script: Dynamic): Void { })
