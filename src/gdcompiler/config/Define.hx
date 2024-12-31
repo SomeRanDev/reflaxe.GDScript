@@ -49,4 +49,12 @@ enum abstract Define(String) from String to String {
 		If defined, the GDScript is generated in folders based on the package.
 	**/
 	var GDScriptOutputDirs = "gdscript_output_dirs";
+
+	/**
+		-D gdscript_always_packages_in_output_filenames
+
+		If defined, the file names will include the package path even if 
+		`-D gdscript_output_dirs` is defined.
+	**/
+	var GDScriptAlwaysUsePackagesInOutputFilenames = "gdscript_always_packages_in_output_filenames";
 }
