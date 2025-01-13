@@ -15,6 +15,8 @@ import reflaxe.data.ClassFuncData;
 import reflaxe.data.EnumOptionData;
 
 import reflaxe.DirectToStringCompiler;
+import reflaxe.preprocessors.implementations.RemoveSingleExpressionBlocksImpl;
+import reflaxe.preprocessors.implementations.RemoveTemporaryVariablesImpl;
 import reflaxe.preprocessors.implementations.everything_is_expr.EverythingIsExprSanitizer;
 
 import gdcompiler.config.Define;
@@ -357,6 +359,11 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			} else {
 				final e = field.expr() ?? v.findDefaultExpr();
 				if(e != null) {
+					// Do quick and dirty optimizations for "block-like" variable assignments.
+					// TODO: Incorporate as feature in Reflaxe.
+					final tvr = new RemoveTemporaryVariablesImpl(AllVariables, e, new Map());
+					final e = RemoveSingleExpressionBlocksImpl.process(tvr.fixTemporaries());
+	
 					compileClassVarExpr(e);
 				} else {
 					"";
@@ -382,7 +389,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			declBuffer.add(name);
 
 			#if !gdscript_untyped
-			final compiledType = TComp.compileType(v.field.type, v.field.pos);
+			final compiledType = TComp.compileType(v.field.type, v.field.pos, v.field.hasMeta(":export"));
 			if(compiledType != null) {
 				declBuffer.addMulti(": ", compiledType.trustMe());
 			}
@@ -468,6 +475,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 						funcDeclaration.add(",");
 					}
 				}
+
 				funcDeclaration.add(args.map(a -> compileFunctionArgument(a, field.pos)).join(", "));
 				funcDeclaration.add(")");
 
