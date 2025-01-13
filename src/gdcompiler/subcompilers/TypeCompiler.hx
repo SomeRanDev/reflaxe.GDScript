@@ -26,28 +26,35 @@ class TypeCompiler {
 		return classType.getNameOrNativeName();
 	}
 
-	function compileModuleType(m: ModuleType): String {
+	function compileModuleType(m: ModuleType, isExport: Bool): String {
 		return switch(m) {
 			case TClassDecl(clsRef): {
 				compileClassName(clsRef.get());
 			}
 			case TEnumDecl(enmRef): {
-				final e = enmRef.get();
-				if(e.isReflaxeExtern()) {
-					e.pack.joinAppend(".") + e.getNameOrNativeName();
-				} else {
-					"Dictionary";
-				}
+				compileEnum(enmRef, isExport);
 			}
 			case _: m.getNameOrNative();
 		}
 	}
 
-	public function compileType(t: Type, errorPos: Position): Null<String> {
+	function compileEnum(enmRef: Ref<EnumType>, isExport: Bool) {
+		final e = enmRef.get();
+		return if(e.isReflaxeExtern()) {
+			e.pack.joinAppend(".") + e.getNameOrNativeName();
+		} else if(!isExport) {
+			"Variant";
+		} else {
+			"Dictionary";
+		}
+	}
+
+	public function compileType(t: Type, errorPos: Position, isExport: Bool = false): Null<String> {
+		// Process and return content from @:nativeTypeCode
 		if(t.getMeta().maybeHas(":nativeTypeCode")) {
 			final params = t.getParams();
 			final paramCallbacks = if(params != null && params.length > 0) {
-				params.map(paramType -> (() -> compileType(paramType, errorPos) ?? "Variant"));
+				params.map(paramType -> (() -> compileType(paramType, errorPos, isExport) ?? "Variant"));
 			} else {
 				[];
 			}
@@ -56,6 +63,18 @@ class TypeCompiler {
 				return code;
 			}
 		}
+
+		if(t.isNull()) {
+			return null;
+		}
+		// Ignore Null<T> and just compile as T
+		// if(t.isNull()) {
+		// 	switch(Context.follow(t.unwrapNullTypeOrSelf())) {
+		// 		case TEnum(_, _) | TAnonymous(_) if(!isExport): return "Variant";
+		// 		case _:
+		// 	}
+		// 	return compileType(t.unwrapNullTypeOrSelf(), errorPos, isExport);
+		// }
 
 		switch(t) {
 			case TAbstract(absRef, params): {
@@ -94,7 +113,7 @@ class TypeCompiler {
 
 				// Prevent recursion...
 				if(!internalType.equals(t)) {
-					return compileType(internalType, errorPos);
+					return compileType(internalType, errorPos, isExport);
 				}
 			}
 
@@ -104,14 +123,14 @@ class TypeCompiler {
 			case _ if(t.isTypeParameter()): return null;
 
 			case TInst(clsRef, _): {
-				return compileModuleType(TClassDecl(clsRef));
+				return compileModuleType(TClassDecl(clsRef), isExport);
 			}
-			case TEnum(enmRef, _): return compileModuleType(TEnumDecl(enmRef));
-			case TType(defRef, _): return compileType(defRef.get().type, errorPos);
+			case TEnum(enmRef, _): return compileEnum(enmRef, isExport);
+			case TType(defRef, _): return compileType(defRef.get().type, errorPos, isExport);
 
 			case TMono(typeRef): {
 				final t = typeRef.get();
-				return if(t != null) compileType(t, errorPos);
+				return if(t != null) compileType(t, errorPos, isExport);
 				else null; // It's okay to return `null` here.
 			}
 
