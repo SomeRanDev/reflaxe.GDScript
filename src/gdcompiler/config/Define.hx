@@ -51,6 +51,13 @@ enum abstract Define(String) from String to String {
 	var GDScriptOutputDirs = "gdscript_output_dirs";
 
 	/**
+		-D gdscript_snake_case
+
+		If defined, features will use snake-case instead of camel-case.
+	**/
+	var GDScriptUseSnakeCase = "gdscript_snake_case";
+
+	/**
 		-D gdscript_always_packages_in_output_filenames
 
 		If defined, the file names will include the package path even if 

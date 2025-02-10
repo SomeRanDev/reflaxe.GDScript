@@ -67,6 +67,24 @@ enum abstract Meta(String) from String to String {
 	var DontAddToPlugin = ":dontAddToPlugin";
 
 	/**
+		@:dont_compile
+
+		If used on a type declaration, that type is never compiled to GDScript.
+
+		```haxe
+		final a: gdscript.Untyped = 123;
+		```
+
+		```gdscript
+		# Normally this would be:
+		# var a: int = 123;
+
+		var a = 123;
+		```
+	**/
+	var DontCompile = ":dont_compile";
+
+	/**
 		@:wrapper(selfName: String = "_self")
 
 		If added to a class, that class will be treated as a wrapper class. This means
