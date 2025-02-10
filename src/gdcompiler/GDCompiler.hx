@@ -325,11 +325,15 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 					case [macro node = $expr]: {
 						overrideExpression = "$" + expr.getConstString() + ";";
 					}
+					case #if gdscript_snake_case [macro maybe_node = $expr] #else [macro maybeNode = $expr] #end: {
+						overrideExpression = "get_node_or_null(\"" + expr.getConstString() + "\");";
+					}
 					case []: {
 						// No arguments is allowed but doesn't do anything...
 					}
 					case _: {
-						Context.error("@:onready should have no arguments or one argument of either format: `val = \"gdscript_expr\"` or `node = \"Node/Path\"`.", field.pos);
+						final maybeNodeName = #if gdscript_snake_case "maybe_node" #else "maybeNode" #end;
+						Context.error("@:onready should have no arguments or one argument of format: `val = \"gdscript_expr\"`, `node = \"Node/Path\"`, or `" + maybeNodeName + " = \"Node/Path\"`.", field.pos);
 					}
 				}
 			}
