@@ -1,5 +1,6 @@
 package gdcompiler.subcompilers;
 
+import gdcompiler.config.Meta;
 import gdcompiler.GDCompiler;
 
 import reflaxe.helpers.Context;
@@ -50,6 +51,11 @@ class TypeCompiler {
 	}
 
 	public function compileType(t: Type, errorPos: Position, isExport: Bool = false): Null<String> {
+		// Check for @:dont_compile
+		if(t.getMeta().maybeHas(Meta.DontCompile)) {
+			return null;
+		}
+
 		// Process and return content from @:nativeTypeCode
 		if(t.getMeta().maybeHas(":nativeTypeCode")) {
 			final params = t.getParams();
