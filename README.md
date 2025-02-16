@@ -54,10 +54,10 @@ This project is currently in development, so install using `haxelib git`:
 
 | #   | What to do                                           | What to write                            |
 | --- | ---------------------------------------------------- | ---------------------------------------- |
-| 1   | Install via haxelib (DON'T FORGET <pre>1.0.0-beta!</pre>) | <pre>haxelib install gdscript 1.0.0-beta</pre>   |
-| 2   | Add the lib to your `.hxml` file or compile command.      | <pre lang="hxml">-lib gdscript</pre>  |
-| 3   | Set the output folder for the compiled GDScript.          | <pre lang="hxml">-D gdscript-output=out</pre> |
-| 4   | Optionally, generate your code as a Godot plugin.         | <pre lang="hxml">-D generate_godot_plugin</pre> |
+| 1   | Install via haxelib (DON'T FORGET `1.0.0-beta!`)      | <pre>haxelib install gdscript 1.0.0-beta</pre>   |
+| 2   | Add the lib to your `.hxml` file or compile command.  | <pre lang="hxml">-lib gdscript</pre>  |
+| 3   | Set the output folder for the compiled GDScript.      | <pre lang="hxml">-D gdscript-output=out</pre> |
+| 4   | Optionally, generate your code as a Godot plugin.     | <pre lang="hxml">-D generate_godot_plugin</pre> |
 
 &nbsp;
 
