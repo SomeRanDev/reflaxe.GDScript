@@ -34,6 +34,6 @@ jobs:
       - name: Submit to Haxelib
         run: |
           haxe -version
-          haxelib submit _Build ${{ secrets.HAXELIB_PASSWORD }}
+          haxelib submit _Build ${{ secrets.HAXELIB_PASSWORD }} --always
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
