@@ -4,6 +4,7 @@ import haxe.iterators.ArrayKeyValueIterator;
 
 @:coreApi
 @:nativeTypeCode("Array[{type0}]")
+@:bindings_api_type("builtin_classes")
 extern class Array<T> {
 	// ----------------------------
 	// Haxe String Functions
