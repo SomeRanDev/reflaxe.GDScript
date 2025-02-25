@@ -12,7 +12,7 @@ static func test() -> void:
 		var cond: bool = count == 10
 		assert(cond, "Test assert failed.")
 
-	var list: Array = []
+	var list: Array[TestStaticVar] = ([] as Array[TestStaticVar])
 
 	list.push_back(TestStaticVar.new())
 	list.push_back(TestStaticVar.new())
@@ -48,7 +48,7 @@ static func test() -> void:
 
 	var old = OtherClass.add
 
-	OtherClass.add = func():
+	OtherClass.add = func() -> void:
 		old.call()
 		old.call()
 	OtherClass.add.call()

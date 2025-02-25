@@ -1,12 +1,11 @@
 @tool
 class_name TestMeta
 
-var prop: int
+var prop: int = 123
 @export_enum("Hello", "World")
-var enumField: int
+var enumField: int = 0
 
 func _init() -> void:
-	self.enumField = 0
 	self.prop = 123
 
 static func test() -> void:

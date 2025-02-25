@@ -1,6 +1,6 @@
 class_name MyClass
 
-var internalProp: int
+var internalProp: int = 1
 
 func _init() -> void:
 	self.internalProp = 1

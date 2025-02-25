@@ -1,12 +1,12 @@
 class_name TestEnum
 
-func _init():
+func _init() -> void:
 	pass
 
 static func test() -> void:
-	var a: Dictionary = { "_index": 0 }
-	var b: Dictionary = { "_index": 1, "i": 123 }
-	var c: Dictionary = { "_index": 2, "s": "Test" }
+	var a: Variant = { "_index": 0 }
+	var b: Variant = { "_index": 1, "i": 123 }
+	var c: Variant = { "_index": 2, "s": "Test" }
 
 	match (b._index):
 		0:

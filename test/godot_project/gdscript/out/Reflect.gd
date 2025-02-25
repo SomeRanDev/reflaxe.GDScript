@@ -1,6 +1,6 @@
 class_name Reflect
 
-func _init():
+func _init() -> void:
 	pass
 
 static func hasField(o, fieldName: String) -> bool:
@@ -31,12 +31,12 @@ static func setProperty(o, fieldName: String, value) -> void:
 	else:
 		Reflect.setField(o, fieldName, value)
 
-static func callMethod(o, _func, args: Array):
+static func callMethod(o, _func, args: Array[Variant]):
 	return _func.callv(args)
 
-static func fields(o) -> Array:
-	var list: Array = o.get_property_list.call()
-	var result: Array = []
+static func fields(o) -> Array[String]:
+	var list: Array[Dictionary] = o.get_property_list.call()
+	var result: Array[String] = ([] as Array[String])
 	var _g: int = 0
 
 	while (_g < list.size()):
@@ -88,12 +88,12 @@ static func copy(o):
 	assert(false, "Only anonymous structures (Dictionaries) may be used with `Reflect.copy`.")
 
 static func makeVarArgs(f):
-	return func(args: Array):
+	return func(args: Array[Variant]):
 		var tempArray
 		if true:
-			var _g: Array = []
+			var _g: Array[Variant] = ([] as Array[Variant])
 			var _g1: int = 0
-			var _g2: Array = args
+			var _g2: Array[Variant] = args
 			while (_g1 < _g2.size()):
 				var v = _g2[_g1]
 				_g1 += 1

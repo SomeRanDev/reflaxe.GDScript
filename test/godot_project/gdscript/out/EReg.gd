@@ -2,10 +2,9 @@ class_name EReg
 
 var regObj
 var regexStr: String
-var m
+var m = null
 
 func _init(r: String, opt: String) -> void:
-	self.m = null
 	self.regObj = RegEx.new()
 	self.regexStr = r
 
@@ -61,11 +60,11 @@ func matchSub(s: String, pos: int, len: int = -1) -> bool:
 
 	return !(!self.m)
 
-func split(s: String) -> Array:
+func split(s: String) -> Array[String]:
 	if (s == null || s.length() <= 0):
-		return [s]
+		return ([s] as Array[String])
 
-	var result: Array = []
+	var result: Array[String] = ([] as Array[String])
 	var index: int = 0
 
 	while (true):

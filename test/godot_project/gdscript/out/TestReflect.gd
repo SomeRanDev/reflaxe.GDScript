@@ -1,6 +1,6 @@
 class_name TestReflect
 
-func _init():
+func _init() -> void:
 	pass
 
 static func test() -> void:
@@ -35,11 +35,11 @@ static func test() -> void:
 		var cond: bool = Reflect.getProperty(cls, "myProp") == 10
 		assert(cond, "Test assert failed.")
 
-	var _func = func(a: int):
+	var _func = func(a: int) -> int:
 		return a + 123
 
 	if true:
-		var cond: bool = _func.callv([100]) == 223
+		var cond: bool = _func.callv(([100] as Array[Variant])) == 223
 		assert(cond, "Test assert failed.")
 	if true:
 		var cond: bool = Reflect.fields(cls).size() == 4

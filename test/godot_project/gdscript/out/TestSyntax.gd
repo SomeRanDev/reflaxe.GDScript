@@ -1,9 +1,8 @@
 class_name TestSyntax
 
-var testField: int
+var testField: int = 123
 
 func _init() -> void:
-	self.testField = 123
 	assert(self.testField == 123, "Test assert failed.")
 
 static func test() -> void:
@@ -79,7 +78,7 @@ static func test() -> void:
 		var cond: bool = 3 == 3
 		assert(cond, "Test assert failed.")
 
-	var arr2: Array = []
+	var arr2: Array[int] = []
 	var _bool: bool = true
 
 	assert(_bool, "Test assert failed.")
@@ -113,7 +112,7 @@ static func test() -> void:
 
 	assert(mutNum[0] == 1001, "Test assert failed.")
 
-	var myFunc = func():
+	var myFunc = func() -> void:
 		mutNum[0] += 1
 
 	myFunc.call()

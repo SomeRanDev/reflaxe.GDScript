@@ -1,6 +1,6 @@
 class_name StringTools
 
-func _init():
+func _init() -> void:
 	pass
 
 static func startsWith(s: String, start: String) -> bool:

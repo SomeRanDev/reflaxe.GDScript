@@ -1,10 +1,10 @@
 class_name TestArray
 
-func _init():
+func _init() -> void:
 	pass
 
 static func test() -> void:
-	var arr: Array = []
+	var arr: Array[int] = []
 
 	if true:
 		var cond: bool = arr.size() == 0
@@ -18,7 +18,7 @@ static func test() -> void:
 		var cond: bool = arr.size() == 3
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond: bool = (arr + [4, 5, 6]).size() == 6
+		var cond: bool = (arr + ([4, 5, 6] as Array[int])).size() == 6
 		assert(cond, "Test assert failed.")
 	if true:
 		var cond: bool = arr.has(3)
@@ -32,7 +32,7 @@ static func test() -> void:
 	if true:
 		var tempRight
 		if true:
-			var _g: Array = []
+			var _g: Array[int] = ([] as Array[int])
 			if true:
 				var _g1: int = 0
 				while (_g1 < arr.size()):
@@ -45,9 +45,9 @@ static func test() -> void:
 	if true:
 		var tempArray
 		if true:
-			var temp = func(i: int):
+			var temp = func(i: int) -> bool:
 				return i != 1
-			var result: Array = []
+			var result: Array[int] = ([] as Array[int])
 			if true:
 				var _g: int = 0
 				while (_g < arr.size()):
@@ -128,9 +128,9 @@ static func test() -> void:
 	var tempArray1
 
 	if true:
-		var temp = func(i: int):
+		var temp = func(i: int) -> int:
 			return i * 2
-		var result: Array = []
+		var result: Array[int] = ([] as Array[int])
 		if true:
 			var _g: int = 0
 			while (_g < arr.size()):
@@ -157,7 +157,7 @@ static func test() -> void:
 	assert(keyTotal == 10, "Test assert failed.")
 	assert(doubleTotal == 20, "Test assert failed.")
 
-	var stack: Array = [84, 29, 655]
+	var stack: Array[int] = ([84, 29, 655] as Array[int])
 
 	if true:
 		var cond: bool = stack.pop_back() == 655
@@ -185,37 +185,37 @@ static func test() -> void:
 	else:
 		assert(false, "Test assert failed.")
 
-	var ordered: Array = [3, 6, 9, 12]
+	var ordered: Array[int] = ([3, 6, 9, 12] as Array[int])
 
 	ordered.reverse()
-	assert(ordered == [12, 9, 6, 3], "Test assert failed.")
+	assert(ordered == ([12, 9, 6, 3] as Array[int]), "Test assert failed.")
 
 	if true:
 		var cond: bool = ordered.pop_front() == 12
 		assert(cond, "Test assert failed.")
 
-	var newArr: Array = [22, 44, 66, 88]
+	var newArr: Array[int] = ([22, 44, 66, 88] as Array[int])
 
 	if true:
-		var cond: bool = newArr.slice(1) == [44, 66, 88]
+		var cond: bool = newArr.slice(1) == ([44, 66, 88] as Array[int])
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond: bool = newArr.slice(2, 3) == [66]
+		var cond: bool = newArr.slice(2, 3) == ([66] as Array[int])
 		assert(cond, "Test assert failed.")
 
-	var sortable: Array = [2, 7, 1, 4, 0, 4]
-	var f = func(a: int, b: int):
+	var sortable: Array[int] = ([2, 7, 1, 4, 0, 4] as Array[int])
+	var f = func(a: int, b: int) -> int:
 		return a - b
 
-	sortable.sort_custom(func(a: int, b: int):
+	sortable.sort_custom(func(a: int, b: int) -> bool:
 		return f.call(a, b) < 0)
-	assert(sortable == [0, 1, 2, 4, 4, 7], "Test assert failed.")
+	assert(sortable == ([0, 1, 2, 4, 4, 7] as Array[int]), "Test assert failed.")
 
 	if true:
 		var tempLeft1
 		if true:
 			var pos: int = 2
-			var result: Array = []
+			var result: Array[int] = ([] as Array[int])
 			if (pos < 0):
 				pos = 0
 			var i: int = pos + 1 - 1
@@ -226,13 +226,13 @@ static func test() -> void:
 				sortable.remove_at(pos)
 				i -= 1
 			tempLeft1 = result
-		var cond: bool = tempLeft1 == [2]
+		var cond: bool = tempLeft1 == ([2] as Array[int])
 		assert(cond, "Test assert failed.")
 	if true:
 		var tempLeft2
 		if true:
 			var pos: int = 1
-			var result: Array = []
+			var result: Array[int] = ([] as Array[int])
 			if (pos < 0):
 				pos = 0
 			var i: int = pos + 3 - 1
@@ -243,15 +243,15 @@ static func test() -> void:
 				sortable.remove_at(pos)
 				i -= 1
 			tempLeft2 = result
-		var cond: bool = tempLeft2 == [1, 4, 4]
+		var cond: bool = tempLeft2 == ([1, 4, 4] as Array[int])
 		assert(cond, "Test assert failed.")
 	if true:
 		var cond: bool = str(sortable) == "[0, 7]"
 		assert(cond, "Test assert failed.")
 
-	var unfinished: Array = [3, 4, 5]
+	var unfinished: Array[int] = ([3, 4, 5] as Array[int])
 
 	unfinished.push_front(2)
 	unfinished.push_front(1)
-	assert(unfinished == [1, 2, 3, 4, 5], "Test assert failed.")
+	assert(unfinished == ([1, 2, 3, 4, 5] as Array[int]), "Test assert failed.")
 

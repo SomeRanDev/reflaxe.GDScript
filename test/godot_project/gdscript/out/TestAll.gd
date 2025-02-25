@@ -1,6 +1,6 @@
 class_name TestAll
 
-func _init():
+func _init() -> void:
 	pass
 
 static func test() -> void:

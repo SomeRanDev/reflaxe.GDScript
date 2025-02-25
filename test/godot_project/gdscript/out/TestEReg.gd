@@ -1,6 +1,6 @@
 class_name TestEReg
 
-func _init():
+func _init() -> void:
 	pass
 
 static func test() -> void:
@@ -25,7 +25,7 @@ static func test() -> void:
 		var cond: bool = EReg.new("abc", "").matchSub("abcabc", 1, -1)
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond: bool = EReg.new("\\s*,\\s*", "").split("one,two ,three, four") == ["one", "two", "three", "four"]
+		var cond: bool = EReg.new("\\s*,\\s*", "").split("one,two ,three, four") == (["one", "two", "three", "four"] as Array[String])
 		assert(cond, "Test assert failed.")
 	if true:
 		var cond: bool = reg.replace("123abc", "456") == "123456"

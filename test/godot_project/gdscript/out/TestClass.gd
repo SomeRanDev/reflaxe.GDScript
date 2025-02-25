@@ -1,21 +1,17 @@
 class_name TestClass
 
-var a: int
-var b: float
-var c: bool
+var a: int = 2
+var b: float = 3
+var c: bool = false
 
 func _init() -> void:
-	self.c = false
-	self.b = 3
-	self.a = 2
-
 	if (!self.c):
 		Log.trace.call(self.a, {
 			"fileName": "src/test/TestClass.hx",
 			"lineNumber": 10,
 			"className": "test.TestClass",
 			"methodName": "new",
-			"customParams": [self.b]
+			"customParams": ([self.b] as Array[Variant])
 		})
 
 static func test() -> void:

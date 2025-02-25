@@ -1,10 +1,10 @@
 class_name OtherClass
 
 static var str: String = ""
-static var add = func():
+static var add = func() -> void:
 	str += "|"
 
-func _init():
+func _init() -> void:
 	pass
 
 static func clear() -> void:
