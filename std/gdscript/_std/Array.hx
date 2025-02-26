@@ -118,14 +118,14 @@ extern class Array<T> {
 	@:runtime inline function map<S>(f: (T) -> S):Array<S> {
 		final temp = f;
 		final result = [];
-		for (v in this) result.push(temp(v));
+		for(v in this) result.push(temp(v));
 		return result;
 	}
 
 	@:runtime inline function filter(f: (T) -> Bool):Array<T> {
 		final temp = f;
 		final result = [];
-		for (v in this) if(temp(v)) result.push(v);
+		for(v in this) if(temp(v)) result.push(v);
 		return result;
 	}
 
