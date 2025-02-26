@@ -965,7 +965,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 	function constantToGDScript(constant: TConstant): String {
 		switch(constant) {
 			case TInt(i): return Std.string(i);
-			case TFloat(s): return s;
+			case TFloat(s): return s.indexOf(".") == -1 ? '$s.0' : s;
 			case TString(s): return "\"" + StringTools.replace(StringTools.replace(s, "\\", "\\\\"), "\"", "\\\"") + "\"";
 			case TBool(b): return b ? "true" : "false";
 			case TNull: return "null";
