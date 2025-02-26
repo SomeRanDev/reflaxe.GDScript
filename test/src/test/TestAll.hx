@@ -14,6 +14,7 @@ class TestAll {
 		TestEReg.test();
 		TestReflect.test();
 		TestClass.test();
+		TestSignals.test();
 
 		trace("Tests successful!!");
 	}

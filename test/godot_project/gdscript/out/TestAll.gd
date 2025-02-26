@@ -16,9 +16,10 @@ static func test() -> void:
 	TestEReg.test()
 	TestReflect.test()
 	TestClass.test()
+	TestSignals.test()
 	Log.trace.call("Tests successful!!", {
 		"fileName": "src/test/TestAll.hx",
-		"lineNumber": 18,
+		"lineNumber": 19,
 		"className": "test.TestAll",
 		"methodName": "test"
 	})

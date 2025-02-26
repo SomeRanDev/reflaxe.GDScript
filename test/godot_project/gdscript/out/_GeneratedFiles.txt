@@ -12,6 +12,7 @@ TestSyntax.gd
 TestString.gd
 TestStd.gd
 TestStaticVar.gd
+TestSignals.gd
 TestReflect.gd
 TestMeta.gd
 TestMath.gd
