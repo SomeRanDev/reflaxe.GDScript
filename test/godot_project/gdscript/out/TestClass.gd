@@ -1,7 +1,7 @@
 class_name TestClass
 
 var a: int = 2
-var b: float = 3
+var b: float = 3.0
 var c: bool = false
 
 func _init() -> void:

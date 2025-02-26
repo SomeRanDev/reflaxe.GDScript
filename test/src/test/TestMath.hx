@@ -17,6 +17,8 @@ class TestMath {
 
 		assert(Math.floor(99.9) == 99);
 
+		assert(1f64 == 1.0);
+
 		assert(Math.isFinite(12));
 		assert(Math.isNaN(Math.NaN));
 		assert(!Math.isFinite(Math.POSITIVE_INFINITY));

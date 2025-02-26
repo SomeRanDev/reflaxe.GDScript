@@ -34,6 +34,7 @@ static func test() -> void:
 		assert(cond, "Test assert failed.")
 
 	assert(99 == 99, "Test assert failed.")
+	assert(1.0 == 1.0, "Test assert failed.")
 
 	if true:
 		var cond: bool = is_finite(12)
