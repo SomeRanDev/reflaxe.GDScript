@@ -5,7 +5,7 @@
 _Compile Haxe to GDScript 2.0 like any other Haxe target. Made using [Reflaxe](https://github.com/RobertBorghese/reflaxe)._
 
 <!---------------------------------------------------------------------------->
-[Button Click]: https://img.shields.io/badge/documentation-click_here!-blue
+[Button Click]: https://img.shields.io/badge/documentation-click_here!-yellow
 [Link]: https://somerandev.github.io/reflaxe.GDScript 'Documentation'
 &nbsp;
 
