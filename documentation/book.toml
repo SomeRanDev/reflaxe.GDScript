@@ -1,0 +1,6 @@
+[book]
+authors = ["Maybee Rezbit"]
+language = "en"
+multilingual = false
+src = "pages"
+title = "Reflaxe/GDScript"
