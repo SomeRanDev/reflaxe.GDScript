@@ -1,9 +1,12 @@
 <img src="img/Logo.png" /> 
 
-<a href="https://discord.com/channels/162395145352904705/1052688097592225904"><img src="https://discordapp.com/api/guilds/162395145352904705/widget.png?style=shield" alt="Reflaxe Thread"/></a>
+<a href="https://discord.com/channels/162395145352904705/1052688097592225904"><img src="https://discordapp.com/api/guilds/162395145352904705/widget.png?style=shield" alt="Reflaxe Thread"/></a> [![Button Click]][Link]
 
 _Compile Haxe to GDScript 2.0 like any other Haxe target. Made using [Reflaxe](https://github.com/RobertBorghese/reflaxe)._
 
+<!---------------------------------------------------------------------------->
+[Button Click]: https://img.shields.io/badge/documentation-click_here!-blue
+[Link]: https://somerandev.github.io/reflaxe.GDScript 'Documentation'
 &nbsp;
 
 **Haxe Code**
@@ -44,7 +47,7 @@ func main():
 | [Installation](#installation)                                                   | How to install and use this project.               |
 | [GDScript Output as a Plugin](#loading-your-gdscript-output-as-a-plugin)        | How to load your code using the plugin workflow.   |
 | [Godot Bindings](#godot-bindings)                                               | How to setup the Godot bindings.                   |
-| [Goals](#goals)                                                                 | The checklist for the goals of this project        |
+| [Read the Documentation!](https://somerandev.github.io/reflaxe.GDScript)        | The documentation for this project                 |
 
 &nbsp;
 
