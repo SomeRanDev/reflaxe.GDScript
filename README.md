@@ -50,8 +50,6 @@ func main():
 
 # Installation
 
-This project is currently in development, so install using `haxelib git`:
-
 | #   | What to do                                           | What to write                            |
 | --- | ---------------------------------------------------- | ---------------------------------------- |
 | 1   | Install via haxelib (DON'T FORGET `1.0.0-beta!`)      | <pre>haxelib install gdscript 1.0.0-beta</pre>   |
