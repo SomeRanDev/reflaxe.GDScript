@@ -27,7 +27,9 @@ class GDCompilerInit {
 				}),
 				RemoveTemporaryVariables(OnlyAvoidTemporaryFieldAccess),
 				PreventRepeatVariables({}),
-				WrapLambdaCaptureVariablesInArray,
+				WrapLambdaCaptureVariablesInArray({
+					wrapMetadata: [":copyType"]
+				}),
 				RemoveSingleExpressionBlocks,
 				RemoveConstantBoolIfs,
 				RemoveUnnecessaryBlocks,
