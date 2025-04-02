@@ -14,6 +14,8 @@ import reflaxe.data.ClassFuncArg;
 import reflaxe.data.ClassFuncData;
 import reflaxe.data.EnumOptionData;
 
+import reflaxe.debug.MeasurePerformance;
+
 import reflaxe.DirectToStringCompiler;
 import reflaxe.preprocessors.implementations.RemoveSingleExpressionBlocksImpl;
 import reflaxe.preprocessors.implementations.RemoveTemporaryVariablesImpl;
@@ -247,6 +249,10 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 	}
 
 	public function compileClassImpl(classType: ClassType, varFields: Array<ClassVarData>, funcFields: Array<ClassFuncData>): Null<String> {
+		#if (eval && reflaxe_gdscript_measure)
+		final classMeasure = new reflaxe.debug.MeasurePerformance();
+		#end
+
 		final variables = [];
 		final functions = [];
 		final staticVariables = [];
@@ -296,6 +302,9 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		// ----------------------
 		// VARIABLES
 		for(v in varFields) {
+			#if (eval && reflaxe_gdscript_measure)
+			final varMeasure = new reflaxe.debug.MeasurePerformance();
+			#end
 			final field = v.field;
 
 			// ----------------------
@@ -404,6 +413,10 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			}
 
 			(v.isStatic ? staticVariables : variables).push(declBuffer.toString());
+
+			#if (eval && reflaxe_gdscript_measure)
+			varMeasure.measure("Reflaxe " + classType.name + "." + v.field.name + " compiled in %MILLI% milliseconds");
+			#end
 		}
 
 		if(isWrapper) {
@@ -413,6 +426,10 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		// ----------------------
 		// FUNCTIONS
 		for(f in funcFields) {
+			#if (eval && reflaxe_gdscript_measure)
+			final funcMeasure = new reflaxe.debug.MeasurePerformance();
+			#end
+
 			final field = f.field;
 			final isConstructor = field.name == "new";
 			final wrapField = isWrapper && (!isWrapPublicOnly || field.isPublic);
@@ -513,7 +530,15 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 						}
 
 						// Compile function
+						#if (eval && reflaxe_gdscript_measure)
+						final me = new MeasurePerformance();
+						#end
+
 						var result = compileClassFuncExpr(expr).tab();
+
+						#if (eval && reflaxe_gdscript_measure)
+						me.measure("expr is %MILLI%");
+						#end
 
 						if(isConstructor) {
 							compilingInConstructor = false;
@@ -544,6 +569,10 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				
 				functions.push(funcDeclaration.toString());
 			}
+
+			#if (eval && reflaxe_gdscript_measure)
+			funcMeasure.measure("Reflaxe " + classType.name + "." + f.field.name + " compiled in %MILLI% milliseconds");
+			#end
 		}
 
 		// if there are no instance variables or functions,
@@ -610,6 +639,10 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 		// Generate file
 		setExtraFile(path, gdscriptContent);
+
+		#if (eval && reflaxe_gdscript_measure)
+		classMeasure.measure("Reflaxe " + classType.name + " compiled in %MILLI% milliseconds");
+		#end
 
 		return null;
 	}
