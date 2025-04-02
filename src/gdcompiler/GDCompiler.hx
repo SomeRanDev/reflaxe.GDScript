@@ -1124,7 +1124,8 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		return if(nameMeta.hasMeta(":native")) {
 			nameMeta.getNameOrNative();
 		} else {
-			final name = compileVarName(nameMeta.getNameOrNativeName());
+			final name = nameMeta.getNameOrNativeName();
+			final name = nameMeta.hasMeta(":nativeName") ? name : compileVarName(name);
 
 			var bypassSelf = false;
 
