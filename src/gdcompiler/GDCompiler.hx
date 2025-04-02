@@ -412,7 +412,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				declBuffer.addMulti(" = ", gdScriptVal);
 			}
 
-			function getFunctionContent(name: String): Null<{ data: ClassFuncData, content: String }> {
+			function getFunctionContent(name: Null<String>): Null<{ data: ClassFuncData, content: String }> {
 				if(name != null) {
 					var desiredFuncField = null;
 					for(f in funcFields) {
@@ -422,7 +422,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 						}
 					}
 
-					if(desiredFuncField != null) {
+					if(desiredFuncField != null && desiredFuncField.expr != null) {
 						return {
 							data: desiredFuncField,
 							content: compileClassFuncExpr(desiredFuncField.expr)
