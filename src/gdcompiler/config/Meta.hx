@@ -53,6 +53,26 @@ enum abstract Meta(String) from String to String {
 	var Icon = ":icon";
 
 	/**
+		@:get(functionIdentifier: Expr)
+
+		Adds a `get` implementation to the variable.
+
+		The argument must be the identifier to a function with no arguments and
+		returns the same type as the variable.
+	**/
+	var Get = ":get";
+
+	/**
+		@:set(functionIdentifier: Expr)
+
+		Adds a `set` implementation to the variable.
+
+		The argument must be the identifier to a function with no return and
+		one argument the same type as the variable.
+	**/
+	var Set = ":set";
+
+	/**
 		@:outputFile(path: String)
 
 		Explicitly sets the output file path for a class.
