@@ -412,6 +412,50 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				declBuffer.addMulti(" = ", gdScriptVal);
 			}
 
+			function getFunctionContent(name: String): Null<{ data: ClassFuncData, content: String }> {
+				if(name != null) {
+					var desiredFuncField = null;
+					for(f in funcFields) {
+						if(f.field.name == name) {
+							desiredFuncField = f;
+							break;
+						}
+					}
+
+					if(desiredFuncField != null) {
+						return {
+							data: desiredFuncField,
+							content: compileClassFuncExpr(desiredFuncField.expr)
+						}
+					}
+				}
+				return null;
+			}
+
+			var getContent = null;
+			if(field.hasMeta(Meta.Get)) {
+				getContent = getFunctionContent(field.meta.extractIdentifierFromFirstMeta(Meta.Get, 0));
+			}
+			var setContent = null;
+			if(field.hasMeta(Meta.Set)) {
+				setContent = getFunctionContent(field.meta.extractIdentifierFromFirstMeta(Meta.Set, 0));
+			}
+
+			if(getContent != null || setContent != null) {
+				declBuffer.add(":\n");
+				if(getContent != null) {
+					declBuffer.add("\tget:\n");
+					declBuffer.add(getContent.content.tab(2));
+					if(setContent != null) declBuffer.add("\n");
+					funcFields.remove(getContent.data);
+				}
+				if(setContent != null && setContent.data.args.length > 0) {
+					declBuffer.addMulti("\tset(", setContent.data.args[0].getName(), "):\n");
+					declBuffer.add(setContent.content.tab(2));
+					funcFields.remove(setContent.data);
+				}
+			}
+
 			(v.isStatic ? staticVariables : variables).push(declBuffer.toString());
 
 			#if (eval && reflaxe_gdscript_measure)
