@@ -349,7 +349,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 			// @:const
 			var isConst = false;
-			if(!v.isStatic && field.hasMeta(Meta.Const)) {
+			if(field.hasMeta(Meta.Const)) {
 				isConst = true;
 
 				switch(field.meta.extractExpressionsFromFirstMeta(Meta.Const)) {
@@ -1268,6 +1268,15 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				case FInstance(clsRef, _, clsFieldRef): {
 					final isSelfAccess = switch(e.expr) {
 						case TConst(TThis): true;
+						case _: false;
+					}
+					if(isSelfAccess && clsFieldRef.get().hasMeta(Meta.Const)) {
+						return name;
+					}
+				}
+				case FStatic(clsRef, clsFieldRef): {
+					final isSelfAccess = switch(e.expr) {
+						case TTypeExpr(TClassDecl(_.get().equals(clsRef.get()) => true)): true;
 						case _: false;
 					}
 					if(isSelfAccess && clsFieldRef.get().hasMeta(Meta.Const)) {
