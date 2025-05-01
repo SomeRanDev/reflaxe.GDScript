@@ -16,3 +16,4 @@ static func test() -> void:
 	var t: TestSignals = TestSignals.new()
 
 	t.do_test()
+

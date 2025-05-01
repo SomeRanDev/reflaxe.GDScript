@@ -25,13 +25,13 @@ static func test() -> void:
 		var cond: bool = obj.testField == 123
 		assert(cond, "Test assert failed.")
 
-	var str: String = "World"
+	var _str: String = "World"
 
-	str = "Hello, " + str
-	str += "!"
-	assert(str == "Hello, World!", "Test assert failed.")
+	_str = "Hello, " + _str
+	_str += "!"
+	assert(_str == "Hello, World!", "Test assert failed.")
 
-	if (str != "Goodbye World!"):
+	if (_str != "Goodbye World!"):
 		var num: int = 3
 		assert(num > 1, "Test assert failed.")
 		assert(num >= 3 && num >= 2, "Test assert failed.")
@@ -159,4 +159,5 @@ static func test() -> void:
 	anotherNum += 10
 	anotherNum2 = anotherNum
 	assert(anotherNum == anotherNum2, "Test assert failed.")
+	await get_tree().create_timer(1.0).timeout
 

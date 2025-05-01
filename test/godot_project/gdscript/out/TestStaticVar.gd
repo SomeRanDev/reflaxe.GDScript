@@ -29,7 +29,7 @@ static func test() -> void:
 		var cond: bool = count == 20
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond: bool = OtherClass.str.length() == 0
+		var cond: bool = OtherClass._str.length() == 0
 		assert(cond, "Test assert failed.")
 
 	OtherClass.add.call()
@@ -37,13 +37,13 @@ static func test() -> void:
 	OtherClass.add.call()
 
 	if true:
-		var cond: bool = OtherClass.str.length() == 3
+		var cond: bool = OtherClass._str.length() == 3
 		assert(cond, "Test assert failed.")
 
 	OtherClass.clear()
 
 	if true:
-		var cond: bool = OtherClass.str.length() == 0
+		var cond: bool = OtherClass._str.length() == 0
 		assert(cond, "Test assert failed.")
 
 	var old = OtherClass.add
@@ -54,7 +54,7 @@ static func test() -> void:
 	OtherClass.add.call()
 
 	if true:
-		var cond: bool = OtherClass.str == "||"
+		var cond: bool = OtherClass._str == "||"
 		assert(cond, "Test assert failed.")
 
 	if (OtherClass.add != null):

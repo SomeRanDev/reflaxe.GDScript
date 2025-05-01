@@ -123,5 +123,7 @@ class TestSyntax {
 
 		anotherNum2 = anotherNum += 10;
 		assert(anotherNum == anotherNum2);
+
+		@:await untyped __gdscript__("get_tree().create_timer(1.0).timeout");
 	}
 }

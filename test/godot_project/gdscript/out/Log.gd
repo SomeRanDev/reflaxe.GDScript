@@ -2,17 +2,17 @@
 class_name Log
 
 static var trace = func(v, infos = null) -> void:
-	var str: String = Log.formatOutput(v, infos)
-	print(str)
+	var _str: String = Log.formatOutput(v, infos)
+	print(_str)
 
 func _init() -> void:
 	pass
 
 static func formatOutput(v, infos: Dictionary) -> String:
-	var str: String = str(v)
+	var _str: String = str(v)
 
 	if (infos == null):
-		return str
+		return _str
 
 	var pstr: String = infos.get("fileName") + ":" + str(infos.get("lineNumber"))
 
@@ -22,7 +22,7 @@ static func formatOutput(v, infos: Dictionary) -> String:
 		while (_g < _g1.size()):
 			var v2 = _g1[_g]
 			_g += 1
-			str += ", " + str(v2)
+			_str += ", " + str(v2)
 
-	return pstr + ": " + str
+	return pstr + ": " + _str
 
