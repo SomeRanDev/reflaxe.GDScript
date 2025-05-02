@@ -19,4 +19,17 @@ class Syntax {
 		final identifier = "%" + identifier;
 		return macro untyped __gdscript__($v{identifier});
 	}
+
+	public static macro function dollar(identifier: Expr): Expr {
+		final identifier = switch(identifier.expr) {
+			case EConst(CString(s, _) | CIdent(s)): s;
+			case _: {
+				Context.error("Expected String or identifier expression", identifier.pos);
+				return macro {};
+			}
+		}
+
+		final identifier = "$" + identifier;
+		return macro untyped __gdscript__($v{identifier});
+	}
 }
