@@ -979,6 +979,9 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 					result.addMulti(" as ", typeCode ?? "Variant", ")");
 				}
 			}
+			case TMeta({ name: _ => Meta.Await }, expr): {
+				result.addMulti("await ", compileExpressionOrError(expr));
+			}
 			case TMeta(_, expr): {
 				result.add(compileExpressionOrError(expr));
 			}

@@ -2,6 +2,25 @@ package gdcompiler.config;
 
 enum abstract Meta(String) from String to String {
 	/**
+		@:await
+
+		`await`s an expression.
+
+		---
+		
+		The conversion is extremely simple; it converts `@:await` into await.
+		```haxe
+		// This
+		final waited_for_value = @:await auth.login(password);
+		```
+		```gdscript
+		# Becomes this
+		var waited_for_value = await auth.login(password);
+		```
+	**/
+	var Await = ":await";
+
+	/**
 		@:onready
 
 		Marks a variable as `@onready`.
