@@ -60,7 +60,7 @@ extern class String {
 	}
 
 	@:runtime public inline function split(delimiter: String): Array<String> {
-		return untyped __gdscript__("Array({0}.split({1}))", this, delimiter);
+		return untyped __gdscript__("Array(Array({0}.split({1})), Variant.Type.TYPE_STRING, \"\", null)", this, delimiter);
 	}
 
 	@:runtime public inline function substring(startIndex: Int, endIndex: Int = -1): String {
