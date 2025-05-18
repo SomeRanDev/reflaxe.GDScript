@@ -1,6 +1,7 @@
 package gdcompiler.subcompilers;
 
 import gdcompiler.config.Meta;
+import gdcompiler.subcompilers.EnumCompiler;
 import gdcompiler.GDCompiler;
 
 import reflaxe.helpers.Context;
@@ -27,6 +28,10 @@ class TypeCompiler {
 		return classType.getNameOrNativeName();
 	}
 
+	public function compileEnumName(enumType: EnumType): String {
+		return enumType.getNameOrNativeName();
+	}
+
 	function compileModuleType(m: ModuleType, isExport: Bool): String {
 		return switch(m) {
 			case TClassDecl(clsRef): {
@@ -43,10 +48,24 @@ class TypeCompiler {
 		final e = enmRef.get();
 		return if(e.isReflaxeExtern()) {
 			e.pack.joinAppend(".") + e.getNameOrNativeName();
-		} else if(!isExport) {
-			"Variant";
 		} else {
-			"Dictionary";
+			final kind = main.enumCompiler.getCompileKind(e);
+			switch(kind) {
+				case GDScriptEnum: {
+					final name = compileEnumName(e);
+					name + "." + name;
+				}
+				case AsInt: {
+					"int";
+				}
+				case AsDictionary: {
+					if(!isExport) {
+						"Variant";
+					} else {
+						"Dictionary";
+					}
+				}
+			}
 		}
 	}
 

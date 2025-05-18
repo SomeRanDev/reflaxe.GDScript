@@ -24,6 +24,7 @@ import reflaxe.preprocessors.implementations.everything_is_expr.EverythingIsExpr
 import gdcompiler.config.Define;
 import gdcompiler.config.Meta;
 
+import gdcompiler.subcompilers.EnumCompiler;
 import gdcompiler.subcompilers.TypeCompiler;
 
 using reflaxe.helpers.ArrayHelper;
@@ -49,9 +50,14 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 	static var autoLoadName = "HxAutoLoad";
 
 	/**
+		Enum compiler.
+	**/
+	var enumCompiler: EnumCompiler;
+
+	/**
 		Type compiler.
 	**/
-	var TComp: TypeCompiler;
+	var typeCompiler: TypeCompiler;
 
 	/**
 		Keeps track of all the classes that extend from `godot.Node`.
@@ -79,7 +85,9 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 	public function new() {
 		super();
 
-		TComp = new TypeCompiler(this);
+		@:nullSafety(Off) final self = this;
+		enumCompiler = new EnumCompiler(self);
+		typeCompiler = new TypeCompiler(self);
 	}
 
 	/**
@@ -160,7 +168,7 @@ script="$pluginScriptName"
 			final args = [
 				'"${cls.name}"',
 				'"${cls.superClass.trustMe().t.get().name}"',
-				'preload("${getClassGDOutputPath(cls)}")',
+				'preload("${getGDOutputPath(cls)}")',
 				'preload("${cls.meta.extractStringFromFirstMeta(Meta.Icon) ?? "res://icon.svg"}")'
 			];
 			enterTreeLines.push('add_custom_type(${args.join(", ")})');
@@ -172,7 +180,7 @@ script="$pluginScriptName"
 			final args = [
 				'"${cls.name}"',
 				'"${cls.superClass.trustMe().t.get().name}"',
-				'preload("${getClassGDOutputPath(cls)}")',
+				'preload("${getGDOutputPath(cls)}")',
 				'preload("${cls.meta.extractStringFromFirstMeta(Meta.Icon) ?? "res://icon.svg"}")'
 			];
 			enterTreeLines.push('add_custom_type(${args.join(", ")})');
@@ -285,12 +293,12 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		if(isWrapper) { // Wrapper only exists to host code, should not be treated like node itself
 			header.add("extends Object\n");
 		} else if(classType.superClass != null) {
-			header.add("extends " + TComp.compileClassName(classType.superClass.t.get()) + "\n");
+			header.add("extends " + typeCompiler.compileClassName(classType.superClass.t.get()) + "\n");
 		}
 
 		// ----------------------
 		// Class name
-		header.addMulti("class_name ", TComp.compileClassName(classType));
+		header.addMulti("class_name ", typeCompiler.compileClassName(classType));
 
 		// Add "_GD" to the end of class name for wrapper classes.
 		if(isWrapper) {
@@ -402,7 +410,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			declBuffer.add(name);
 
 			#if !gdscript_untyped
-			final compiledType = TComp.compileType(v.field.type, v.field.pos, v.field.hasMeta(":export"));
+			final compiledType = typeCompiler.compileType(v.field.type, v.field.pos, v.field.hasMeta(":export"));
 			if(compiledType != null) {
 				declBuffer.addMulti(": ", compiledType.trustMe());
 			}
@@ -546,7 +554,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 				if(!isSignal) {
 					#if !gdscript_untyped
-					final returnType = TComp.compileType(f.ret, field.pos);
+					final returnType = typeCompiler.compileType(f.ret, field.pos);
 					if(returnType != null) {
 						funcDeclaration.addMulti(" -> ", returnType);
 					}
@@ -664,22 +672,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			StringTools.trim(result.toString()) + "\n\n";
 		}
 
-		// @:outputFile(path: String)
-		var path = if(classType.hasMeta(Meta.OutputFile)) {
-			final outputFilePath = classType.meta.extractStringFromFirstMeta(Meta.OutputFile);
-			if(outputFilePath == null) {
-				final msg = "@:outputFile requires a String path for the first argument.";
-				Context.error(msg, classType.meta.getFirstPosition(Meta.OutputFile) ?? classType.pos);
-			}
-			outputFilePath;
-		} else {
-			null;
-		}
-
-		// Default name
-		if(path == null) {
-			path = getClassGDOutputPath(classType);
-		}
+		final path = getPathForBaseType(classType);
 
 		// Generate file
 		setExtraFile(path, gdscriptContent);
@@ -691,14 +684,14 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		return null;
 	}
 
-	function getClassGDOutputPath(classType: ClassType) {
-		var path = classType.globalName() + ".gd";
+	function getGDOutputPath(baseType: BaseType) {
+		var path = baseType.globalName() + ".gd";
 		#if gdscript_output_dirs
-		if(classType.pack.length > 0) {
+		if(baseType.pack.length > 0) {
 			#if !gdscript_always_packages_in_output_filenames
-			path = classType.name + ".gd";
+			path = baseType.name + ".gd";
 			#end
-			path = classType.pack.join("/") + "/" + path;
+			path = baseType.pack.join("/") + "/" + path;
 		}
 		#end
 		return path;
@@ -709,7 +702,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		result.add(compileVarName(arg.getName()));
 		
 		#if !gdscript_untyped
-		final type = TComp.compileType(arg.type, pos);
+		final type = typeCompiler.compileType(arg.type, pos);
 		if(type != null) {
 			result.addMulti(": ", type);
 		}
@@ -736,7 +729,29 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		return result;
 	}
 
-	public function compileEnumImpl(enumType: EnumType, options:Array<EnumOptionData>): Null<String> {
+	function getPathForBaseType(baseType: BaseType): String {
+		// @:outputFile(path: String)
+		var path = if(baseType.hasMeta(Meta.OutputFile)) {
+			final outputFilePath = baseType.meta.extractStringFromFirstMeta(Meta.OutputFile);
+			if(outputFilePath == null) {
+				final msg = "@:outputFile requires a String path for the first argument.";
+				Context.error(msg, baseType.meta.getFirstPosition(Meta.OutputFile) ?? baseType.pos);
+			}
+			outputFilePath;
+		} else {
+			null;
+		}
+
+		// Default name
+		if(path == null) {
+			path = getGDOutputPath(baseType);
+		}
+
+		return path;
+	}
+
+	public function compileEnumImpl(enumType: EnumType, options: Array<EnumOptionData>): Null<String> {
+		enumCompiler.compile(enumType, options, getPathForBaseType(enumType));
 		return null;
 	}
   
@@ -770,7 +785,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				result.add(fieldAccessToGDScript(e, fa));
 			}
 			case TTypeExpr(m): {
-				result.add(TComp.compileType(TypeHelper.fromModuleType(m), expr.pos) ?? "Variant");
+				result.add(typeCompiler.compileType(TypeHelper.fromModuleType(m), expr.pos) ?? "Variant");
 			}
 			case TParenthesis(e): {
 				final gdScript = compileExpressionOrError(e);
@@ -803,7 +818,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 					result.add("([");
 					result.add(el.map(e -> compileExpression(e)).join(", "));
 					result.add("] as ");
-					result.add(TComp.compileType(expr.t, expr.pos));
+					result.add(typeCompiler.compileType(expr.t, expr.pos));
 					result.add(")");
 				}
 			}
@@ -837,7 +852,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				result.add(")");
 
 				#if !gdscript_untyped
-				final type = TComp.compileType(tfunc.t, expr.pos);
+				final type = typeCompiler.compileType(tfunc.t, expr.pos);
 				if(type != null) {
 					result.addMulti(" -> ", type);
 				}
@@ -855,7 +870,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 						result.addMulti(" = [", e, "]");	
 					} else {
 						#if !gdscript_untyped
-						final compiledType = TComp.compileType(tvar.t, expr.pos);
+						final compiledType = typeCompiler.compileType(tvar.t, expr.pos);
 						if(compiledType != null) {
 							result.addMulti(": ", compiledType);
 						}
@@ -975,7 +990,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				}
 				result.add(compileExpressionOrError(expr));
 				if(hasModuleType) {
-					final typeCode = TComp.compileType(TypeHelper.fromModuleType(maybeModuleType.trustMe()), expr.pos);
+					final typeCode = typeCompiler.compileType(TypeHelper.fromModuleType(maybeModuleType.trustMe()), expr.pos);
 					result.addMulti(" as ", typeCode ?? "Variant", ")");
 				}
 			}
@@ -997,19 +1012,28 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				}
 			}
 			case TEnumIndex(expr): {
-				final isExtern = switch(expr.t) {
-					case TEnum(_.get() => e, _): e.isReflaxeExtern();
-					case _: false;
+				final kind = switch(expr.t) {
+					case TEnum(_.get() => e, _): {
+						if(e.isReflaxeExtern()) {
+							GDScriptEnum;
+						} else {
+							enumCompiler.getCompileKind(e);
+						}
+					}
+					case _: AsDictionary;
 				}
 
-				if(isExtern) {
-					result.add("((");
-				}
-				result.add(compileExpressionOrError(expr));
-				if(isExtern) {
-					result.add(" as Variant) as int)");
-				} else {
-					result.add("._index");
+				final expression = compileExpressionOrError(expr);
+				switch(kind) {
+					case GDScriptEnum: {
+						result.addMulti("((", expression, " as Variant) as int)");
+					}
+					case AsInt: {
+						result.add(expression);
+					}
+					case AsDictionary: {
+						result.addMulti(expression, "._index");
+					}
 				}
 			}
 		}
@@ -1086,7 +1110,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		final nfc = this.compileNativeFunctionCodeMeta(calledExpr, arguments, function(index: Int) {
 			if(nfcTypes == null) nfcTypes = calledExpr.getFunctionTypeParams(originalExprType);
 			if(nfcTypes != null && index >= 0 && index < nfcTypes.length) {
-				return TComp.compileType(nfcTypes[index], calledExpr.pos);
+				return typeCompiler.compileType(nfcTypes[index], calledExpr.pos);
 			}
 			return null;
 		});
@@ -1103,9 +1127,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				switch(fa) {
 					// enum field access
 					case FEnum(_, _): {
-						final enumCall = compileEnumFieldCall(calledExpr, arguments);
-						if(enumCall != null) enumCall;
-						else null;
+						compileEnumFieldCall(calledExpr, arguments);
 					}
 					// @:constructor static function
 					case FStatic(classTypeRef, _.get() => cf) if(cf.meta.maybeHas(":constructor")): {
@@ -1155,7 +1177,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				native + "(" + args + ")";
 			} else {
 				final cls = classTypeRef.get();
-				final className = TComp.compileClassName(cls);
+				final className = typeCompiler.compileClassName(cls);
 				final meta = cls.meta.maybeExtract(":bindings_api_type");
 
 				// Check for @:bindings_api_type("builtin_classes") metadata
@@ -1233,7 +1255,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				case FStatic(clsRef, cfRef): {
 					final cls = clsRef.get();
 					final cf = cfRef.get();
-					final className = TComp.compileClassName(cls);
+					final className = typeCompiler.compileClassName(cls);
 					switch(cf.kind) {
 						case FMethod(kind): {
 							if(kind == MethDynamic) {
@@ -1255,13 +1277,9 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 				// Check if this is an enum 
 				// TODO... is this correct??? I wrote this in 2022 but idk how this works??
+				// [May 2025] Update from 2025, I'm not sure why my past self was hesitant this could be wrong??? Looks good to me?
 				case FEnum(enumRef, enumField): {
-					final enumType = enumRef.get();
-					if(enumType.isReflaxeExtern()) {
-						return enumType.getNameOrNative() + "." + enumField.name;
-					}
-
-					return "{ \"_index\": " + enumField.index + " }";
+					return enumCompiler.compileExpressionFromIndex(enumRef.get(), enumField, null);
 				}
 				case _:
 			}
@@ -1342,42 +1360,16 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		Dictionary with the enum data.
 	**/
 	function compileEnumFieldCall(e: TypedExpr, el: Array<TypedExpr>): Null<String> {
-		final ef = switch(e.expr) {
+		return switch(e.expr) {
 			case TField(_, fa): {
 				switch(fa) {
-					case FEnum(enumRef, ef): {
-						if(enumRef.get().isReflaxeExtern()) {
-							return ef.name;
-						}
-						ef;
+					case FEnum(_.get() => enumType, enumField): {
+						enumCompiler.compileExpressionFromIndex(enumType, enumField, el);
 					}
 					case _: null;
 				}
 			}
 			case _: null;
-		}
-
-		return if(ef != null) {
-			var result = new StringBuf();
-			switch(ef.type) {
-				case TFun(args, _): {
-					result.addMulti("{ \"_index\": ", Std.string(ef.index), ", ");
-					final fields = [];
-					for(i in 0...el.length) {
-						if(args[i] != null) {
-							result.addMulti("\"", args[i].name, "\": ", compileExpressionOrError(el[i]));
-							if(i < el.length - 1) {
-								result.add(", ");
-							}
-						}
-					}
-					result.add(" }");
-				}
-				case _:
-			}
-			result.toString();
-		} else {
-			null;
 		}
 	}
 }
