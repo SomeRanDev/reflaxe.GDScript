@@ -93,10 +93,7 @@ class EnumCompiler {
 			case AsInt: {
 				Std.string(enumField.index);
 			}
-			case AsDictionary if(!providedArgs): {
-				"{ \"_index\": " + enumField.index + " }";
-			}
-			case AsDictionary: {
+			case AsDictionary if(exprArgsPassed != null && providedArgs): { // Redundant null-check for null-safety
 				final result = new StringBuf();
 				final enumFieldArgs = switch(enumField.type) {
 					case TFun(args, _): args;
@@ -115,6 +112,9 @@ class EnumCompiler {
 				}
 				result.add(" }");
 				result.toString();
+			}
+			case AsDictionary: {
+				"{ \"_index\": " + enumField.index + " }";
 			}
 		}
 	}
