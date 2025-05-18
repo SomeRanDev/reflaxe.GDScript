@@ -52,10 +52,10 @@ static func test() -> void:
 		var cond: bool = tempLeft == 0
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond: bool = Array(_str.split("s"))[0] == "Te"
+		var cond: bool = Array(Array(_str.split("s")), Variant.Type.TYPE_STRING, "", null)[0] == "Te"
 		assert(cond, "Test assert failed.")
 	if true:
-		var cond: bool = Array(_str.split("e")).size() == 2
+		var cond: bool = Array(Array(_str.split("e")), Variant.Type.TYPE_STRING, "", null).size() == 2
 		assert(cond, "Test assert failed.")
 
 	var str2: String = "Hello, World!"

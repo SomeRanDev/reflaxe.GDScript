@@ -159,5 +159,4 @@ static func test() -> void:
 	anotherNum += 10
 	anotherNum2 = anotherNum
 	assert(anotherNum == anotherNum2, "Test assert failed.")
-	await get_tree().create_timer(1.0).timeout
 

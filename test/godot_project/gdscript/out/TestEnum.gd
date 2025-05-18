@@ -3,7 +3,30 @@ class_name TestEnum
 func _init() -> void:
 	pass
 
+static func isLeftWinner(left: MyGDEnum.MyGDEnum, right: MyGDEnum.MyGDEnum) -> bool:
+	var tempResult
+
+	match (((left as Variant) as int)):
+		0:
+			tempResult = right == MyGDEnum.MyGDEnum.Scissors
+		1:
+			tempResult = right == MyGDEnum.MyGDEnum.Rock
+		2:
+			tempResult = right == MyGDEnum.MyGDEnum.Paper
+
+	return tempResult
+
 static func test() -> void:
+	if true:
+		var cond: bool = TestEnum.isLeftWinner(MyGDEnum.MyGDEnum.Paper, MyGDEnum.MyGDEnum.Rock)
+		assert(cond, "Test assert failed.")
+	if true:
+		var cond: bool = !TestEnum.isLeftWinner(MyGDEnum.MyGDEnum.Rock, MyGDEnum.MyGDEnum.Paper)
+		assert(cond, "Test assert failed.")
+	if true:
+		var cond: bool = !TestEnum.isLeftWinner(MyGDEnum.MyGDEnum.Scissors, MyGDEnum.MyGDEnum.Scissors)
+		assert(cond, "Test assert failed.")
+
 	var a: Variant = { "_index": 0 }
 	var b: Variant = { "_index": 1, "i": 123 }
 	var c: Variant = { "_index": 2, "s": "Test" }

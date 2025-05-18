@@ -12,5 +12,9 @@ config_version=5
 
 config/name="Haxe-to-GDScript-Test"
 run/main_scene="res://test_scene.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
