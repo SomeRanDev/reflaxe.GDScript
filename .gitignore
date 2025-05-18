@@ -1,9 +1,18 @@
+# Test
 test/gdscript/out
 test/project.godot
+
+# Reflaxe Build
 _Build/
 
+# Bindings
 godot/
 
+# Haxelib Files
 extension_api.json
 gdscript.zip
 Submit.bat
+
+# Projects and Personal Utilities
+Build.bat
+ReflaxeGDScript.code-workspace
