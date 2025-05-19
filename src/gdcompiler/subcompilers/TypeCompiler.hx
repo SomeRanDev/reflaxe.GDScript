@@ -102,6 +102,9 @@ class TypeCompiler {
 		// }
 
 		switch(t) {
+			case TAbstract(_, _) if(t.isMultitype()): {
+				return compileType(Context.followWithAbstracts(t, true), errorPos, isExport);
+			}
 			case TAbstract(absRef, params): {
 				final abs = absRef.get();
 
@@ -143,10 +146,14 @@ class TypeCompiler {
 			}
 
 			case TDynamic(_): return null;
-			case TAnonymous(_): return "Dictionary";
+			case TAnonymous(_): return "Variant";
 			case TFun(_, _): return null;
 			case _ if(t.isTypeParameter()): return null;
 
+			case TInst(_.get() => cls, _) if(cls.isInterface): {
+				// Interfaces don't exist, just use a Variant
+				return "Variant";
+			}
 			case TInst(clsRef, _): {
 				return compileModuleType(TClassDecl(clsRef), isExport);
 			}

@@ -40,7 +40,7 @@ class GDCompilerInit {
 			fileOutputExtension: ".gd",
 			outputDirDefineName: "gdscript-output",
 			fileOutputType: FilePerClass,
-			ignoreTypes: ["haxe.iterators.ArrayIterator"],
+			ignoreTypes: [],
 			reservedVarNames: reservedNames(),
 			targetCodeInjectionName: "__gdscript__",
 			allowMetaMetadata: true,
@@ -122,6 +122,20 @@ class GDCompilerInit {
 		"push_error", "push_warning", "var_to_str", "str_to_var", "var_to_bytes", "bytes_to_var",
 		"var_to_bytes_with_objects", "bytes_to_var_with_objects", "hash", "instance_from_id", "is_instance_id_valid",
 		"is_instance_valid", "rid_allocate_id", "rid_from_int64", "is_same",
+
+		// Object fields
+		// These are on ALL objects, so better to just be safe than sorry...
+		"_get", "_get_property_list", "_init", "_iter_get", "_iter_init", "_iter_next", "_notification",
+		"_property_can_revert", "_property_get_revert", "_set", "_to_string", "_validate_property",
+		"get_class", "is_class", "set", "get", "set_indexed", "get_indexed", "get_property_list",
+		"get_method_list", "property_can_revert", "property_get_revert", "notification", "to_string",
+		"get_instance_id", "set_script", "get_script", "set_meta", "remove_meta", "get_meta", "has_meta",
+		"get_meta_list", "add_user_signal", "has_user_signal", "remove_user_signal", "emit_signal", "call",
+		"call_deferred", "set_deferred", "callv", "has_method", "get_method_argument_count", "has_signal",
+		"get_signal_list", "get_signal_connection_list", "get_incoming_connections", "connect", "disconnect",
+		"is_connected", "has_connections", "set_block_signals", "is_blocking_signals", "notify_property_list_changed",
+		"set_message_translation", "can_translate_messages", "tr", "tr_n", "get_translation_domain", "set_translation_domain",
+		"is_queued_for_deletion", "cancel_free",
 
 		// Reserved for @:wrapper argument
 		"_self"

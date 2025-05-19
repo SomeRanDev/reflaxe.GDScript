@@ -256,6 +256,13 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		return extendsFrom(t, ":is_resource");
 	}
 
+	/**
+		Ignore interfaces.
+	**/
+	public override function shouldGenerateClass(cls: ClassType): Bool {
+		return !cls.isInterface && super.shouldGenerateClass(cls);
+	}
+
 	public function compileClassImpl(classType: ClassType, varFields: Array<ClassVarData>, funcFields: Array<ClassFuncData>): Null<String> {
 		#if (eval && reflaxe_gdscript_measure)
 		final classMeasure = new reflaxe.debug.MeasurePerformance();

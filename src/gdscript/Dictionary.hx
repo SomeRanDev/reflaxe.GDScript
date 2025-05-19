@@ -54,9 +54,9 @@ extern class Dictionary_Fields<KeyType, ValueType> {
 	public function keys(): Array<KeyType>;
 	public function values(): Array<ValueType>;
 	public function duplicate(deep: Bool = false): Dictionary<KeyType, ValueType>;
-	public function get(key: Dynamic, ?default_value: Dynamic): Dynamic;
+	@:nativeName("get") public function get(key: Dynamic, ?default_value: Dynamic): Dynamic;
 	public function get_or_add(key: Dynamic, ?default_value: Dynamic): Dynamic;
-	public function set(key: Dynamic, value: Dynamic): Bool;
+	@:nativeName("set") public function set(key: Dynamic, value: Dynamic): Bool;
 	public function is_typed(): Bool;
 	public function is_typed_key(): Bool;
 	public function is_typed_value(): Bool;

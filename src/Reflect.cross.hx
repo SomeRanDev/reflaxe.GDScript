@@ -39,7 +39,7 @@ class Reflect {
 
 	public static function fields(o: Dynamic): Array<String> {
 		return untyped {
-			final list: Array<{ name: String }> = o.get_property_list();
+			final list: Array<{ name: String }> = untyped __gdscript__("{0}.get_property_list()", o);
 			var result = [];
 			for(l in list) {
 				result.push(l.name);
