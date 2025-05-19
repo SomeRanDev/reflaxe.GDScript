@@ -64,7 +64,7 @@ static func test() -> void:
 
 	var copied: StringMap = map.copy()
 
-	copied != map
+	assert(copied != map, "Test assert failed.")
 
 	if true:
 		var cond: bool = copied.exists("foo") == map.exists("foo")
@@ -243,7 +243,7 @@ static func test() -> void:
 
 	var copied2: IntMap = map6.copy()
 
-	copied2 != map6
+	assert(copied2 != map6, "Test assert failed.")
 
 	if true:
 		var cond: bool = copied2.exists(1) == map6.exists(1)
@@ -476,7 +476,7 @@ static func test() -> void:
 
 	var copied3: ObjectMap = map8.copy()
 
-	copied3 != map8
+	assert(copied3 != map8, "Test assert failed.")
 
 	if true:
 		var cond: bool = copied3.exists(a) == map8.exists(a)
@@ -656,7 +656,7 @@ static func test() -> void:
 
 	var copied4: ObjectMap = map9.copy()
 
-	copied4 != map9
+	assert(copied4 != map9, "Test assert failed.")
 
 	if true:
 		var cond: bool = copied4.exists(a2) == map9.exists(a2)
@@ -1094,5 +1094,3 @@ static func test() -> void:
 	if true:
 		var cond: bool = (["1a", "1b"] as Array[String]).has(tempArray15[1])
 		assert(cond, "Test assert failed.")
-
-	print("Map test reached end.");

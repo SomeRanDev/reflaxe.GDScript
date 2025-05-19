@@ -30,7 +30,7 @@ class TestMap {
 		assert(map4.get("foo") == 1);
 
 		var copied = map.copy();
-		copied != map;
+		assert(copied != map);
 		assert(copied.exists("foo") == map.exists("foo"));
 		assert(copied.exists("bar") == map.exists("bar"));
 		assert(copied.exists("baz") == map.exists("baz"));
@@ -87,7 +87,7 @@ class TestMap {
 		assert(map.get(3) == 3);
 
 		var copied = map.copy();
-		copied != map;
+		assert(copied != map);
 		assert(copied.exists(1) == map.exists(1));
 		assert(copied.exists(2) == map.exists(2));
 		assert(copied.exists(3) == map.exists(3));
@@ -154,7 +154,7 @@ class TestMap {
 		assert([1,2,3].contains(values[2]));
 
 		var copied = map.copy();
-		copied != map;
+		assert(copied != map);
 		assert(copied.exists(a) == map.exists(a));
 		assert(copied.exists(b) == map.exists(b));
 		assert(copied.exists(c) == map.exists(c));
@@ -213,7 +213,7 @@ class TestMap {
 		assert([1,2,3].contains(values[2]));
 
 		var copied = map.copy();
-		copied != map;
+		assert(copied != map);
 		assert(copied.exists(a) == map.exists(a));
 		assert(copied.exists(b) == map.exists(b));
 		assert(copied.exists(c) == map.exists(c));
