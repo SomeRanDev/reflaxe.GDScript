@@ -38,7 +38,7 @@ extern abstract Dictionary<KeyType, ValueType>(Dictionary_Fields<KeyType, ValueT
 extern class Dictionary_Fields<KeyType, ValueType> {
 	@:overload(function(from: Dictionary<KeyType, ValueType>): Void { })
 	@:overload(function(base: Dictionary<KeyType, ValueType>, key_type: Int, key_class_name: StringName, key_script: Dynamic, value_type: Int, value_class_name: StringName, value_script: Dynamic): Void { })
-	public function new();
+	@:nativeFunctionCode("{}") public function new();
 	public function size(): Int;
 	public function is_empty(): Bool;
 	public function clear(): Void;
