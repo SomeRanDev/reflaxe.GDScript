@@ -15,6 +15,7 @@ class TestAll {
 		TestReflect.test();
 		TestClass.test();
 		TestSignals.test();
+		TestMap.test();
 
 		trace("Tests successful!!");
 	}
