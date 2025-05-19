@@ -1,5 +1,5 @@
 version // 1
-0//0
+0//1
 test_TestStd_C.gd
 test_TestStd_B.gd
 test_TestStd_A.gd
@@ -16,6 +16,7 @@ TestStd.gd
 TestStaticVar.gd
 TestSignals.gd
 TestReflect.gd
+TestNode.gd
 TestMeta.gd
 TestMath.gd
 TestEnum.gd

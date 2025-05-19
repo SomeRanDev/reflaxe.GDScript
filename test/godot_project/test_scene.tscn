@@ -1,6 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://b2ov0mlfa2u6n"]
+[gd_scene load_steps=3 format=3 uid="uid://b2ov0mlfa2u6n"]
 
 [ext_resource type="Script" uid="uid://ct7urpn1juqu1" path="res://gdscript/Test.gd" id="1_s5uoa"]
+[ext_resource type="Script" uid="uid://cx1b4may35vuv" path="res://gdscript/out/TestNode.gd" id="2_ia1lp"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_s5uoa")
+
+[node name="TestNode" type="Node" parent="."]
+script = ExtResource("2_ia1lp")
+dictionary = Dictionary[String, String]({
+"What is this?": "This is a added in editor! Success!!"
+})
+metadata/_custom_type_script = "uid://cx1b4may35vuv"

@@ -5,4 +5,8 @@ func _init():
 	TestAll.test();
 
 func _ready():
-	get_tree().quit(0);
+	call_deferred("quit");
+
+func quit(): pass
+	# quits too soon for some reason?? Fix later
+	# get_tree().quit(0);
