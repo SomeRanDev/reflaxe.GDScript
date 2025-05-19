@@ -21,3 +21,4 @@ static func test() -> void:
 		"className": "test.TestClass",
 		"methodName": "test"
 	})
+

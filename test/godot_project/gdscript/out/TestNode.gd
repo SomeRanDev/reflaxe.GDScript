@@ -14,3 +14,4 @@ func _ready() -> void:
 		"className": "test.TestNode",
 		"methodName": "_ready"
 	})
+

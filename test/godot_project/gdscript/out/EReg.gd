@@ -34,7 +34,7 @@ func matchedRight() -> String:
 
 	return ""
 
-func matchedPos() -> Dictionary:
+func matchedPos() -> Variant:
 	if (self.m == null):
 		return {
 			"pos": -1,
@@ -69,7 +69,7 @@ func split(s: String) -> Array[String]:
 
 	while (true):
 		if (self.matchSub(s, index, -1)):
-			var pos: Dictionary = self.matchedPos()
+			var pos: Variant = self.matchedPos()
 			var tempString
 			if true:
 				var endIndex: int = pos.get("pos")

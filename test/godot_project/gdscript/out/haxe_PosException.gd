@@ -1,7 +1,7 @@
 extends Exception
 class_name PosException
 
-var posInfos: Dictionary
+var posInfos: Variant
 
 func _init(message: String, previous = null, pos = null) -> void:
 	super(message, previous)

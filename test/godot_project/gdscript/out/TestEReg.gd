@@ -13,7 +13,7 @@ static func test() -> void:
 		var cond: bool = reg.matched(0) == "abc"
 		assert(cond, "Test assert failed.")
 
-	var pos: Dictionary = reg.matchedPos()
+	var pos: Variant = reg.matchedPos()
 
 	if true:
 		var cond: bool = pos.get("pos") == 0

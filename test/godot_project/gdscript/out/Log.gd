@@ -8,7 +8,7 @@ static var trace = func(v, infos = null) -> void:
 func _init() -> void:
 	pass
 
-static func formatOutput(v, infos: Dictionary) -> String:
+static func formatOutput(v, infos: Variant) -> String:
 	var _str: String = str(v)
 
 	if (infos == null):

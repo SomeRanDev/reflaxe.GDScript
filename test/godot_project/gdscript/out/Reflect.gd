@@ -35,12 +35,12 @@ static func callMethod(o, _func, args: Array[Variant]):
 	return _func.callv(args)
 
 static func fields(o) -> Array[String]:
-	var list: Array[Dictionary] = o.get_property_list.call()
+	var list: Array[Variant] = o.get_property_list()
 	var result: Array[String] = ([] as Array[String])
 	var _g: int = 0
 
 	while (_g < list.size()):
-		var l: Dictionary = list[_g]
+		var l: Variant = list[_g]
 		_g += 1
 		result.push_back(l.get("name"))
 
@@ -100,4 +100,3 @@ static func makeVarArgs(f):
 				_g.push_back(v)
 			tempArray = _g
 		return f.call(tempArray)
-

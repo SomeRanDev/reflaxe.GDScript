@@ -6,9 +6,14 @@ test_TestStd_A.gd
 test_TestStaticVar_OtherClass.gd
 test_TestReflect_MyClass.gd
 test_TestEnum_MyGDEnum.gd
+haxe_StringMap.gd
 haxe_PosException.gd
+haxe_ObjectMap.gd
 haxe_NotImplementedException.gd
+haxe_MapKeyValueIterator.gd
+haxe_IntMap.gd
 haxe_Encoding.gd
+haxe_ArrayIterator.gd
 TestSys.gd
 TestSyntax.gd
 TestString.gd
@@ -19,6 +24,7 @@ TestReflect.gd
 TestNode.gd
 TestMeta.gd
 TestMath.gd
+TestMap.gd
 TestEnum.gd
 TestEReg.gd
 TestClass.gd

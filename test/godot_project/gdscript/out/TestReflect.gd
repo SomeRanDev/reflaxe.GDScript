@@ -4,7 +4,7 @@ func _init() -> void:
 	pass
 
 static func test() -> void:
-	var obj: Dictionary = {
+	var obj: Variant = {
 		"num": 123,
 		"str": "String"
 	}
