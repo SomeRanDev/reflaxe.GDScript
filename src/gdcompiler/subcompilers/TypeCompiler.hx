@@ -24,6 +24,14 @@ class TypeCompiler {
 		this.main = main;
 	}
 
+	function isGodotClass(classType: ClassType): Bool {
+		return switch(classType.meta.extractExpressionsFromFirstMeta(":bindings_api_type")) {
+			case [macro "class"]: true;
+			case _ if(classType.superClass != null): isGodotClass(classType.superClass.t.get());
+			case _: false;
+		}
+	}
+
 	public function compileClassName(classType: ClassType): String {
 		return classType.getNameOrNativeName();
 	}
@@ -90,6 +98,21 @@ class TypeCompiler {
 		}
 
 		if(t.isNull()) {
+			// Primitives, Arrays, Dictionaries, and copy-types (Vector2, etc.) cannot be assigned `null`.
+			// The only way to handle these is to remain "untyped" at the moment.
+			//
+			// Object types are generated with `@:bindings_api_type("class")`, so those are safe to
+			// type and assign `null`.
+			final unwrappedType = Context.followWithAbstracts(t.unwrapNullTypeOrSelf(), true);
+			switch(unwrappedType) {
+				case TInst(clsRef, _): {
+					if(isGodotClass(clsRef.get())) {
+						return compileType(unwrappedType, errorPos, isExport);
+					}
+				}
+				case _:
+			}
+
 			return null;
 		}
 		// Ignore Null<T> and just compile as T
