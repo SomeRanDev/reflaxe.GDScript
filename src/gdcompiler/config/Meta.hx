@@ -124,6 +124,16 @@ enum abstract Meta(String) from String to String {
 	var DontCompile = ":dont_compile";
 
 	/**
+		@:uncompilable
+
+		If Reflaxe/GDScript attempts to compile a field with this metadata,
+		it will throw an error.
+		
+		Used to ensure fields intended to be replaced at compile-time aren't compiled.
+	**/
+	var Uncompilable = ":uncompilable";
+
+	/**
 		@:wrapper(selfName: String = "_self")
 
 		If added to a class, that class will be treated as a wrapper class. This means

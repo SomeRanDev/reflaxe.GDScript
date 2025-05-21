@@ -386,12 +386,12 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				overrideExpression;
 			} else {
 				final e = field.expr() ?? v.findDefaultExpr();
-				if(e != null) {
+				if(e != null && !e.isStaticField("gdscript.Syntax", "NoAssign", true)) {
 					// Do quick and dirty optimizations for "block-like" variable assignments.
 					// TODO: Incorporate as feature in Reflaxe.
 					final tvr = new RemoveTemporaryVariablesImpl(AllVariables, e, new Map());
 					final e = RemoveSingleExpressionBlocksImpl.process(tvr.fixTemporaries());
-	
+
 					compileClassVarExpr(e);
 				} else {
 					"";
@@ -871,7 +871,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			case TVar(tvar, maybeExpr): {
 				result.add("var ");
 				result.add(compileVarName(tvar.name, expr));
-				if(maybeExpr != null) {
+				if(maybeExpr != null && !maybeExpr.isStaticField("gdscript.Syntax", "NoAssign", true)) {
 					final e = compileExpressionOrError(maybeExpr);
 					if(tvar.meta.maybeHas(":arrayWrap")) {
 						result.addMulti(" = [", e, "]");	
@@ -1177,10 +1177,6 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		return result;
 	}
 
-	function compileCalledFieldAccess(calledExpr: TypedExpr, fieldAccess: FieldAccess) {
-		
-	}
-
 	function newToGDScript(classTypeRef: Ref<ClassType>, originalExpr: TypedExpr, el: Array<TypedExpr>): String {
 		final nfc = this.compileNativeFunctionCodeMeta(originalExpr, el);
 		return if(nfc != null) {
@@ -1237,6 +1233,10 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			case FClosure(_, classFieldRef): classFieldRef.get();
 			case FEnum(_, enumField): enumField;
 			case FDynamic(s): { name: s, meta: null };
+		}
+
+		if(nameMeta.hasMeta(Meta.Uncompilable)) {
+			Context.error("Attempting to compile field marked with `@:uncompilable`.", e.pos);
 		}
 
 		return if(nameMeta.hasMeta(":native")) {
