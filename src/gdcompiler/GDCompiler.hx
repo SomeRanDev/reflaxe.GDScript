@@ -1142,9 +1142,14 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 					}
 					// Replace pad nulls with default values
 					case FInstance(clsRef, _, cfRef) | FStatic(clsRef, cfRef): {
-						final funcData = cfRef.get().findFuncData(clsRef.get());
-						if(funcData != null) {
-							arguments = funcData.replacePadNullsWithDefaults(arguments, ":noNullPad", generateInjectionExpression);
+						switch(cfRef.get().kind) {
+							case FMethod(_): {
+								final funcData = cfRef.get().findFuncData(clsRef.get());
+								if(funcData != null) {
+									arguments = funcData.replacePadNullsWithDefaults(arguments, ":noNullPad", generateInjectionExpression);
+								}
+							}
+							case _:
 						}
 						null;
 					}
@@ -1170,6 +1175,10 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		}
 
 		return result;
+	}
+
+	function compileCalledFieldAccess(calledExpr: TypedExpr, fieldAccess: FieldAccess) {
+		
 	}
 
 	function newToGDScript(classTypeRef: Ref<ClassType>, originalExpr: TypedExpr, el: Array<TypedExpr>): String {
