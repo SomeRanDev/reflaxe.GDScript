@@ -11,4 +11,4 @@
 - [On Ready](./basic_usage/on_ready.md)
 - [Signals](./basic_usage/signals.md)
 - [Constant Preloads](./basic_usage/constant_preloads.md)
-
+- [`gdscript.Syntax` Class](./basic_usage/syntax_class.md)

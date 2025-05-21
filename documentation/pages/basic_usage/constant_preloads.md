@@ -4,7 +4,7 @@
 ```haxe
 class MyNode extends godot.Node {
 	@:const
-	final MAX_JUMPS = 4;
+	static final MAX_JUMPS = 4;
 }
 ```
 
@@ -21,8 +21,9 @@ const MAX_JUMPS: int = 4;
 A common pattern in GDScript is to `preload` resources into a `const` variable. The `@:const` metadata provides a helper feature to achieve this:
 ```haxe
 class MyNode extends godot.Node {
+	// Use `gdscript.Syntax.NoAssign` since Haxe requires us to assign something to `final`.
 	@:const(preload = "res://scenes/bullet.tscn")
-	final BULLET_SCENE: PackedScene;
+	static final BULLET_SCENE: PackedScene = gdscript.Syntax.NoAssign;
 }
 ```
 
