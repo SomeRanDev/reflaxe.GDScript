@@ -1077,7 +1077,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		switch(constant) {
 			case TInt(i): return Std.string(i);
 			case TFloat(s): return s.indexOf(".") == -1 ? '$s.0' : s;
-			case TString(s): return "\"" + StringTools.replace(StringTools.replace(s, "\\", "\\\\"), "\"", "\\\"") + "\"";
+			case TString(s): return stringToGDScript(s);
 			case TBool(b): return b ? "true" : "false";
 			case TNull: return "null";
 			case TThis: {
@@ -1090,6 +1090,15 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			case _: {}
 		}
 		return "";
+	}
+
+	function stringToGDScript(s: String): String {
+		var result = StringTools.replace(s, "\\", "\\\\");
+		result = StringTools.replace(result, "\"", "\\\"");
+		result = StringTools.replace(result, "\t", "\\t");
+		result = StringTools.replace(result, "\n", "\\n");
+		result = StringTools.replace(result, "\r", "\\r");
+		return "\"" + result + "\"";
 	}
 
 	function binopToGDScript(op: Binop, e1: TypedExpr, e2: TypedExpr): String {
