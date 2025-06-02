@@ -42,6 +42,16 @@ using reflaxe.helpers.SyntaxHelper;
 using reflaxe.helpers.TypedExprHelper;
 using reflaxe.helpers.TypeHelper;
 
+// ---
+
+enum AccessMode {
+	Default;
+	ForceSelf;
+	RemoveFieldAccess;
+}
+
+// ---
+
 class GDCompiler extends reflaxe.DirectToStringCompiler {
 	/**
 		The name of the autoload GDScript file that's generated
@@ -76,6 +86,13 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		If empty, "self" will be used.
 	**/
 	var selfStack: Array<{ selfName: String, publicOnly: Bool }> = [];
+
+	/**
+		A list of fields (using Haxe names) that should not be generated
+		with `self.`. Certain circumstances in GDScript prevent this:
+		 - Cannot use `self.` on a field within its own setter.
+	**/
+	var bypassSelfStack: Array<String> = [];
 
 	/**
 		Set to `true` when compiling an expression for a constructor.
@@ -427,21 +444,24 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				declBuffer.addMulti(" = ", gdScriptVal);
 			}
 
-			function getFunctionContent(name: Null<String>): Null<{ data: ClassFuncData, content: String }> {
-				if(name != null) {
+			function getFunctionContent(originalFieldHaxeName: String, setOrGetFunctionName: Null<String>): Null<{ data: ClassFuncData, content: String }> {
+				if(setOrGetFunctionName != null) {
 					var desiredFuncField = null;
 					for(f in funcFields) {
-						if(f.field.name == name) {
+						if(f.field.name == setOrGetFunctionName) {
 							desiredFuncField = f;
 							break;
 						}
 					}
 
 					if(desiredFuncField != null && desiredFuncField.expr != null) {
-						return {
+						bypassSelfStack.push(originalFieldHaxeName);
+						final result = {
 							data: desiredFuncField,
 							content: compileClassFuncExpr(desiredFuncField.expr)
-						}
+						};
+						bypassSelfStack.pop();
+						return result;
 					}
 				}
 				return null;
@@ -449,11 +469,11 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 			var getContent = null;
 			if(field.hasMeta(Meta.Get)) {
-				getContent = getFunctionContent(field.meta.extractIdentifierFromFirstMeta(Meta.Get, 0));
+				getContent = getFunctionContent(field.name, field.meta.extractIdentifierFromFirstMeta(Meta.Get, 0));
 			}
 			var setContent = null;
 			if(field.hasMeta(Meta.Set)) {
-				setContent = getFunctionContent(field.meta.extractIdentifierFromFirstMeta(Meta.Set, 0));
+				setContent = getFunctionContent(field.name, field.meta.extractIdentifierFromFirstMeta(Meta.Set, 0));
 			}
 
 			if(getContent != null || setContent != null) {
@@ -1254,24 +1274,40 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			final name = nameMeta.getNameOrNativeName();
 			final name = nameMeta.hasMeta(":nativeName") ? name : compileVarName(name);
 
-			var bypassSelf = false;
+			var accessMode: AccessMode = Default;
 
 			switch(fa) {
-				// Check if this is a self.field with BypassWrapper
-				case FInstance(clsRef, _, clsFieldRef) if(selfStack.length > 0): {
+				// Check if this is a self.field with BypassWrapper OR a field in `bypassSelfStack`
+				case FInstance(clsRef, _, clsFieldRef) if(selfStack.length > 0 || bypassSelfStack.length > 0): {
 					final isSelfAccess = switch(e.expr) {
 						case TConst(TThis): true;
 						case _: false;
 					}
 					if(isSelfAccess) {
-						final isSameClass = switch(e.t) {
-							case TInst(clsRef2, _) if(clsRef.get().name == clsRef2.get().name): true;
-							case _: false;
+						// Check selfStack
+						if(selfStack.length > 0) {
+							final isSameClass = switch(e.t) {
+								case TInst(clsRef2, _) if(clsRef.get().name == clsRef2.get().name): true;
+								case _: false;
+							}
+							if(isSameClass) {
+								final selfData = selfStack[selfStack.length - 1];
+								final field = clsFieldRef.get();
+								if(field.hasMeta(Meta.BypassWrapper) || (selfData.publicOnly && !field.isPublic)) {
+									accessMode = ForceSelf;
+								}
+							}
 						}
-						if(isSameClass) {
-							final selfData = selfStack[selfStack.length - 1];
-							final field = clsFieldRef.get();
-							bypassSelf = field.hasMeta(Meta.BypassWrapper) || (selfData.publicOnly && !field.isPublic);
+
+						// Check bypassSelfStack
+						if(accessMode == Default && bypassSelfStack.length > 0) {
+							final fieldHaxeName = clsFieldRef.get().name;
+							for(name in bypassSelfStack) {
+								if(fieldHaxeName == name) {
+									accessMode = RemoveFieldAccess;
+									break;
+								}
+							}
 						}
 					}
 				}
@@ -1333,7 +1369,11 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			}
 
 			// Compile "accessed" expression
-			final gdExpr = bypassSelf ? "self" : compileExpression(e);
+			final gdExpr = switch(accessMode) {
+				case Default: compileExpression(e);
+				case ForceSelf: "self";
+				case RemoveFieldAccess: return name;
+			}
 
 			// Check if we're accessing an anonymous type.
 			// If so, it's a Dictionary in GDScript and .get should be used.
