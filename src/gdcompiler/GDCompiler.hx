@@ -347,7 +347,11 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 			// ----------------------
 			// Name of variable
-			final name: String = field.meta.extractStringFromFirstMeta(":nativeName") ?? compileVarName(field.name, null, field);
+			final name: String = if(field.hasMeta(Meta.KeepName)) {
+				field.name;
+			} else {
+				field.meta.extractStringFromFirstMeta(Meta.NativeName) ?? compileVarName(field.name, null, field);
+			}
 
 			// ----------------------
 			// The GDScript expression string override provided by metadata
@@ -520,8 +524,10 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				"_init";
 			} else {
 				var result = null;
-				if(field.hasMeta(":nativeName")) {
-					result = field.meta.extractStringFromFirstMeta(":nativeName");
+				if(field.hasMeta(Meta.KeepName)) {
+					result = field.name;
+				} else if(field.hasMeta(Meta.NativeName)) {
+					result = field.meta.extractStringFromFirstMeta(Meta.NativeName);
 				}
 				if(result == null) {
 					final varName = compileVarName(field.name);
@@ -1272,7 +1278,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			nameMeta.getNameOrNative();
 		} else {
 			final name = nameMeta.getNameOrNativeName();
-			final name = nameMeta.hasMeta(":nativeName") ? name : compileVarName(name);
+			final name = nameMeta.hasMeta(Meta.KeepName) || nameMeta.hasMeta(Meta.NativeName) ? name : compileVarName(name);
 
 			var accessMode: AccessMode = Default;
 

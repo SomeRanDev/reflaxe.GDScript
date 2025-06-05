@@ -159,4 +159,18 @@ enum abstract Meta(String) from String to String {
 		If used on a field, the effects of `@:wrapper` will be ignored when accessing it.
 	**/
 	var BypassWrapper = ":bypass_wrapper";
+
+	/**
+		@:nativeName(name: String)
+
+		Use instead of `@:native`.
+	**/
+	var NativeName = ":nativeName";
+
+	/**
+		@:keepName
+
+		Keeps the name of the field no matter what.
+	**/
+	var KeepName = ":keepName";
 }
