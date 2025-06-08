@@ -33,6 +33,10 @@ class TypeCompiler {
 	}
 
 	public function compileClassName(classType: ClassType): String {
+		// Classes in `haxe` package have simple names that might conflict, so let's use pack_Name.
+		if(classType.pack.length >= 1 && classType.pack[0] == "haxe") {
+			return classType.pack.join("_") + "_" + classType.getNameOrNativeName();
+		}
 		return classType.getNameOrNativeName();
 	}
 
