@@ -148,9 +148,11 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		if(Context.defined(Define.GenerateGodotPlugin)) {
 			generatePlugin();
 		}
+		#if generate_resource_export_list
 		if(Context.defined(Define.GenerateResourceExportList)) {
 			setExtraFile("resource_export_list.txt", usedResources.join(", "));
 		}
+		#end
 	}
 
 	/**
