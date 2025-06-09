@@ -99,6 +99,13 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 	**/
 	var compilingInConstructor: Bool = false;
 
+	#if generate_resource_export_list
+	/**
+		A list of resources preloaded by the code.
+	**/
+	var usedResources: Array<String> = [];
+	#end
+
 	public function new() {
 		super();
 
@@ -141,6 +148,11 @@ class GDCompiler extends reflaxe.DirectToStringCompiler {
 		if(Context.defined(Define.GenerateGodotPlugin)) {
 			generatePlugin();
 		}
+		#if generate_resource_export_list
+		if(Context.defined(Define.GenerateResourceExportList)) {
+			setExtraFile("resource_export_list.txt", usedResources.join(", "));
+		}
+		#end
 	}
 
 	/**
@@ -390,7 +402,11 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 				switch(field.meta.extractExpressionsFromFirstMeta(Meta.Const)) {
 					case [macro preload = $expr]: {
-						overrideExpression = "preload(\"" + expr.getConstString() + "\");";
+						final path = expr.getConstString();
+						#if generate_resource_export_list
+						usedResources.push(path);
+						#end
+						overrideExpression = "preload(\"" + path + "\");";
 					}
 					case []: {
 						// No arguments is allowed but doesn't do anything...

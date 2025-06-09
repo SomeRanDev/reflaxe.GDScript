@@ -64,4 +64,13 @@ enum abstract Define(String) from String to String {
 		`-D gdscript_output_dirs` is defined.
 	**/
 	var GDScriptAlwaysUsePackagesInOutputFilenames = "gdscript_always_packages_in_output_filenames";
+
+	/**
+		-D generate_resource_export_list
+
+		If defined, a `.txt` file contained a comma separated list of preloaded
+		paths will be generated. These will be taken from uses of `@:const(preload = "path")`
+		and do not account for normal calls to `preload` at the moment.
+	**/
+	var GenerateResourceExportList = "generate_resource_export_list";
 }
