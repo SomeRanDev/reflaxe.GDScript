@@ -1,4 +1,4 @@
-class_name ArrayIterator
+class_name haxe_iterators_ArrayIterator
 
 var array: Array[Variant]
 var current: int = 0

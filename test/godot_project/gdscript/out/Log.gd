@@ -1,8 +1,8 @@
 @tool
-class_name Log
+class_name haxe_Log
 
 static var trace = func(v, infos = null) -> void:
-	var _str: String = Log.formatOutput(v, infos)
+	var _str: String = haxe_Log.formatOutput(v, infos)
 	print(_str)
 
 func _init() -> void:

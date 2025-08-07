@@ -4,7 +4,7 @@ func _init() -> void:
 	pass
 
 static func test() -> void:
-	var map: StringMap = StringMap.new()
+	var map: haxe_ds_StringMap = haxe_ds_StringMap.new()
 
 	if true:
 		var cond: bool = map.exists("foo") == false
@@ -23,7 +23,7 @@ static func test() -> void:
 	var map4: Variant = dynmap
 
 	if true:
-		var cond: bool = ((map as Variant) is StringMap) == true
+		var cond: bool = ((map as Variant) is haxe_ds_StringMap) == true
 		assert(cond, "Test assert failed.")
 	if true:
 		var cond: bool = map.exists("foo") == true
@@ -62,7 +62,7 @@ static func test() -> void:
 		var cond: bool = map4.__get("foo") == 1
 		assert(cond, "Test assert failed.")
 
-	var copied: StringMap = map.copy()
+	var copied: haxe_ds_StringMap = map.copy()
 
 	assert(copied != map, "Test assert failed.")
 
@@ -156,7 +156,7 @@ static func test() -> void:
 	var tempMap
 
 	if true:
-		var _g: IntMap = IntMap.new()
+		var _g: haxe_ds_IntMap = haxe_ds_IntMap.new()
 		_g.__set(1, "2")
 		_g.__set(2, "4")
 		_g.__set(3, "6")
@@ -206,7 +206,7 @@ static func test() -> void:
 		return Reflect.compare(a, b) < 0)
 	assert(tempArray1 == (["2", "4", "6"] as Array[String]), "Test assert failed.")
 
-	var map6: IntMap = IntMap.new()
+	var map6: haxe_ds_IntMap = haxe_ds_IntMap.new()
 
 	if true:
 		var cond: bool = map6.exists(1) == false
@@ -220,7 +220,7 @@ static func test() -> void:
 	map6.__set(3, 3)
 
 	if true:
-		var cond: bool = ((map6 as Variant) is IntMap) == true
+		var cond: bool = ((map6 as Variant) is haxe_ds_IntMap) == true
 		assert(cond, "Test assert failed.")
 	if true:
 		var cond: bool = map6.exists(1) == true
@@ -241,7 +241,7 @@ static func test() -> void:
 		var cond: bool = map6.__get(3) == 3
 		assert(cond, "Test assert failed.")
 
-	var copied2: IntMap = map6.copy()
+	var copied2: haxe_ds_IntMap = map6.copy()
 
 	assert(copied2 != map6, "Test assert failed.")
 
@@ -335,7 +335,7 @@ static func test() -> void:
 	var tempMap1
 
 	if true:
-		var _g: IntMap = IntMap.new()
+		var _g: haxe_ds_IntMap = haxe_ds_IntMap.new()
 		_g.__set(1, 2)
 		_g.__set(2, 4)
 		_g.__set(3, 6)
@@ -385,7 +385,7 @@ static func test() -> void:
 		return Reflect.compare(a, b) < 0)
 	assert(tempArray3 == ([2, 4, 6] as Array[int]), "Test assert failed.")
 
-	var map8: ObjectMap = ObjectMap.new()
+	var map8: haxe_ds_ObjectMap = haxe_ds_ObjectMap.new()
 	var a: ClassWithHashCode = ClassWithHashCode.new(1)
 	var b: ClassWithHashCode = ClassWithHashCode.new(2)
 	var c: ClassWithHashCode = ClassWithHashCode.new(3)
@@ -474,7 +474,7 @@ static func test() -> void:
 		var cond: bool = ([1, 2, 3] as Array[int]).has(tempArray5[2])
 		assert(cond, "Test assert failed.")
 
-	var copied3: ObjectMap = map8.copy()
+	var copied3: haxe_ds_ObjectMap = map8.copy()
 
 	assert(copied3 != map8, "Test assert failed.")
 
@@ -565,7 +565,7 @@ static func test() -> void:
 		var cond: bool = map8.__get(b) == null
 		assert(cond, "Test assert failed.")
 
-	var map9: ObjectMap = ObjectMap.new()
+	var map9: haxe_ds_ObjectMap = haxe_ds_ObjectMap.new()
 	var a2: ClassWithoutHashCode = ClassWithoutHashCode.new(1)
 	var b2: ClassWithoutHashCode = ClassWithoutHashCode.new(2)
 	var c2: ClassWithoutHashCode = ClassWithoutHashCode.new(3)
@@ -654,7 +654,7 @@ static func test() -> void:
 		var cond: bool = ([1, 2, 3] as Array[int]).has(tempArray7[2])
 		assert(cond, "Test assert failed.")
 
-	var copied4: ObjectMap = map9.copy()
+	var copied4: haxe_ds_ObjectMap = map9.copy()
 
 	assert(copied4 != map9, "Test assert failed.")
 
@@ -745,7 +745,7 @@ static func test() -> void:
 		var cond: bool = map9.__get(b2) == null
 		assert(cond, "Test assert failed.")
 
-	var map10: StringMap = StringMap.new()
+	var map10: haxe_ds_StringMap = haxe_ds_StringMap.new()
 
 	if true:
 		var cond: bool = map10.__get("foo") == null
@@ -814,7 +814,7 @@ static func test() -> void:
 		if true:
 			var tempMap2
 			if true:
-				var _g: StringMap = StringMap.new()
+				var _g: haxe_ds_StringMap = haxe_ds_StringMap.new()
 				_g.__set("", "")
 				tempMap2 = _g
 			var this1: Variant = tempMap2
@@ -826,7 +826,7 @@ static func test() -> void:
 		if true:
 			var tempMap3
 			if true:
-				var _g: StringMap = StringMap.new()
+				var _g: haxe_ds_StringMap = haxe_ds_StringMap.new()
 				_g.__set("", "")
 				tempMap3 = _g
 			var this1: Variant = tempMap3
@@ -838,7 +838,7 @@ static func test() -> void:
 		if true:
 			var tempMap4
 			if true:
-				var _g: IntMap = IntMap.new()
+				var _g: haxe_ds_IntMap = haxe_ds_IntMap.new()
 				_g.__set(2, 3)
 				tempMap4 = _g
 			var this1: Variant = tempMap4
@@ -850,7 +850,7 @@ static func test() -> void:
 		if true:
 			var tempMap5
 			if true:
-				var _g: IntMap = IntMap.new()
+				var _g: haxe_ds_IntMap = haxe_ds_IntMap.new()
 				_g.__set(2, 3)
 				tempMap5 = _g
 			var this1: Variant = tempMap5
@@ -866,7 +866,7 @@ static func test() -> void:
 		if true:
 			var tempMap6
 			if true:
-				var _g: StringMap = StringMap.new()
+				var _g: haxe_ds_StringMap = haxe_ds_StringMap.new()
 				_g.__set("", "")
 				tempMap6 = _g
 			var this1: Variant = tempMap6
@@ -882,7 +882,7 @@ static func test() -> void:
 		if true:
 			var tempMap7
 			if true:
-				var _g: StringMap = StringMap.new()
+				var _g: haxe_ds_StringMap = haxe_ds_StringMap.new()
 				_g.__set("", "")
 				tempMap7 = _g
 			var this1: Variant = tempMap7
@@ -898,7 +898,7 @@ static func test() -> void:
 		if true:
 			var tempMap8
 			if true:
-				var _g: IntMap = IntMap.new()
+				var _g: haxe_ds_IntMap = haxe_ds_IntMap.new()
 				_g.__set(2, 3)
 				tempMap8 = _g
 			var this1: Variant = tempMap8
@@ -914,7 +914,7 @@ static func test() -> void:
 		if true:
 			var tempMap9
 			if true:
-				var _g: IntMap = IntMap.new()
+				var _g: haxe_ds_IntMap = haxe_ds_IntMap.new()
 				_g.__set(2, 3)
 				tempMap9 = _g
 			var this1: Variant = tempMap9
@@ -929,7 +929,7 @@ static func test() -> void:
 	var tempMap10
 
 	if true:
-		var _g: IntMap = IntMap.new()
+		var _g: haxe_ds_IntMap = haxe_ds_IntMap.new()
 		_g.__set(1, "2")
 		_g.__set(2, "4")
 		tempMap10 = _g
@@ -972,7 +972,7 @@ static func test() -> void:
 	var tempMap11
 
 	if true:
-		var _g: IntMap = IntMap.new()
+		var _g: haxe_ds_IntMap = haxe_ds_IntMap.new()
 		_g.__set(1, "2")
 		_g.__set(2, "4")
 		tempMap11 = _g
@@ -1035,7 +1035,7 @@ static func test() -> void:
 	var tempMap12
 
 	if true:
-		var _g: StringMap = StringMap.new()
+		var _g: haxe_ds_StringMap = haxe_ds_StringMap.new()
 		_g.__set("1a", "2")
 		_g.__set("1b", "4")
 		tempMap12 = _g

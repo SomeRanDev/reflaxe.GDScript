@@ -8,7 +8,7 @@ func _init() -> void:
 	self.dictionary = {}
 
 func _ready() -> void:
-	Log.trace.call(self.dictionary, {
+	haxe_Log.trace.call(self.dictionary, {
 		"fileName": "src/test/TestNode.hx",
 		"lineNumber": 11,
 		"className": "test.TestNode",

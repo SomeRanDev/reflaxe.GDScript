@@ -25,12 +25,12 @@ func matched(n: int) -> String:
 	return ""
 
 func matchedLeft() -> String:
-	assert(false, "EReg.matchedLeft not implemented for GDScript.")
+	assert(false, str("EReg.matchedLeft not implemented for GDScript."))
 
 	return ""
 
 func matchedRight() -> String:
-	assert(false, "EReg.matchedRight not implemented for GDScript.")
+	assert(false, str("EReg.matchedRight not implemented for GDScript."))
 
 	return ""
 
@@ -100,12 +100,12 @@ func replace(s: String, by: String) -> String:
 	return self.regObj.sub.call(s, by)
 
 func map(s: String, f) -> String:
-	assert(false, "EReg.map not implemented for GDScript.")
+	assert(false, str("EReg.map not implemented for GDScript."))
 
 	return ""
 
 static func escape(s: String) -> String:
-	assert(false, "EReg.escape not implemented for GDScript.")
+	assert(false, str("EReg.escape not implemented for GDScript."))
 
 	return ""
 

@@ -1,5 +1,5 @@
-extends Exception
-class_name PosException
+extends haxe_Exception
+class_name haxe_exceptions_PosException
 
 var posInfos: Variant
 

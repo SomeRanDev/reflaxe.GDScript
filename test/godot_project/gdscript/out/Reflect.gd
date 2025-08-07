@@ -85,7 +85,7 @@ static func copy(o):
 	if ((o as Variant) is Dictionary):
 		return o.duplicate()
 
-	assert(false, "Only anonymous structures (Dictionaries) may be used with `Reflect.copy`.")
+	assert(false, str("Only anonymous structures (Dictionaries) may be used with `Reflect.copy`."))
 
 static func makeVarArgs(f):
 	return func(args: Array[Variant]):

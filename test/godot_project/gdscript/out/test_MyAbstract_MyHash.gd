@@ -3,23 +3,23 @@ class_name MyHash_Impl_
 func _init() -> void:
 	pass
 
-static func _new() -> StringMap:
-	var this1: StringMap = StringMap.new()
+static func _new() -> haxe_ds_StringMap:
+	var this1: haxe_ds_StringMap = haxe_ds_StringMap.new()
 
 	return this1
 
-static func __set(this1: StringMap, k: String, v) -> void:
+static func __set(this1: haxe_ds_StringMap, k: String, v) -> void:
 	this1.__set(k, v)
 
-static func __get(this1: StringMap, k: String):
+static func __get(this1: haxe_ds_StringMap, k: String):
 	return this1.__get(k)
 
-static func toString(this1: StringMap) -> String:
+static func toString(this1: haxe_ds_StringMap) -> String:
 	return this1.toString()
 
-static func fromStringArray(arr: Array[String]) -> StringMap:
-	var this1: StringMap = StringMap.new()
-	var tempMyHash: StringMap = this1
+static func fromStringArray(arr: Array[String]) -> haxe_ds_StringMap:
+	var this1: haxe_ds_StringMap = haxe_ds_StringMap.new()
+	var tempMyHash: haxe_ds_StringMap = this1
 	var i: int = 0
 
 	while (i < arr.size()):
@@ -35,9 +35,9 @@ static func fromStringArray(arr: Array[String]) -> StringMap:
 
 	return tempMyHash
 
-static func fromArray(arr: Array[Variant]) -> StringMap:
-	var this1: StringMap = StringMap.new()
-	var tempMyHash: StringMap = this1
+static func fromArray(arr: Array[Variant]) -> haxe_ds_StringMap:
+	var this1: haxe_ds_StringMap = haxe_ds_StringMap.new()
+	var tempMyHash: haxe_ds_StringMap = this1
 	var i: int = 0
 
 	while (i < arr.size()):

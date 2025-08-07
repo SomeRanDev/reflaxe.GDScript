@@ -1,5 +1,5 @@
-extends Exception
-class_name Error
+extends haxe_Exception
+class_name haxe_macro_Error
 
 var pos: Variant
 

@@ -1,4 +1,4 @@
-class_name MapKeyValueIterator
+class_name haxe_iterators_MapKeyValueIterator
 
 var map: Variant
 var keys: Variant

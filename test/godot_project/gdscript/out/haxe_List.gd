@@ -1,16 +1,16 @@
-class_name List
+class_name haxe_ds_List
 
-var h: ListNode
-var q: ListNode
+var h: haxe_ds__List_ListNode
+var q: haxe_ds__List_ListNode
 var length: int
 
 func _init() -> void:
 	self.length = 0
 
 func add(item) -> void:
-	var next: ListNode = null
-	var tempListNode: ListNode = ListNode.new(item, next)
-	var x: ListNode = tempListNode
+	var next: haxe_ds__List_ListNode = null
+	var tempListNode: haxe_ds__List_ListNode = haxe_ds__List_ListNode.new(item, next)
+	var x: haxe_ds__List_ListNode = tempListNode
 
 	if (self.h == null):
 		self.h = x
@@ -21,9 +21,9 @@ func add(item) -> void:
 	self.length += 1
 
 func push(item) -> void:
-	var next: ListNode = self.h
-	var tempListNode: ListNode = ListNode.new(item, next)
-	var x: ListNode = tempListNode
+	var next: haxe_ds__List_ListNode = self.h
+	var tempListNode: haxe_ds__List_ListNode = haxe_ds__List_ListNode.new(item, next)
+	var x: haxe_ds__List_ListNode = tempListNode
 
 	self.h = x
 
@@ -63,7 +63,7 @@ func isEmpty() -> bool:
 func toString() -> String:
 	var s_b: String = ""
 	var first: bool = true
-	var l: ListNode = self.h
+	var l: haxe_ds__List_ListNode = self.h
 
 	s_b += str("{")
 

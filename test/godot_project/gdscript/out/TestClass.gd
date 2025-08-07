@@ -6,7 +6,7 @@ var c: bool = false
 
 func _init() -> void:
 	if (!self.c):
-		Log.trace.call(self.a, {
+		haxe_Log.trace.call(self.a, {
 			"fileName": "src/test/TestClass.hx",
 			"lineNumber": 10,
 			"className": "test.TestClass",
@@ -15,7 +15,7 @@ func _init() -> void:
 		})
 
 static func test() -> void:
-	Log.trace.call(TestClass.new(), {
+	haxe_Log.trace.call(TestClass.new(), {
 		"fileName": "src/test/TestClass.hx",
 		"lineNumber": 15,
 		"className": "test.TestClass",

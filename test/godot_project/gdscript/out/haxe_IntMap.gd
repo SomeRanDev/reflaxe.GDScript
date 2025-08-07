@@ -1,4 +1,4 @@
-class_name IntMap
+class_name haxe_ds_IntMap
 
 var m: Dictionary[int, Variant]
 
@@ -26,21 +26,21 @@ func remove(key: int) -> bool:
 
 func keys() -> Variant:
 	var _this: Array[int] = self.m.keys()
-	var tempResult: ArrayIterator = ArrayIterator.new(_this)
+	var tempResult: haxe_iterators_ArrayIterator = haxe_iterators_ArrayIterator.new(_this)
 
 	return tempResult
 
 func iterator() -> Variant:
 	var _this: Array[Variant] = self.m.values()
-	var tempResult: ArrayIterator = ArrayIterator.new(_this)
+	var tempResult: haxe_iterators_ArrayIterator = haxe_iterators_ArrayIterator.new(_this)
 
 	return tempResult
 
 func keyValueIterator() -> Variant:
-	return MapKeyValueIterator.new(self)
+	return haxe_iterators_MapKeyValueIterator.new(self)
 
-func copy() -> IntMap:
-	var result: IntMap = IntMap.new()
+func copy() -> haxe_ds_IntMap:
+	var result: haxe_ds_IntMap = haxe_ds_IntMap.new()
 
 	result.m = self.m.duplicate(false)
 

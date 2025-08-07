@@ -1,4 +1,4 @@
-class_name StringMap
+class_name haxe_ds_StringMap
 
 var m: Dictionary[String, Variant]
 
@@ -26,21 +26,21 @@ func remove(key: String) -> bool:
 
 func keys() -> Variant:
 	var _this: Array[String] = self.m.keys()
-	var tempResult: ArrayIterator = ArrayIterator.new(_this)
+	var tempResult: haxe_iterators_ArrayIterator = haxe_iterators_ArrayIterator.new(_this)
 
 	return tempResult
 
 func iterator() -> Variant:
 	var _this: Array[Variant] = self.m.values()
-	var tempResult: ArrayIterator = ArrayIterator.new(_this)
+	var tempResult: haxe_iterators_ArrayIterator = haxe_iterators_ArrayIterator.new(_this)
 
 	return tempResult
 
 func keyValueIterator() -> Variant:
-	return MapKeyValueIterator.new(self)
+	return haxe_iterators_MapKeyValueIterator.new(self)
 
-func copy() -> StringMap:
-	var result: StringMap = StringMap.new()
+func copy() -> haxe_ds_StringMap:
+	var result: haxe_ds_StringMap = haxe_ds_StringMap.new()
 
 	result.m = self.m.duplicate(false)
 

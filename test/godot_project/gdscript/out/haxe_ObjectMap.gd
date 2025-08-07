@@ -1,4 +1,4 @@
-class_name ObjectMap
+class_name haxe_ds_ObjectMap
 
 var m: Dictionary[Variant, Variant]
 
@@ -26,21 +26,21 @@ func remove(key) -> bool:
 
 func keys() -> Variant:
 	var _this: Array[Variant] = self.m.keys()
-	var tempResult: ArrayIterator = ArrayIterator.new(_this)
+	var tempResult: haxe_iterators_ArrayIterator = haxe_iterators_ArrayIterator.new(_this)
 
 	return tempResult
 
 func iterator() -> Variant:
 	var _this: Array[Variant] = self.m.values()
-	var tempResult: ArrayIterator = ArrayIterator.new(_this)
+	var tempResult: haxe_iterators_ArrayIterator = haxe_iterators_ArrayIterator.new(_this)
 
 	return tempResult
 
 func keyValueIterator() -> Variant:
-	return MapKeyValueIterator.new(self)
+	return haxe_iterators_MapKeyValueIterator.new(self)
 
-func copy() -> ObjectMap:
-	var result: ObjectMap = ObjectMap.new()
+func copy() -> haxe_ds_ObjectMap:
+	var result: haxe_ds_ObjectMap = haxe_ds_ObjectMap.new()
 
 	result.m = self.m.duplicate(false)
 
