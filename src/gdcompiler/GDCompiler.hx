@@ -1059,7 +1059,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				result.add("continue");
 			}
 			case TThrow(expr): {
-				result.addMulti("assert(false, ", compileExpressionOrError(expr), ")");
+				result.addMulti("assert(false, str(", compileExpressionOrError(expr), "))");
 			}
 			case TCast(expr, maybeModuleType): {
 				final hasModuleType = maybeModuleType != null;
