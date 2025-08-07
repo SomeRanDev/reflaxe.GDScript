@@ -530,6 +530,19 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 			#end
 
 			final field = f.field;
+
+			// ----------------------
+			// Do not generate extern functions
+			if(field.isExtern || field.hasMeta(":extern") || field.hasMeta(":gd_extern")) {
+				continue;
+			}
+
+			// ----------------------
+			// Do not generate abstract functions
+			if(field.isAbstract) {
+				continue;
+			}
+
 			final isConstructor = field.name == "new";
 			final wrapField = isWrapper && (!isWrapPublicOnly || field.isPublic);
 			final isSignal = field.hasMeta(Meta.Signal);
@@ -656,12 +669,12 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 
 						// Use "pass" if function empty
 						if(StringTools.trim(result).length == 0) {
-							"\tpass";
+							getEmptyFunctionContent(f);
 						} else {
 							result;
 						}
 					} else {
-						"\tpass";
+						getEmptyFunctionContent(f);
 					}
 
 					funcDeclaration.add(gdScriptVal);
@@ -731,6 +744,22 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 		#end
 
 		return null;
+	}
+
+	function getEmptyFunctionContent(data: ClassFuncData): String {
+		if(data.ret.isVoid()) {
+			return "\tpass";
+		}
+
+		if(data.ret.isBool()) {
+			return "\treturn false";
+		}
+
+		if(data.ret.isNumberType()) {
+			return "\treturn 0;";
+		}
+
+		return "\treturn null";
 	}
 
 	function getGDOutputPath(baseType: BaseType) {
@@ -1030,7 +1059,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				result.add("continue");
 			}
 			case TThrow(expr): {
-				result.addMulti("assert(false, ", compileExpressionOrError(expr), ")");
+				result.addMulti("assert(false, str(", compileExpressionOrError(expr), "))");
 			}
 			case TCast(expr, maybeModuleType): {
 				final hasModuleType = maybeModuleType != null;
