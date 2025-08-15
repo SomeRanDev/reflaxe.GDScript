@@ -17,7 +17,7 @@ class StringTools {
 		Decode an URL using the standard format.
 	**/
 	inline public static function urlDecode(s:String):String {
-		return null;
+		return "";
 	}
 
 	/**
