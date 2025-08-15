@@ -1094,3 +1094,4 @@ static func test() -> void:
 	if true:
 		var cond: bool = (["1a", "1b"] as Array[String]).has(tempArray15[1])
 		assert(cond, "Test assert failed.")
+

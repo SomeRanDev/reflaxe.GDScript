@@ -584,3 +584,4 @@ func run(e: Variant) -> void:
 						tempVar1 = v.callv(pl)
 					var x: String = str(tempVar1)
 					_this.b += str(x)
+

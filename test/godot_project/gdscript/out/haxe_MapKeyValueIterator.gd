@@ -17,3 +17,4 @@ func next() -> Variant:
 		"value": self.map.__get(key),
 		"key": key
 	}
+

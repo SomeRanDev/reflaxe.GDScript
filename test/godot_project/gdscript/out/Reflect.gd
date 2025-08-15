@@ -100,3 +100,4 @@ static func makeVarArgs(f):
 				_g.push_back(v)
 			tempArray = _g
 		return f.call(tempArray)
+

@@ -15,3 +15,4 @@ func next():
 	var tempIndex: int = self.current - 1
 
 	return self.array[tempIndex]
+

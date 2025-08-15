@@ -34,3 +34,4 @@ static func test() -> void:
 		"className": "test.TestAbstractClass",
 		"methodName": "test"
 	})
+

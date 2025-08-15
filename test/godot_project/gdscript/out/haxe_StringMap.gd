@@ -73,3 +73,4 @@ func toString() -> String:
 
 func clear() -> void:
 	self.m.clear()
+

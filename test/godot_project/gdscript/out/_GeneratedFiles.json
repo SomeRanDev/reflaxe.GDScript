@@ -53,6 +53,7 @@
 		"haxe_ArrayIterator.gd",
 		"TestSys.gd",
 		"TestSyntax.gd",
+		"TestStringTools.gd",
 		"TestString.gd",
 		"TestStd.gd",
 		"TestStaticVar.gd",
@@ -78,7 +79,7 @@
 		"Exception.gd",
 		"EReg.gd"
 	],
-	"id": 5,
+	"id": 33,
 	"wasCached": false,
 	"version": 1
 }

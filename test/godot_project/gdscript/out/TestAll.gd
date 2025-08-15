@@ -19,9 +19,10 @@ static func test() -> void:
 	TestSignals.test()
 	TestMap.test()
 	TestAbstractClass.test()
+	TestStringTools.test()
 	haxe_Log.trace.call("Tests successful!!", {
 		"fileName": "src/test/TestAll.hx",
-		"lineNumber": 21,
+		"lineNumber": 22,
 		"className": "test.TestAll",
 		"methodName": "test"
 	})

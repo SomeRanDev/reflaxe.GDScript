@@ -9,7 +9,7 @@ static func urlEncode(s: String) -> String:
 	return ""
 
 static func urlDecode(s: String) -> String:
-	return null
+	return ""
 
 static func htmlEscape(s: String, quotes: bool = false) -> String:
 	var buf_b: String = ""
@@ -324,7 +324,8 @@ static func hex(n: int, digits = null) -> String:
 
 	while true:
 		s = hexChars[n & 15] + s
-		n >>>= 4	if (n > 0):
+		n = (((n & -1) >> 4) & -1)
+		if !(n > 0):
 			break
 
 	if (digits != null):
@@ -465,4 +466,3 @@ static func utf16CodePointAt(s: String, index: int) -> int:
 		c = c - 55232 << 10 | s.unicode_at.call(index + 1) & 1023
 
 	return c
-
