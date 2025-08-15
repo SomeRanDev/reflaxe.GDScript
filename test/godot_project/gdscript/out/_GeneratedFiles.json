@@ -5,6 +5,7 @@
 		"test_TestStd_A.gd",
 		"test_TestStaticVar_OtherClass.gd",
 		"test_TestReflect_MyClass.gd",
+		"test_TestMetadata_TestPreload.gd",
 		"test_TestEnum_MyGDEnum.gd",
 		"test_TestAbstractClass_MyObject.gd",
 		"test_TestAbstractClass_MyChildOfAbstractClass2.gd",
@@ -60,6 +61,7 @@
 		"TestSignals.gd",
 		"TestReflect.gd",
 		"TestNode.gd",
+		"TestMetadata.gd",
 		"TestMeta.gd",
 		"TestMath.gd",
 		"TestMap.gd",
@@ -71,6 +73,7 @@
 		"TestAbstractClass.gd",
 		"Template.gd",
 		"SysTools.gd",
+		"Syntax.gd",
 		"StringTools.gd",
 		"StringBuf.gd",
 		"Reflect.gd",
@@ -79,7 +82,7 @@
 		"Exception.gd",
 		"EReg.gd"
 	],
-	"id": 33,
+	"id": 42,
 	"wasCached": false,
 	"version": 1
 }
