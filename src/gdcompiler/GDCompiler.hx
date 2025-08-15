@@ -989,14 +989,19 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				}
 			}
 			case TWhile(econd, blockExpr, normalWhile): {
-				final gdCond = compileExpressionOrError(econd);
 				if(normalWhile) {
+					final gdCond = compileExpressionOrError(econd);
 					result.addMulti("while ", gdCond, ":\n");
 					result.add(toIndentedScope(blockExpr));
 				} else {
+					final gdCond = compileExpressionOrError({
+						expr: TUnop(Unop.OpNot, false, econd),
+						pos: econd.pos,
+						t: econd.t,
+					});
 					result.add("while true:\n");
 					result.add(toIndentedScope(blockExpr));
-					result.addMulti("\tif ", gdCond, ":\n");
+					result.addMulti("\n\tif ", gdCond, ":\n");
 					result.add("\t\tbreak");
 				}
 			}
