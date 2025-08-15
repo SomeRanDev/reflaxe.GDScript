@@ -537,12 +537,6 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				continue;
 			}
 
-			// ----------------------
-			// Do not generate abstract functions
-			if(field.isAbstract) {
-				continue;
-			}
-
 			final isConstructor = field.name == "new";
 			final wrapField = isWrapper && (!isWrapPublicOnly || field.isPublic);
 			final isSignal = field.hasMeta(Meta.Signal);
