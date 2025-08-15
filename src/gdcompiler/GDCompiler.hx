@@ -1419,7 +1419,7 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 				}
 				case FStatic(clsRef, clsFieldRef): {
 					final isSelfAccess = switch(e.expr) {
-						case TTypeExpr(TClassDecl(_.get().equals(clsRef.get()) => true)): true;
+						case TTypeExpr(_ == getCurrentModule() => true): true;
 						case _: false;
 					}
 					if(isSelfAccess && clsFieldRef.get().hasMeta(Meta.Const)) {
