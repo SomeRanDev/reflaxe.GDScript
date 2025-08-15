@@ -17,6 +17,7 @@ class TestAll {
 		TestSignals.test();
 		TestMap.test();
 		TestAbstractClass.test();
+		TestStringTools.test();
 
 		trace("Tests successful!!");
 	}
