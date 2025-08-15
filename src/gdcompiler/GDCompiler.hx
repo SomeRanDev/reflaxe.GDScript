@@ -1180,6 +1180,17 @@ ${exitTreeLines.length > 0 ? exitTreeLines.join("\n").tab() : "\tpass"}
 	function binopToGDScript(op: Binop, e1: TypedExpr, e2: TypedExpr): String {
 		var gdExpr1 = compileExpression(e1);
 		var gdExpr2 = compileExpression(e2);
+
+		switch(op) {
+			case OpUShr: {
+				return '(($gdExpr1 & -1) >> $gdExpr2) & -1';
+			}
+			case OpAssignOp(OpUShr): {
+				return '$gdExpr1 = ((($gdExpr1 & -1) >> $gdExpr2) & -1)';
+			}
+			case _:
+		}
+
 		final operatorStr = OperatorHelper.binopToString(op);
 
 		// Wrap primitives with str(...) when added with String
