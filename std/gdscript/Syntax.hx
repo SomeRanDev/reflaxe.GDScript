@@ -85,7 +85,7 @@ class Syntax {
 		```
 	**/
 	public static macro function dollar(identifier: Expr): Expr {
-		final identifier = switch(identifier.expr) {
+		var identifier = switch(identifier.expr) {
 			case EConst(CString(s, _) | CIdent(s)): s;
 			case _: {
 				Context.error("Expected String or identifier expression", identifier.pos);
@@ -93,7 +93,25 @@ class Syntax {
 			}
 		}
 
-		final identifier = "$" + identifier;
+		// Check if the input content contains a space.
+		final hasSpace = {
+			var result = false;
+			final len = identifier.length;
+			for(i in 0...len) {
+				if(StringTools.isSpace(identifier, i)) {
+					result = true;
+					break;
+				}
+			}
+			result;
+		}
+
+		// Wrap with quotes if the identifier has a space.
+		if(hasSpace) {
+			identifier = '"${identifier}"';
+		}
+
+		identifier = "$" + identifier;
 		return macro untyped __gdscript__($v{identifier});
 	}
 }
